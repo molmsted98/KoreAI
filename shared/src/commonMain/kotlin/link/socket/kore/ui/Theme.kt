@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 
 val backgroundColor = Color(0xFFF2F2F7)
 val bodyTextColor = Color(0xFF575758)
-val nonContentCardColor = Color(0xFFF8F8F8)
+val nonContentCardColor = Color(0xFFEEEEEE)
 val iconAlpha = 0.5f
 val separatorIconSize = 4.dp
 val iconButtonSize = 48.dp

@@ -13,13 +13,13 @@ import link.socket.kore.model.tool.ParameterDefinition
 
 data class ParentsAgent(
     override val openAI: OpenAI
-) : KoreAgent.LLMAssisted() {
-
-    private var parentRoles: Pair<String, String>? = null
+) : KoreAgent.HumanAndLLMAssisted()  {
 
     companion object {
         private const val INSTRUCTIONS =
-            "You are a helpful assistant that knows about my family."
+            "You are a helpful assistant that knows about my family. To avoid perpetuating cultural stereotypes, " +
+                "you should prompt the user to describe which roles each of their parents fit (e.g. Mom, Dad, Grandma), " +
+                "and how many parents they have."
 
         private const val INITIAL_PROMPT =
             "What are my parent's names?"
@@ -31,7 +31,7 @@ data class ParentsAgent(
     override val availableFunctions: Map<String, FunctionProvider> = mapOf(
         FunctionProvider.provide(
             name = "parentName",
-            description = "Get the name of a particular parent.",
+            description = "Get the name of a particular parent based on their role.",
             function = ::callParentName,
             parameterList = listOf(
                 ParameterDefinition(
@@ -39,25 +39,17 @@ data class ParentsAgent(
                     isRequired = true,
                     definition = buildJsonObject {
                         put("type", "string")
-                        put("description", "The parent that you are querying for; e.g. Mom, Dad, Father, etc.")
+                        put("description", "The parental role that you are querying for; e.g. Mom, Dad, Father, Grandma, etc.")
                         putJsonArray("enum") {
                             add("Mom")
                             add("Dad")
+                            add("Other")
                         }
                     },
                 )
             )
         )
     )
-}
-
-private fun callSetParentRoles(args: JsonObject): String {
-    val role = args.getValue("role").jsonPrimitive.content
-    return parentName(role)
-}
-
-private fun setParentRoles(parentRoles: Pair<String, String>) {
-
 }
 
 private fun callParentName(args: JsonObject): String {
@@ -69,6 +61,7 @@ private fun parentName(role: String): String {
     val parentData = mapOf(
         "Mom" to "Lynn",
         "Dad" to "James",
+        "Other" to "Parker",
     )
     return parentData[role] ?: "Unknown"
 }

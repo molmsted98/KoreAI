@@ -22,6 +22,7 @@ import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import link.kore.shared.config.KotlinConfig
+import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.example.ParentsAgent
 import kotlin.time.Duration.Companion.seconds
 
@@ -39,18 +40,20 @@ fun App() {
         typography = themeTypography(),
         shapes = themeShapes(),
     ) {
+        var shouldRerun by remember { mutableStateOf(false) }
         var isLoading by remember { mutableStateOf(false) }
         var messages by remember { mutableStateOf(emptyList<ChatMessage>()) }
         var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
 
         LaunchedEffect(Unit) {
             isLoading = true
+            agent.initialize()
+        }
+
+        LaunchedEffect(shouldRerun) {
+            isLoading = true
 
             with(agent) {
-                initialize()
-
-                var shouldRerun: Boolean
-
                 do {
                     messages = getChatMessages()
                     shouldRerun = execute()
@@ -78,12 +81,21 @@ fun App() {
 
             // TODO: Add Thread selection header
 
-            ChatTextEntry(
-                modifier = Modifier
-                    .requiredHeight(72.dp)
-                    .align(Alignment.BottomCenter),
-                textFieldValue = textFieldValue
-            ) { textFieldValue = it }
+            if (agent is KoreAgent.HumanAssisted) {
+                val onSendClicked: () -> Unit = {
+                    agent.addUserChat(textFieldValue.text)
+                    shouldRerun = true
+                }
+
+                ChatTextEntry(
+                    modifier = Modifier
+                        .requiredHeight(72.dp)
+                        .align(Alignment.BottomCenter),
+                    textFieldValue = textFieldValue,
+                    onSendClicked = onSendClicked,
+                    onTextChanged = { textFieldValue= it}
+                )
+            }
         }
     }
 }

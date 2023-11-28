@@ -19,6 +19,10 @@ import androidx.compose.material.icons.twotone.ArrowUpward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
@@ -27,7 +31,16 @@ fun ChatTextEntry(
     modifier: Modifier = Modifier,
     textFieldValue: TextFieldValue,
     onTextChanged: (TextFieldValue) -> Unit,
+    onSendClicked: () -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+
+    val onTextInputCompleted: () -> Unit = {
+        onSendClicked()
+        onTextChanged(textFieldValue.copy(""))
+        focusManager.clearFocus()
+    }
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -58,7 +71,15 @@ fun ChatTextEntry(
 
             TextField(
                 modifier = Modifier
-                    .fillMaxWidth(.90f),
+                    .fillMaxWidth(.90f)
+                    .onPreviewKeyEvent { event ->
+                        if (event.key == Key.Enter) {
+                            onTextInputCompleted()
+                            true
+                        } else {
+                            false
+                        }
+                    },
                 value = textFieldValue,
                 onValueChange = onTextChanged,
                 label = { Text("Your message...") },
@@ -69,9 +90,7 @@ fun ChatTextEntry(
             IconButton(
                 modifier = Modifier
                     .requiredSize(iconButtonSize),
-                onClick = {
-                    // TODO: Handle click
-                }
+                onClick = onTextInputCompleted,
             ) {
                 Image(
                     imageVector = Icons.TwoTone.ArrowUpward,

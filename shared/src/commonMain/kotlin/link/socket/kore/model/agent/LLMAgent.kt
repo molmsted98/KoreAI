@@ -8,13 +8,10 @@ import com.aallam.openai.api.chat.TextContent
 import com.aallam.openai.api.chat.Tool
 import com.aallam.openai.api.chat.ToolCall
 import com.aallam.openai.api.core.FinishReason
-import com.aallam.openai.api.core.Role
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import kotlinx.serialization.json.JsonObject
 import link.socket.kore.model.chat.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
-import kotlin.reflect.KFunction1
 
 private const val MODEL_NAME = "gpt-4-1106-preview"
 
@@ -97,6 +94,15 @@ interface LLMAgent {
         getChatMessages()
             .map(ChatMessage::content)
             .forEach(::println)
+    }
+
+    fun addUserChat(input: String) {
+        updateChatHistory(
+            ChatMessage(
+                role = ChatRole.User,
+                content = input,
+            )
+        )
     }
 
     private fun updateChatHistory(chatMessage: ChatMessage) {
