@@ -15,6 +15,8 @@ data class ParentsAgent(
     override val openAI: OpenAI
 ) : KoreAgent.LLMAssisted() {
 
+    private var parentRoles: Pair<String, String>? = null
+
     companion object {
         private const val INSTRUCTIONS =
             "You are a helpful assistant that knows about my family."
@@ -27,7 +29,7 @@ data class ParentsAgent(
     override val initialPrompt: String = INITIAL_PROMPT
 
     override val availableFunctions: Map<String, FunctionProvider> = mapOf(
-        "parentName" to FunctionProvider.functionProvider(
+        FunctionProvider.provide(
             name = "parentName",
             description = "Get the name of a particular parent.",
             function = ::callParentName,
@@ -47,6 +49,15 @@ data class ParentsAgent(
             )
         )
     )
+}
+
+private fun callSetParentRoles(args: JsonObject): String {
+    val role = args.getValue("role").jsonPrimitive.content
+    return parentName(role)
+}
+
+private fun setParentRoles(parentRoles: Pair<String, String>) {
+
 }
 
 private fun callParentName(args: JsonObject): String {

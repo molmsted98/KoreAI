@@ -40,7 +40,7 @@ interface LLMAgent {
 
     val tools: List<Tool>
         get() = availableFunctions.map { entry ->
-            entry.value.definition.second
+            entry.value.definition.tool
         }.toList()
 
     var chatHistory: ChatHistory
@@ -83,7 +83,7 @@ interface LLMAgent {
 
         val functionArgs = argumentsAsJson()
 
-        return functionTool.definition.first.invoke(functionArgs) as? String
+        return functionTool.definition.function.invoke(functionArgs) as? String
             ?: error("Function $name did not return String")
     }
 
