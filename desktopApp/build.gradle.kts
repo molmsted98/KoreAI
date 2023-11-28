@@ -19,11 +19,11 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "link.socket.kore.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "KotlinMultiplatformComposeDesktopApplication"
+            packageName = "KoreAI"
             packageVersion = "1.0.0"
         }
     }

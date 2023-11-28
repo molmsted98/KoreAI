@@ -1,4 +1,4 @@
-package com.myapplication
+package link.kore
 
 import MainView
 import android.os.Bundle

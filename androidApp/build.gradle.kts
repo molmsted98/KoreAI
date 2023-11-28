@@ -17,16 +17,16 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.myapplication"
+    namespace = "link.socket.kore"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
-        applicationId = "com.myapplication.MyApplication"
+        applicationId = "link.socket.kore"
         minSdk = (findProperty("android.minSdk") as String).toInt()
         targetSdk = (findProperty("android.targetSdk") as String).toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

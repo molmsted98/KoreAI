@@ -1,28 +1,23 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization")
     id("com.android.library")
     id("org.jetbrains.compose")
 }
 
 kotlin {
     androidTarget()
-
     jvm("desktop")
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "shared"
-            isStatic = true
-        }
-    }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation("com.aallam.openai:openai-client:3.6.0")
+                implementation("io.ktor:ktor-client-core:2.3.6")
+                implementation("io.ktor:ktor-client-okhttp:2.3.6")
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
@@ -37,15 +32,6 @@ kotlin {
                 api("androidx.core:core-ktx:1.10.1")
             }
         }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-        }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
@@ -56,7 +42,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.myapplication.common"
+    namespace = "link.socket.kore"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -73,3 +59,29 @@ android {
         jvmToolchain(17)
     }
 }
+
+tasks.register("kotlinConfiguration") {
+    val generatedSources = File(buildDir, "generated/kotlin/config")
+    generatedSources.mkdirs()
+    kotlin.sourceSets.commonMain.get().kotlin.srcDirs(generatedSources)
+
+    val localProperties = Properties().apply {
+        load(FileInputStream(File(rootProject.rootDir, "local.properties")))
+    }
+
+    val properties = localProperties.entries
+        .filter { (key, _) -> (key as? String)?.contains(".") == false }
+        .joinToString("\n") { (key, value) -> "\tconst val $key = \"$value\"" }
+
+    val kotlinConfig = File(generatedSources, "KotlinConfig.kt")
+    kotlinConfig.writeText(
+        "package link.kore.shared.config\n\n" +
+            "object KotlinConfig {\n" +
+            "$properties\n" +
+            "}\n"
+    )
+}
+
+tasks.findByName("build")?.dependsOn(
+    tasks.findByName("kotlinConfiguration")
+)
