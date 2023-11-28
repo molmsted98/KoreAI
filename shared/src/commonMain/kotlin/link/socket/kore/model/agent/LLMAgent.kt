@@ -92,15 +92,16 @@ interface LLMAgent {
             ?: error("Function $name did not return String")
     }
 
-    fun getChatHistoryStrings(): List<String> =
+    fun getChatMessages(): List<ChatMessage> =
         chatHistory.getMessages()
-            .filter { it.role == Role.Assistant || it.role == Role.User }
+            // TODO: Add configurable role filter
             .filter { it.messageContent is TextContent }
             .filter { it.content?.isNotEmpty() == true }
-            .map { "${it.role.role}:\n ${it.content}\n" }
 
     fun logChatHistory() {
-        getChatHistoryStrings().forEach(::println)
+        getChatMessages()
+            .map(ChatMessage::content)
+            .forEach(::println)
     }
 
     private fun updateChatHistory(chatMessage: ChatMessage) {
