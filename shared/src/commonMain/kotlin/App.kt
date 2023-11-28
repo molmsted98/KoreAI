@@ -42,7 +42,7 @@ import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import link.kore.shared.config.KotlinConfig
-import link.socket.kore.model.agent.example.WeatherAgent
+import link.socket.kore.model.agent.example.ParentsAgent
 import kotlin.time.Duration.Companion.seconds
 
 val openAI = OpenAI(
@@ -50,7 +50,7 @@ val openAI = OpenAI(
     timeout = Timeout(socket = 45.seconds),
     logging = LoggingConfig(logLevel = LogLevel.None),
 )
-val agent = WeatherAgent(openAI)
+val agent = ParentsAgent(openAI)
 
 val backgroundColor = Color(0xFFF2F2F7)
 val bodyTextColor = Color(0xFF575758)

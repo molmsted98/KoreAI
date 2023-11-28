@@ -9,9 +9,9 @@ import com.aallam.openai.api.assistant.Function
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import link.socket.kore.model.agent.FunctionDefinition
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.chat.ChatHistory
+import link.socket.kore.model.tool.FunctionProvider
 
 @OptIn(BetaOpenAI::class)
 data class KoreAssistant(
@@ -21,7 +21,7 @@ data class KoreAssistant(
     private val name: String,
     override val instructions: String,
     override val initialPrompt: String,
-    override val availableFunctions: Map<String, FunctionDefinition>,
+    override val availableFunctions: Map<String, FunctionProvider>,
 ) : LLMAgent {
 
     override var chatHistory: ChatHistory = ChatHistory.Threaded.Uninitialized

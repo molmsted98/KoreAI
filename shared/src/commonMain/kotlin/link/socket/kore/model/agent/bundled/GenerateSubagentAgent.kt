@@ -1,10 +1,7 @@
 package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
-import kotlinx.serialization.json.JsonObject
-import link.socket.kore.model.agent.FunctionDefinition
 import link.socket.kore.model.agent.KoreAgent
-import kotlin.reflect.KFunction1
 
 data class GenerateSubagentAgent(
     override val openAI: OpenAI,
@@ -42,7 +39,4 @@ data class GenerateSubagentAgent(
 
     override val instructions: String = instructionsFrom()
     override val initialPrompt: String = initialPromptFrom(description)
-    override val availableFunctions: Map<String, FunctionDefinition> = mapOf(
-
-    )
 }

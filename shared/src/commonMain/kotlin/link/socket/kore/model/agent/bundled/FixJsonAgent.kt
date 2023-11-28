@@ -1,7 +1,6 @@
 package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
-import link.socket.kore.model.agent.FunctionDefinition
 import link.socket.kore.model.agent.KoreAgent
 
 data class FixJsonAgent(
@@ -22,7 +21,4 @@ data class FixJsonAgent(
 
     override val instructions: String = INSTRUCTIONS
     override val initialPrompt: String = initialPromptFrom(invalidJson)
-    override val availableFunctions: Map<String, FunctionDefinition> = mapOf(
-
-    )
 }

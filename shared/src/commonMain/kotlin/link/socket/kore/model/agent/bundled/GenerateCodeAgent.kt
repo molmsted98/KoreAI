@@ -1,7 +1,6 @@
 package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
-import link.socket.kore.model.agent.FunctionDefinition
 import link.socket.kore.model.agent.KoreAgent
 
 data class GenerateCodeAgent(
@@ -27,7 +26,4 @@ data class GenerateCodeAgent(
 
     override val instructions: String = instructionsFrom(technologies)
     override val initialPrompt: String = initialPromptFrom(description, technologies)
-    override val availableFunctions: Map<String, FunctionDefinition> = mapOf(
-
-    )
 }

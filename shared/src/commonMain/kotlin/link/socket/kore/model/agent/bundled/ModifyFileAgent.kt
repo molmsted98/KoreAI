@@ -1,7 +1,6 @@
 package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
-import link.socket.kore.model.agent.FunctionDefinition
 import link.socket.kore.model.agent.KoreAgent
 
 data class ModifyFileAgent(
@@ -33,7 +32,4 @@ data class ModifyFileAgent(
 
     override val instructions: String = instructionsFrom(technologies)
     override val initialPrompt: String = initialPromptFrom(filepath, description)
-    override val availableFunctions: Map<String, FunctionDefinition> = mapOf(
-
-    )
 }

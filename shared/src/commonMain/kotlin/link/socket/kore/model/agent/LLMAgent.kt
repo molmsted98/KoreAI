@@ -13,9 +13,8 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import kotlinx.serialization.json.JsonObject
 import link.socket.kore.model.chat.ChatHistory
+import link.socket.kore.model.tool.FunctionProvider
 import kotlin.reflect.KFunction1
-
-typealias FunctionDefinition = Pair<KFunction1<JsonObject, String>, Tool>
 
 private const val MODEL_NAME = "gpt-4-1106-preview"
 
@@ -23,9 +22,6 @@ interface LLMAgent {
     val openAI: OpenAI
     val instructions: String
     val initialPrompt: String
-
-    val availableFunctions: Map<String, FunctionDefinition>
-        get() = emptyMap()
 
     val initialSystemMessage
         get() = ChatMessage(
@@ -39,13 +35,12 @@ interface LLMAgent {
             content = initialPrompt,
         )
 
+    val availableFunctions: Map<String, FunctionProvider>
+        get() = emptyMap()
+
     val tools: List<Tool>
         get() = availableFunctions.map { entry ->
-            Tool.function(
-                name = entry.value.second.function.name,
-                description = entry.value.second.description,
-                parameters = entry.value.second.function.parameters,
-            )
+            entry.value.definition.second
         }.toList()
 
     var chatHistory: ChatHistory
@@ -88,7 +83,7 @@ interface LLMAgent {
 
         val functionArgs = argumentsAsJson()
 
-        return functionTool.first.invoke(functionArgs) as? String
+        return functionTool.definition.first.invoke(functionArgs) as? String
             ?: error("Function $name did not return String")
     }
 

@@ -7,20 +7,10 @@ sealed interface KoreAgent {
 
     interface Unassisted : KoreAgent
 
-    interface HumanAssisted : KoreAgent {
-        fun humanEditString(originalValue: String?): String? {
-            // TODO: Prompt user with system editor on String
-            return originalValue
-        }
-    }
+    interface HumanAssisted : KoreAgent
 
     abstract class LLMAssisted : KoreAgent, LLMAgent {
-
         override var chatHistory: ChatHistory = ChatHistory.NonThreaded(emptyList())
         override var completionRequest: ChatCompletionRequest? = null
-
-        fun handleResult(result: String) {
-
-        }
     }
 }
