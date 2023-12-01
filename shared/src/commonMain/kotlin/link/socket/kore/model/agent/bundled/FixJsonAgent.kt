@@ -9,16 +9,19 @@ data class FixJsonAgent(
 ) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
 
     companion object {
+        const val NAME = "Clean JSON"
+
         private const val INSTRUCTIONS =
             "You are a helpful assistant that is an expert in understanding JSON parsing."
 
-        fun initialPromptFrom(
+        private fun initialPromptFrom(
             invalidJson: String,
         ) = "The given string is not a valid JSON:\n" +
             "$invalidJson\n\n" +
             "Plan your solution step-by-step before you fix this and produce a valid JSON."
     }
 
+    override val name: String = NAME
     override val instructions: String = INSTRUCTIONS
     override val initialPrompt: String = initialPromptFrom(invalidJson)
 }

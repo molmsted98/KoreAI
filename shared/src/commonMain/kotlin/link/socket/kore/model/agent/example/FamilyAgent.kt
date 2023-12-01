@@ -11,11 +11,13 @@ import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
 
-data class ParentsAgent(
+data class FamilyAgent(
     override val openAI: OpenAI
 ) : KoreAgent.HumanAndLLMAssisted()  {
 
     companion object {
+        const val NAME = "Family Information"
+
         private const val INSTRUCTIONS =
             "You are a helpful assistant that knows about my family. To avoid perpetuating cultural stereotypes, " +
                 "you should prompt the user to describe which roles each of their parents fit (e.g. Mom, Dad, Grandma), " +
@@ -25,6 +27,7 @@ data class ParentsAgent(
             "What are my parent's names?"
     }
 
+    override val name: String = NAME
     override val instructions: String = INSTRUCTIONS
     override val initialPrompt: String = INITIAL_PROMPT
 

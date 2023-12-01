@@ -10,11 +10,13 @@ data class GenerateCodeAgent(
 ) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
 
     companion object {
-        fun instructionsFrom(technologies: List<String>): String =
+        const val NAME = "Write Code"
+
+        private fun instructionsFrom(technologies: List<String>): String =
             "You are a helpful assistant that is an expert programmer in:\n" +
                 "${technologies.joinToString(", ")}.\n"
 
-        fun initialPromptFrom(description: String, technologies: List<String>): String =
+        private fun initialPromptFrom(description: String, technologies: List<String>): String =
             "You are tasked with writing code using the following technologies:\n" +
                 "${technologies.joinToString(", ")}.\n" +
                 "\n\n" +
@@ -24,6 +26,7 @@ data class GenerateCodeAgent(
                 "Plan your solution step-by-step before you start coding."
     }
 
+    override val name: String = NAME
     override val instructions: String = instructionsFrom(technologies)
     override val initialPrompt: String = initialPromptFrom(description, technologies)
 }

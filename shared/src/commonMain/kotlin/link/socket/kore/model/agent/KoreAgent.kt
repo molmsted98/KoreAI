@@ -5,6 +5,8 @@ import link.socket.kore.model.chat.ChatHistory
 
 sealed interface KoreAgent {
 
+    val name: String
+
     interface Unassisted : KoreAgent
     interface HumanAssisted : KoreAgent
 

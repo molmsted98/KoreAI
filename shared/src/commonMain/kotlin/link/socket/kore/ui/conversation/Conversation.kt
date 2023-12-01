@@ -10,7 +10,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,20 +22,22 @@ import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.chat.ChatMessage
 import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.model.agent.example.ParentsAgent
+import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.ui.ChatHistory
 import link.socket.kore.ui.ChatTextEntry
 import link.socket.kore.ui.SmallSnackbarHost
 import link.socket.kore.ui.openAI
 import link.socket.kore.ui.themeColors
 
-private val agent = ParentsAgent(openAI)
+private val agent = FamilyAgent(openAI)
 
 @Composable
 fun Conversation(
     modifier: Modifier = Modifier,
     messages: List<ChatMessage>,
     isLoading: Boolean,
+    selectedAgent: KoreAgent?,
+    agentList: List<KoreAgent>,
     onAgentSelected: (KoreAgent) -> Unit,
     onChatSent: () -> Unit,
 ) {
@@ -53,9 +54,11 @@ fun Conversation(
         }
     }
 
-    // TODO: Trigger upon Agent selection
-    LaunchedEffect(Unit) {
+    val onHeaderAgentSelection: (KoreAgent) -> Unit = { agent ->
         onAgentSelected(agent)
+        scope.launch {
+            scaffoldState.drawerState.close()
+        }
     }
 
     Box(
@@ -64,9 +67,34 @@ fun Conversation(
     ) {
         Scaffold(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom =72.dp),
+                .fillMaxSize(),
             scaffoldState = scaffoldState,
+            topBar = {
+                ConversationHeader(
+                    drawerExpanded = scaffoldState.drawerState.isOpen,
+                    selectedAgent = selectedAgent,
+                    agentList = agentList,
+                    onAgentSelected = onHeaderAgentSelection,
+                )
+            },
+            bottomBar = {
+                if (agent is KoreAgent.HumanAssisted) {
+                    val onSendClicked: () -> Unit = {
+                        agent.addUserChat(textFieldValue.text)
+                        onChatSent()
+                    }
+
+                    ChatTextEntry(
+                        modifier = Modifier
+                            .requiredHeight(72.dp)
+                            .align(Alignment.BottomCenter),
+                        textFieldValue = textFieldValue,
+                        onSendClicked = onSendClicked,
+                        onTextChanged = { textFieldValue = it },
+                        displaySnackbar = displaySnackbar,
+                    )
+                }
+            },
             snackbarHost = { snackbarState ->
                 Box(
                     modifier = Modifier
@@ -96,23 +124,6 @@ fun Conversation(
                 )
 
             }
-        }
-
-        if (agent is KoreAgent.HumanAssisted) {
-            val onSendClicked: () -> Unit = {
-                agent.addUserChat(textFieldValue.text)
-                onChatSent()
-            }
-
-            ChatTextEntry(
-                modifier = Modifier
-                    .requiredHeight(72.dp)
-                    .align(Alignment.BottomCenter),
-                textFieldValue = textFieldValue,
-                onSendClicked = onSendClicked,
-                onTextChanged = { textFieldValue = it },
-                displaySnackbar = displaySnackbar,
-            )
         }
     }
 }

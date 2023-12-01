@@ -11,11 +11,13 @@ data class ModifyFileAgent(
 ) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
 
     companion object {
-        fun instructionsFrom(technologies: List<String>): String =
+        const val NAME = "Change File"
+
+        private fun instructionsFrom(technologies: List<String>): String =
             "You are a helpful assistant that is an expert programmer in:\n" +
                 "${technologies.joinToString(", ")}.\n"
 
-        fun initialPromptFrom(filepath: String, description: String): String {
+        private fun initialPromptFrom(filepath: String, description: String): String {
             // TODO: Get filepath contents
             val fileContents = ""
 
@@ -30,6 +32,7 @@ data class ModifyFileAgent(
         }
     }
 
+    override val name: String = NAME
     override val instructions: String = instructionsFrom(technologies)
     override val initialPrompt: String = initialPromptFrom(filepath, description)
 }

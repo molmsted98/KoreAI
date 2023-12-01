@@ -7,6 +7,12 @@ data class SaveFileAgent(
     val fileContent: String,
 ) : KoreAgent.Unassisted {
 
+    companion object {
+        const val NAME = "Create File"
+    }
+
+    override val name: String = NAME
+
     // override suspend fun execute(): String? {
     //     // TODO: Save the file
     //     return ""

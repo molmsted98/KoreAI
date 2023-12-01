@@ -9,6 +9,8 @@ data class GenerateSubagentAgent(
 ) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
 
     companion object {
+        const val NAME = "Delegate Tasks"
+
         private fun instructionsFrom(): String {
             // TODO: Get code from files
             val generateCodeAgentContent = ""
@@ -37,6 +39,7 @@ data class GenerateSubagentAgent(
                 "Plan your solution step-by-step to ensure work is appropriately delegated to Subagents before you start."
     }
 
+    override val name: String = NAME
     override val instructions: String = instructionsFrom()
     override val initialPrompt: String = initialPromptFrom(description)
 }

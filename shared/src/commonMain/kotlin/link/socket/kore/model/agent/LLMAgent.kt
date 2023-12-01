@@ -119,7 +119,7 @@ interface LLMAgent {
         completionRequest = ChatCompletionRequest(
             model = ModelId(MODEL_NAME),
             messages = chatHistory.getMessages(),
-            tools = tools,
+            tools = tools.ifEmpty { null },
         )
     }
 }

@@ -20,6 +20,12 @@ import kotlinx.coroutines.launch
 import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
+import link.socket.kore.model.agent.bundled.FixJsonAgent
+import link.socket.kore.model.agent.bundled.GenerateCodeAgent
+import link.socket.kore.model.agent.bundled.GenerateSubagentAgent
+import link.socket.kore.model.agent.bundled.ModifyFileAgent
+import link.socket.kore.model.agent.bundled.SaveFileAgent
+import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.ui.conversation.Conversation
 import kotlin.time.Duration.Companion.seconds
 
@@ -27,6 +33,35 @@ val openAI = OpenAI(
     token = KotlinConfig.openai_api_key,
     timeout = Timeout(socket = 45.seconds),
     logging = LoggingConfig(logLevel = LogLevel.All),
+)
+
+// TODO: Allow user specification of default values
+private val agentList: List<KoreAgent> = listOf(
+    GenerateSubagentAgent(
+        openAI = openAI,
+        description = "Create an Android screen that displays a list of items containing names and images " +
+            "of popular cereal brands.",
+    ),
+    FamilyAgent(openAI),
+    GenerateCodeAgent(
+        openAI = openAI,
+        description = "How should I parse a .csv file to display in a Kotlin Multiplatform app?",
+        technologies = listOf("Kotlin")
+    ),
+    ModifyFileAgent(
+        openAI = openAI,
+        filepath = "",
+        description = "",
+        technologies = emptyList(),
+    ),
+    SaveFileAgent(
+        filepath = "",
+        fileContent = "",
+    ),
+    FixJsonAgent(
+        openAI = openAI,
+        invalidJson = "{foo\"bar",
+    ),
 )
 
 @Composable
@@ -54,7 +89,9 @@ fun App() {
         }
 
         LaunchedEffect(agent, shouldRerun) {
-            isLoading = true
+            if (agent != null && shouldRerun) {
+                isLoading = true
+            }
 
             (agent as? LLMAgent)?.apply {
                 do {
@@ -75,6 +112,8 @@ fun App() {
                     .fillMaxSize(),
                 messages = messages,
                 isLoading = isLoading,
+                selectedAgent = agent,
+                agentList = agentList,
                 onAgentSelected = onAgentSelected,
                 onChatSent = { shouldRerun = true },
             )
