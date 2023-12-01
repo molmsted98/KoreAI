@@ -1,11 +1,10 @@
-package link.socket.kore.model.chat
+package link.socket.kore.model.conversation
 
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.assistant.AssistantId
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.FunctionCall
 import com.aallam.openai.api.thread.ThreadId
-import link.socket.kore.model.chat.ChatHistory.Threaded.Uninitialized.chatMessages
 import link.socket.kore.util.append
 
 @OptIn(BetaOpenAI::class)

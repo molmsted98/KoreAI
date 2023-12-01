@@ -3,6 +3,8 @@ package link.socket.kore.ui.widget.header
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -11,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import link.socket.kore.ui.theme.headerHeight
 import link.socket.kore.ui.theme.themeTypography
 
 @Composable
@@ -20,7 +23,9 @@ fun SelectionHeader(
 ) {
     with(selectionConfig) {
         Row(
-            modifier = modifier,
+            modifier = modifier
+                .requiredHeight(headerHeight)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {

@@ -20,10 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.aallam.openai.api.chat.ChatMessage
 import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.agent.example.FamilyAgent
+import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.openAI
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.widget.SmallSnackbarHost
@@ -31,22 +32,22 @@ import link.socket.kore.ui.widget.SmallSnackbarHost
 private val agent = FamilyAgent(openAI)
 
 @Composable
-fun Conversation(
+fun ConversationScreen(
     modifier: Modifier = Modifier,
-    messages: List<ChatMessage>,
+    existingConversation: Conversation?,
     isLoading: Boolean,
-    selectedAgent: KoreAgent?,
     agentList: List<KoreAgent>,
     onAgentSelected: (KoreAgent) -> Unit,
     onChatSent: () -> Unit,
+    onBackClicked: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
 
-    val selectionEnabled = remember(selectedAgent) {
+    val selectionEnabled = remember(existingConversation) {
         derivedStateOf {
-            selectedAgent == null
+            existingConversation == null
         }
     }
 
@@ -83,9 +84,10 @@ fun Conversation(
                             scaffoldState.drawerState.open()
                         }
                     },
-                    selectedAgent = selectedAgent,
+                    selectedAgent = existingConversation?.agent,
                     agentList = agentList,
                     onAgentSelected = onHeaderAgentSelection,
+                    onBackClicked = onBackClicked,
                 )
             },
             bottomBar = {
@@ -128,11 +130,13 @@ fun Conversation(
                     .padding(contentPadding),
             ) {
                 if (!selectionEnabled.value) {
+                    val agent = existingConversation?.agent
+
                     ChatHistory(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 72.dp),
-                        messages = messages,
+                        messages = (agent as? LLMAgent)?.getChatMessages() ?: emptyList(),
                         isLoading = isLoading,
                         displaySnackbar = displaySnackbar,
                     )

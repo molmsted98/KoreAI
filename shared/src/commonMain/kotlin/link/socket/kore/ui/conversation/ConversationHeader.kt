@@ -23,12 +23,14 @@ fun ConversationHeader(
     selectedAgent: KoreAgent?,
     agentList: List<KoreAgent>,
     onAgentSelected: (KoreAgent) -> Unit,
+    onBackClicked: () -> Unit,
 ) {
     Surface(
+        modifier = modifier,
         elevation = 16.dp,
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth(),
         ) {
@@ -46,6 +48,7 @@ fun ConversationHeader(
                 displayMenuIcon = selectionEnabled,
                 drawerExpanded = drawerExpanded,
                 onExpandDrawer = onExpandDrawer,
+                onBackClicked = onBackClicked,
             )
 
             if (selectionEnabled) {

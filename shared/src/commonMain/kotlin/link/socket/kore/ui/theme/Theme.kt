@@ -12,6 +12,8 @@ val nonContentCardColor = Color(0xFFEEEEEE)
 val iconAlpha = 0.5f
 val separatorIconSize = 4.dp
 val iconButtonSize = 48.dp
+val headerHeight = 64.dp
+val agentCardHeight = 256.dp
 
 @Composable
 fun themeColors() = MaterialTheme.colors.copy(

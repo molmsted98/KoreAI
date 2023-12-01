@@ -10,10 +10,10 @@ import com.aallam.openai.api.chat.ToolCall
 import com.aallam.openai.api.core.FinishReason
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import link.socket.kore.model.chat.ChatHistory
+import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
 
-private const val MODEL_NAME = "gpt-4-1106-preview"
+const val MODEL_NAME = "gpt-4-1106-preview"
 
 interface LLMAgent {
     val openAI: OpenAI
@@ -44,8 +44,9 @@ interface LLMAgent {
     var completionRequest: ChatCompletionRequest?
 
     suspend fun initialize() {
-        chatHistory = ChatHistory.NonThreaded(listOf(initialSystemMessage, initialPromptMessage))
-        updateCompletionRequest()
+        if (chatHistory is ChatHistory.Threaded.Uninitialized) {
+            chatHistory = ChatHistory.NonThreaded(listOf(initialSystemMessage, initialPromptMessage))
+        }
     }
 
     suspend fun execute(): Boolean =
@@ -107,15 +108,13 @@ interface LLMAgent {
 
     private fun updateChatHistory(chatMessage: ChatMessage) {
         chatHistory = chatHistory.appendMessage(chatMessage)
-        updateCompletionRequest()
     }
 
     private fun updateChatHistory(function: FunctionCall, response: String) {
         chatHistory = chatHistory.appendFunctionCallResponse(function, response)
-        updateCompletionRequest()
     }
 
-    private fun updateCompletionRequest() {
+    fun updateCompletionRequest() {
         completionRequest = ChatCompletionRequest(
             model = ModelId(MODEL_NAME),
             messages = chatHistory.getMessages(),

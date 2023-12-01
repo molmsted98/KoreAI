@@ -10,7 +10,7 @@ import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import link.socket.kore.model.agent.LLMAgent
-import link.socket.kore.model.chat.ChatHistory
+import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
 
 @OptIn(BetaOpenAI::class)

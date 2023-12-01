@@ -1,13 +1,15 @@
 package link.socket.kore.ui.widget
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.ui.theme.agentCardHeight
 import link.socket.kore.ui.theme.themeTypography
 
 @Composable
@@ -17,7 +19,8 @@ fun AgentCard(
 ) {
     Surface(
         modifier = modifier
-            .requiredSize(64.dp),
+            .fillMaxWidth()
+            .requiredHeight(agentCardHeight),
         elevation = 2.dp,
     ) {
         Column {

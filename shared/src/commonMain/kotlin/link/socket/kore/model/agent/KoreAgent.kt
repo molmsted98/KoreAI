@@ -1,7 +1,7 @@
 package link.socket.kore.model.agent
 
 import com.aallam.openai.api.chat.ChatCompletionRequest
-import link.socket.kore.model.chat.ChatHistory
+import link.socket.kore.model.conversation.ChatHistory
 
 sealed interface KoreAgent {
 
@@ -10,13 +10,16 @@ sealed interface KoreAgent {
     interface Unassisted : KoreAgent
     interface HumanAssisted : KoreAgent
 
-    abstract class HumanAndLLMAssisted : HumanAssisted, LLMAgent {
-        override var chatHistory: ChatHistory = ChatHistory.NonThreaded(emptyList())
-        override var completionRequest: ChatCompletionRequest? = null
-    }
+    abstract class HumanAndLLMAssisted : LLMAssisted(), HumanAssisted
 
     abstract class LLMAssisted : KoreAgent, LLMAgent {
-        override var chatHistory: ChatHistory = ChatHistory.NonThreaded(emptyList())
+
+        override var chatHistory: ChatHistory = ChatHistory.Threaded.Uninitialized
+            set(value) {
+                field = value
+                updateCompletionRequest()
+            }
+
         override var completionRequest: ChatCompletionRequest? = null
 
         override fun addUserChat(input: String) {
