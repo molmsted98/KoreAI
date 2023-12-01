@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationCard
+import link.socket.kore.ui.conversation.CreateConversationCard
 import link.socket.kore.ui.theme.themeTypography
 
 @Composable
@@ -26,6 +27,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     agentList: List<KoreAgent>,
     agentConversationsList: List<Conversation>,
+    onCreateConversationSelected: () -> Unit,
     onConversationSelected: (Conversation) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -73,6 +75,12 @@ fun HomeScreen(
                         )
 
                         Spacer(modifier = Modifier.requiredHeight(16.dp))
+
+                        CreateConversationCard(
+                            modifier = Modifier
+                                .padding(bottom = 8.dp),
+                            onClick = onCreateConversationSelected,
+                        )
                     }
 
                     items(agentConversationsList) { conversation ->

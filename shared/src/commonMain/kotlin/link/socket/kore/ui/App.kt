@@ -37,7 +37,7 @@ import kotlin.time.Duration.Companion.seconds
 
 val openAI = OpenAI(
     token = KotlinConfig.openai_api_key,
-    timeout = Timeout(socket = 45.seconds),
+    timeout = Timeout(socket = 180.seconds),
     logging = LoggingConfig(logLevel = LogLevel.All),
 )
 
@@ -100,18 +100,29 @@ fun App() {
         var isLoading by remember { mutableStateOf(false) }
 
         val onAgentSelected: (KoreAgent) -> Unit = { newAgent ->
-            // Initialize new Agent in Conversation
+            // Initialize new Agent in the Conversation before continuing
             shouldRerun = false
             agentInitialized = false
-            (selectedConversation?.agent as? KoreAgent.HumanAndLLMAssisted)?.let { llmAgent ->
-                isLoading = true
-                selectedConversation = selectedConversation?.copy(agent = llmAgent)
-                scope.launch {
-                    (selectedConversation?.agent as? LLMAgent)?.initialize()
-                }
-                shouldRerun = true
-                agentInitialized = true
+            isLoading = true
+
+            // Construct Conversation if this is the initial Agent selection
+            selectedConversation = if (selectedConversation == null) {
+                // TODO: Allow selection of these parameters
+                Conversation(
+                    title = "New Conversation",
+                    model = ModelId(MODEL_NAME),
+                    agent = newAgent,
+                )
+            } else {
+                selectedConversation?.copy(agent = newAgent)
             }
+
+            scope.launch {
+                (selectedConversation?.agent as? LLMAgent)?.initialize()
+            }
+
+            agentInitialized = true
+            shouldRerun = true
         }
 
         LaunchedEffect(selectedConversation) {
@@ -145,6 +156,10 @@ fun App() {
                     HomeScreen(
                         agentList = agentList,
                         agentConversationsList = existingAgentConversations,
+                        onCreateConversationSelected = {
+                            selectedConversation = null
+                            selectedScreen = Screen.CONVERSATION
+                        },
                         onConversationSelected = { newConversation ->
                             selectedConversation = newConversation
                             onAgentSelected(newConversation.agent)
