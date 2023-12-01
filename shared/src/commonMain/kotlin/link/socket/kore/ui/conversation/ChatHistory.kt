@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.chat.ChatMessage
+import com.aallam.openai.api.core.Role
 
 @Composable
 fun ChatHistory(
@@ -25,7 +26,7 @@ fun ChatHistory(
         modifier = modifier,
         contentPadding = PaddingValues(8.dp),
     ) {
-        items(messages) { message ->
+        itemsIndexed(messages) { index, message ->
             ChatMessage(
                 modifier = Modifier
                     .wrapContentHeight()
@@ -33,6 +34,7 @@ fun ChatHistory(
                     .padding(bottom = 8.dp),
                 message = message,
                 displaySnackbar = displaySnackbar,
+                showRegenerate = (index == messages.size - 1) && message.role == Role.Assistant,
             )
         }
 

@@ -23,13 +23,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
-import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.model.conversation.Conversation
-import link.socket.kore.ui.openAI
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.widget.SmallSnackbarHost
-
-private val agent = FamilyAgent(openAI)
 
 @Composable
 fun ConversationScreen(
@@ -92,9 +88,9 @@ fun ConversationScreen(
             },
             bottomBar = {
                 if (!selectionEnabled.value) {
-                    if (agent is KoreAgent.HumanAssisted) {
+                    (existingConversation?.agent as? KoreAgent.HumanAndLLMAssisted)?.let { assistedAgent ->
                         val onSendClicked: () -> Unit = {
-                            agent.addUserChat(textFieldValue.text)
+                            assistedAgent.addUserChat(textFieldValue.text)
                             onChatSent()
                         }
 
@@ -105,7 +101,6 @@ fun ConversationScreen(
                             textFieldValue = textFieldValue,
                             onSendClicked = onSendClicked,
                             onTextChanged = { textFieldValue = it },
-                            displaySnackbar = displaySnackbar,
                         )
                     }
                 }

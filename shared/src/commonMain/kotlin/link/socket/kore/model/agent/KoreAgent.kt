@@ -21,9 +21,5 @@ sealed interface KoreAgent {
             }
 
         override var completionRequest: ChatCompletionRequest? = null
-
-        override fun addUserChat(input: String) {
-            error("Cannot use this function, please extend the HumanAndLLMAssisted class instead of LLMAssisted")
-        }
     }
 }

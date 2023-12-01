@@ -39,6 +39,7 @@ fun ChatMessage(
     modifier: Modifier = Modifier,
     message: ChatMessage,
     displaySnackbar: (String) -> Unit,
+    showRegenerate: Boolean,
 ) {
     Surface(
         modifier = modifier
@@ -131,7 +132,7 @@ fun ChatMessage(
                         .fillMaxWidth()
                         .padding(top = 8.dp),
                 ) {
-                    if (message.role == Role.Assistant) {
+                    if (showRegenerate) {
                         IconButton(
                             modifier = Modifier
                                 .requiredSize(iconButtonSize),

@@ -103,11 +103,11 @@ fun App() {
             // Initialize new Agent in Conversation
             shouldRerun = false
             agentInitialized = false
-            selectedConversation = selectedConversation?.copy(agent = newAgent)
-            (selectedConversation?.agent as? LLMAgent)?.let { llmAgent ->
+            (selectedConversation?.agent as? KoreAgent.HumanAndLLMAssisted)?.let { llmAgent ->
                 isLoading = true
+                selectedConversation = selectedConversation?.copy(agent = llmAgent)
                 scope.launch {
-                    llmAgent.initialize()
+                    (selectedConversation?.agent as? LLMAgent)?.initialize()
                 }
                 shouldRerun = true
                 agentInitialized = true

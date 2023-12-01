@@ -34,7 +34,6 @@ fun ChatTextEntry(
     textFieldValue: TextFieldValue,
     onTextChanged: (TextFieldValue) -> Unit,
     onSendClicked: () -> Unit,
-    displaySnackbar: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
