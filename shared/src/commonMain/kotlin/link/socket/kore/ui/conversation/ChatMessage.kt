@@ -1,4 +1,4 @@
-package link.socket.kore.ui
+package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -26,6 +26,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.core.Role
+import link.socket.kore.ui.theme.iconAlpha
+import link.socket.kore.ui.theme.iconButtonSize
+import link.socket.kore.ui.theme.nonContentCardColor
+import link.socket.kore.ui.theme.separatorIconSize
+import link.socket.kore.ui.theme.themeColors
+import link.socket.kore.ui.theme.themeShapes
+import link.socket.kore.ui.theme.themeTypography
 
 @Composable
 fun ChatMessage(

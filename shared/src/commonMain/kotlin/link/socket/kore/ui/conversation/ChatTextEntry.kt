@@ -1,4 +1,4 @@
-package link.socket.kore.ui
+package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,8 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import link.socket.kore.ui.theme.iconAlpha
+import link.socket.kore.ui.theme.iconButtonSize
 
 @Composable
 fun ChatTextEntry(

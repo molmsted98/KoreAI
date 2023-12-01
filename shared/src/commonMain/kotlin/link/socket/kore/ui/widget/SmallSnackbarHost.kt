@@ -1,4 +1,4 @@
-package link.socket.kore.ui
+package link.socket.kore.ui.widget
 
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Snackbar

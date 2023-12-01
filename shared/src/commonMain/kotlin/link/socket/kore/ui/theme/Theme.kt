@@ -1,4 +1,4 @@
-package link.socket.kore.ui
+package link.socket.kore.ui.theme
 
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.MaterialTheme

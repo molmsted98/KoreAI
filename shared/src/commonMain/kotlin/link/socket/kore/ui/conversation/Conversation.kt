@@ -10,6 +10,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,11 +24,9 @@ import com.aallam.openai.api.chat.ChatMessage
 import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.example.FamilyAgent
-import link.socket.kore.ui.ChatHistory
-import link.socket.kore.ui.ChatTextEntry
-import link.socket.kore.ui.SmallSnackbarHost
 import link.socket.kore.ui.openAI
-import link.socket.kore.ui.themeColors
+import link.socket.kore.ui.theme.themeColors
+import link.socket.kore.ui.widget.SmallSnackbarHost
 
 private val agent = FamilyAgent(openAI)
 
@@ -44,6 +43,12 @@ fun Conversation(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+
+    val selectionEnabled = remember(selectedAgent) {
+        derivedStateOf {
+            selectedAgent == null
+        }
+    }
 
     val displaySnackbar: (String) -> Unit = { message ->
         scope.launch {
@@ -71,28 +76,36 @@ fun Conversation(
             scaffoldState = scaffoldState,
             topBar = {
                 ConversationHeader(
+                    selectionEnabled = selectionEnabled.value,
                     drawerExpanded = scaffoldState.drawerState.isOpen,
+                    onExpandDrawer = {
+                        scope.launch {
+                            scaffoldState.drawerState.open()
+                        }
+                    },
                     selectedAgent = selectedAgent,
                     agentList = agentList,
                     onAgentSelected = onHeaderAgentSelection,
                 )
             },
             bottomBar = {
-                if (agent is KoreAgent.HumanAssisted) {
-                    val onSendClicked: () -> Unit = {
-                        agent.addUserChat(textFieldValue.text)
-                        onChatSent()
-                    }
+                if (!selectionEnabled.value) {
+                    if (agent is KoreAgent.HumanAssisted) {
+                        val onSendClicked: () -> Unit = {
+                            agent.addUserChat(textFieldValue.text)
+                            onChatSent()
+                        }
 
-                    ChatTextEntry(
-                        modifier = Modifier
-                            .requiredHeight(72.dp)
-                            .align(Alignment.BottomCenter),
-                        textFieldValue = textFieldValue,
-                        onSendClicked = onSendClicked,
-                        onTextChanged = { textFieldValue = it },
-                        displaySnackbar = displaySnackbar,
-                    )
+                        ChatTextEntry(
+                            modifier = Modifier
+                                .requiredHeight(72.dp)
+                                .align(Alignment.BottomCenter),
+                            textFieldValue = textFieldValue,
+                            onSendClicked = onSendClicked,
+                            onTextChanged = { textFieldValue = it },
+                            displaySnackbar = displaySnackbar,
+                        )
+                    }
                 }
             },
             snackbarHost = { snackbarState ->
@@ -114,15 +127,16 @@ fun Conversation(
                     .background(themeColors().background)
                     .padding(contentPadding),
             ) {
-                ChatHistory(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 72.dp),
-                    messages = messages,
-                    isLoading = isLoading,
-                    displaySnackbar = displaySnackbar,
-                )
-
+                if (!selectionEnabled.value) {
+                    ChatHistory(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 72.dp),
+                        messages = messages,
+                        isLoading = isLoading,
+                        displaySnackbar = displaySnackbar,
+                    )
+                }
             }
         }
     }

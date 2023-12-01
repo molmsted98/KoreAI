@@ -11,9 +11,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
+import com.aallam.openai.api.thread.ThreadId
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.launch
@@ -27,6 +29,10 @@ import link.socket.kore.model.agent.bundled.ModifyFileAgent
 import link.socket.kore.model.agent.bundled.SaveFileAgent
 import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.ui.conversation.Conversation
+import link.socket.kore.ui.home.Home
+import link.socket.kore.ui.theme.themeColors
+import link.socket.kore.ui.theme.themeShapes
+import link.socket.kore.ui.theme.themeTypography
 import kotlin.time.Duration.Companion.seconds
 
 val openAI = OpenAI(
@@ -64,6 +70,7 @@ private val agentList: List<KoreAgent> = listOf(
     ),
 )
 
+@OptIn(BetaOpenAI::class)
 @Composable
 fun App() {
     MaterialTheme(
@@ -72,6 +79,8 @@ fun App() {
         shapes = themeShapes(),
     ) {
         val scope = rememberCoroutineScope()
+
+        var selectedConversation by remember { mutableStateOf<ThreadId?>(null) }
 
         var shouldRerun by remember { mutableStateOf(true) }
         var isLoading by remember { mutableStateOf(false) }
@@ -107,16 +116,23 @@ fun App() {
         }
 
         Box {
-            Conversation(
-                modifier = Modifier
-                    .fillMaxSize(),
-                messages = messages,
-                isLoading = isLoading,
-                selectedAgent = agent,
-                agentList = agentList,
-                onAgentSelected = onAgentSelected,
-                onChatSent = { shouldRerun = true },
-            )
+            selectedConversation?.let { threadId ->
+                // TODO: Load proper conversation based on `threadId`
+                Conversation(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    messages = messages,
+                    isLoading = isLoading,
+                    selectedAgent = agent,
+                    agentList = agentList,
+                    onAgentSelected = onAgentSelected,
+                    onChatSent = { shouldRerun = true },
+                )
+            } ?: run {
+                Home(
+                    agentList = agentList,
+                )
+            }
         }
     }
 }
