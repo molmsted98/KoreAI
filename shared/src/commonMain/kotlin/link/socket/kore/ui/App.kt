@@ -1,15 +1,8 @@
 package link.socket.kore.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,10 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
@@ -29,15 +19,15 @@ import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.launch
 import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.model.agent.example.ParentsAgent
+import link.socket.kore.model.agent.LLMAgent
+import link.socket.kore.ui.conversation.Conversation
 import kotlin.time.Duration.Companion.seconds
 
 val openAI = OpenAI(
     token = KotlinConfig.openai_api_key,
     timeout = Timeout(socket = 45.seconds),
-    logging = LoggingConfig(logLevel = LogLevel.None),
+    logging = LoggingConfig(logLevel = LogLevel.All),
 )
-val agent = ParentsAgent(openAI)
 
 @Composable
 fun App() {
@@ -47,22 +37,26 @@ fun App() {
         shapes = themeShapes(),
     ) {
         val scope = rememberCoroutineScope()
-        val scaffoldState = rememberScaffoldState()
 
-        var shouldRerun by remember { mutableStateOf(false) }
+        var shouldRerun by remember { mutableStateOf(true) }
         var isLoading by remember { mutableStateOf(false) }
         var messages by remember { mutableStateOf(emptyList<ChatMessage>()) }
-        var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+        var agent by remember { mutableStateOf<KoreAgent?>(null) }
 
-        LaunchedEffect(Unit) {
-            isLoading = true
-            agent.initialize()
+        val onAgentSelected: (KoreAgent) -> Unit = { newAgent ->
+            agent = newAgent
+            (agent as? LLMAgent)?.let { llmAgent ->
+                isLoading = true
+                scope.launch {
+                    llmAgent.initialize()
+                }
+            }
         }
 
-        LaunchedEffect(shouldRerun) {
+        LaunchedEffect(agent, shouldRerun) {
             isLoading = true
 
-            with(agent) {
+            (agent as? LLMAgent)?.apply {
                 do {
                     messages = getChatMessages()
                     shouldRerun = execute()
@@ -75,69 +69,15 @@ fun App() {
             isLoading = false
         }
 
-        val displaySnackbar: (String) -> Unit = { message ->
-            scope.launch {
-                scaffoldState.snackbarHostState.showSnackbar(
-                    message = message,
-                    duration = SnackbarDuration.Short,
-                )
-            }
-        }
-
         Box {
-            Scaffold(
+            Conversation(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom =72.dp),
-                scaffoldState = scaffoldState,
-                snackbarHost = { snackbarState ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        SmallSnackbarHost(
-                            modifier = Modifier
-                                .align(Alignment.BottomStart),
-                            snackbarHostState = snackbarState
-                        )
-                    }
-                }
-            ) { contentPadding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(themeColors().background)
-                        .padding(contentPadding),
-                ) {
-                    ChatHistory(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 72.dp),
-                        messages = messages,
-                        isLoading = isLoading,
-                        displaySnackbar = displaySnackbar,
-                    )
-
-                    // TODO: Add Thread selection header
-                }
-            }
-
-            if (agent is KoreAgent.HumanAssisted) {
-                val onSendClicked: () -> Unit = {
-                    agent.addUserChat(textFieldValue.text)
-                    shouldRerun = true
-                }
-
-                ChatTextEntry(
-                    modifier = Modifier
-                        .requiredHeight(72.dp)
-                        .align(Alignment.BottomCenter),
-                    textFieldValue = textFieldValue,
-                    onSendClicked = onSendClicked,
-                    onTextChanged = { textFieldValue = it },
-                    displaySnackbar = displaySnackbar,
-                )
-            }
+                    .fillMaxSize(),
+                messages = messages,
+                isLoading = isLoading,
+                onAgentSelected = onAgentSelected,
+                onChatSent = { shouldRerun = true },
+            )
         }
     }
 }
