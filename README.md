@@ -3,7 +3,7 @@
 
 # KoreAI: A KMP Library for AI Agents & Assistants
 
-<img src="readme_images/banner.png" height="350">
+<img src="readme_images/banner.png" height="450">
 
 > **Note**
 > This library, its APIs, and the sample client applications are in Alpha.
