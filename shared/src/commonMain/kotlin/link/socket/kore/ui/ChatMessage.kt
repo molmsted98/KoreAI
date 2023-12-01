@@ -20,6 +20,8 @@ import androidx.compose.material.icons.twotone.ReplayCircleFilled
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.chat.ChatMessage
@@ -29,6 +31,7 @@ import com.aallam.openai.api.core.Role
 fun ChatMessage(
     modifier: Modifier = Modifier,
     message: ChatMessage,
+    displaySnackbar: (String) -> Unit,
 ) {
     Surface(
         modifier = modifier
@@ -137,11 +140,16 @@ fun ChatMessage(
                         }
                     }
 
+                    val clipboardManager = LocalClipboardManager.current
+
                     IconButton(
                         modifier = Modifier
                             .requiredSize(iconButtonSize),
                         onClick = {
-                            // TODO: Handle click
+                            clipboardManager.setText(
+                                AnnotatedString(message.content ?: ""),
+                            )
+                            displaySnackbar("Copied to clipboard")
                         }
                     ) {
                         Image(

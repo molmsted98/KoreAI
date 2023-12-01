@@ -19,6 +19,7 @@ fun ChatHistory(
     modifier: Modifier = Modifier,
     messages: List<ChatMessage>,
     isLoading: Boolean,
+    displaySnackbar: (String) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -31,6 +32,7 @@ fun ChatHistory(
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 message = message,
+                displaySnackbar = displaySnackbar,
             )
         }
 

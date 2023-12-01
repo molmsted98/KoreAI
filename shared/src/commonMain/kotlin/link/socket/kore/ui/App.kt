@@ -3,14 +3,19 @@ package link.socket.kore.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +26,7 @@ import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.launch
 import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.example.ParentsAgent
@@ -40,6 +46,9 @@ fun App() {
         typography = themeTypography(),
         shapes = themeShapes(),
     ) {
+        val scope = rememberCoroutineScope()
+        val scaffoldState = rememberScaffoldState()
+
         var shouldRerun by remember { mutableStateOf(false) }
         var isLoading by remember { mutableStateOf(false) }
         var messages by remember { mutableStateOf(emptyList<ChatMessage>()) }
@@ -66,20 +75,52 @@ fun App() {
             isLoading = false
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(themeColors().background),
-        ) {
-            ChatHistory(
+        val displaySnackbar: (String) -> Unit = { message ->
+            scope.launch {
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = message,
+                    duration = SnackbarDuration.Short,
+                )
+            }
+        }
+
+        Box {
+            Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 72.dp),
-                messages = messages,
-                isLoading = isLoading,
-            )
+                    .padding(bottom =72.dp),
+                scaffoldState = scaffoldState,
+                snackbarHost = { snackbarState ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        SmallSnackbarHost(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart),
+                            snackbarHostState = snackbarState
+                        )
+                    }
+                }
+            ) { contentPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(themeColors().background)
+                        .padding(contentPadding),
+                ) {
+                    ChatHistory(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 72.dp),
+                        messages = messages,
+                        isLoading = isLoading,
+                        displaySnackbar = displaySnackbar,
+                    )
 
-            // TODO: Add Thread selection header
+                    // TODO: Add Thread selection header
+                }
+            }
 
             if (agent is KoreAgent.HumanAssisted) {
                 val onSendClicked: () -> Unit = {
@@ -93,7 +134,8 @@ fun App() {
                         .align(Alignment.BottomCenter),
                     textFieldValue = textFieldValue,
                     onSendClicked = onSendClicked,
-                    onTextChanged = { textFieldValue= it}
+                    onTextChanged = { textFieldValue = it },
+                    displaySnackbar = displaySnackbar,
                 )
             }
         }
