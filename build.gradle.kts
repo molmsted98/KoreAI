@@ -7,3 +7,9 @@ plugins {
     id("com.android.library").apply(false)
     id("org.jetbrains.compose").apply(false)
 }
+
+buildscript {
+    dependencies {
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.25.3")
+    }
+}

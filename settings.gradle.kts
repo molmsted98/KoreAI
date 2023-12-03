@@ -1,7 +1,7 @@
 rootProject.name = "KoreAI"
 
-include(":androidApp")
 include(":shared")
+include(":androidApp")
 include(":desktopApp")
 
 pluginManagement {

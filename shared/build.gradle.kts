@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -6,11 +7,15 @@ plugins {
     kotlin("plugin.serialization")
     id("com.android.library")
     id("org.jetbrains.compose")
+    id("com.vanniktech.maven.publish")
 }
+
+group = "link.socket"
+version = "1.0"
 
 kotlin {
     androidTarget()
-    jvm("desktop")
+    jvm()
 
     sourceSets {
         val commonMain by getting {
@@ -33,9 +38,33 @@ kotlin {
                 api("androidx.core:core-ktx:1.10.1")
             }
         }
-        val desktopMain by getting {
+        val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
+            }
+        }
+    }
+
+    androidTarget {
+        publishLibraryVariants("release", "debug")
+        publishLibraryVariantsGroupedByFlavor = true
+    }
+
+    // https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilations.get("main").compilerOptions.options.freeCompilerArgs.add("-Xexport-kdoc")
+    }
+
+    // https://kotlinlang.org/docs/multiplatform-publish-lib.html#avoid-duplicate-publications
+    val publicationsFromMainHost =  jvm().name + "kotlinMultiplatform"
+
+    publishing {
+        publications {
+            matching { it.name in publicationsFromMainHost }.all {
+                val targetPublication = this@all
+                tasks.withType<AbstractPublishToMaven>()
+                    .matching { it.publication == targetPublication }
+                    .configureEach { onlyIf { findProperty("isMainHost") == "true" } }
             }
         }
     }
@@ -86,3 +115,8 @@ tasks.register("kotlinConfiguration") {
 tasks.findByName("build")?.dependsOn(
     tasks.findByName("kotlinConfiguration")
 )
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.DEFAULT)
+    signAllPublications()
+}
