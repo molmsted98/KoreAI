@@ -24,6 +24,10 @@ import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.conversation.Conversation
+import link.socket.kore.ui.conversation.chat.ChatHistory
+import link.socket.kore.ui.conversation.selector.AgentInput
+import link.socket.kore.ui.conversation.selector.AgentSelectionState
+import link.socket.kore.ui.conversation.selector.ConversationHeader
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.widget.SmallSnackbarHost
 
@@ -41,9 +45,34 @@ fun ConversationScreen(
     val scaffoldState = rememberScaffoldState()
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
 
-    val selectionEnabled = remember(existingConversation) {
+    var partiallySelectedAgent by remember { mutableStateOf<KoreAgent?>(null) }
+
+    val selectionState = remember(existingConversation, partiallySelectedAgent) {
         derivedStateOf {
-            existingConversation == null
+            when {
+                partiallySelectedAgent != null ->
+                    AgentSelectionState.PartiallySelected(
+                        agent = partiallySelectedAgent!!,
+                        // TODO: Move inputs to Agent definition
+                        neededInputs = listOf(
+                            AgentInput.StringArg(
+                                key = "Code Description",
+                                value = ""
+                            ),
+                            AgentInput.ListArg(
+                                key = "Technology List",
+                                textFieldLabel = "Technology Name",
+                                listValue = emptyList(),
+                            )
+                        )
+                    )
+
+                existingConversation != null ->
+                    AgentSelectionState.Selected(existingConversation.agent)
+
+                else ->
+                    AgentSelectionState.Unselected(agentList)
+            }
         }
     }
 
@@ -57,10 +86,15 @@ fun ConversationScreen(
     }
 
     val onHeaderAgentSelection: (KoreAgent) -> Unit = { agent ->
-        onAgentSelected(agent)
+        partiallySelectedAgent = agent
         scope.launch {
             scaffoldState.drawerState.close()
         }
+    }
+
+    val onHeaderAgentSubmission: (AgentSelectionState.PartiallySelected) -> Unit = { state ->
+        onAgentSelected(state.agent)
+        partiallySelectedAgent = null
     }
 
     Box(
@@ -73,28 +107,27 @@ fun ConversationScreen(
             scaffoldState = scaffoldState,
             topBar = {
                 ConversationHeader(
-                    selectionEnabled = selectionEnabled.value,
+                    selectionState = selectionState.value,
                     drawerExpanded = scaffoldState.drawerState.isOpen,
                     onExpandDrawer = {
                         scope.launch {
                             scaffoldState.drawerState.open()
                         }
                     },
-                    selectedAgent = existingConversation?.agent,
-                    agentList = agentList,
                     onAgentSelected = onHeaderAgentSelection,
+                    onHeaderAgentSubmission = onHeaderAgentSubmission,
                     onBackClicked = onBackClicked,
                 )
             },
             bottomBar = {
-                if (!selectionEnabled.value) {
+                if (selectionState.value is AgentSelectionState.Selected) {
                     (existingConversation?.agent as? KoreAgent.HumanAndLLMAssisted)?.let { assistedAgent ->
                         val onSendClicked: () -> Unit = {
                             assistedAgent.addUserChat(textFieldValue.text)
                             onChatSent()
                         }
 
-                        ChatTextEntry(
+                        ConversationTextEntry(
                             modifier = Modifier
                                 .requiredHeight(72.dp)
                                 .align(Alignment.BottomCenter),
@@ -124,7 +157,7 @@ fun ConversationScreen(
                     .background(themeColors().background)
                     .padding(contentPadding),
             ) {
-                if (!selectionEnabled.value) {
+                if (selectionState.value is AgentSelectionState.Selected) {
                     val agent = existingConversation?.agent
 
                     ChatHistory(

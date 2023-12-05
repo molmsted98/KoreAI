@@ -3,15 +3,22 @@ package link.socket.kore.model.agent.bundled
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.ui.conversation.selector.AgentInput
 
 data class GenerateSubagentAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
-    val description: String,
 ) : KoreAgent.HumanAndLLMAssisted(scope) {
+
+    private lateinit var description: String
 
     companion object {
         const val NAME = "Delegate Tasks"
+
+        private val descriptionArg = AgentInput.StringArg(
+            key = "Code Description",
+            value = "",
+        )
 
         private fun instructionsFrom(): String {
             // TODO: Get code from files
@@ -42,8 +49,13 @@ data class GenerateSubagentAgent(
     }
 
     override val name: String = NAME
-    override val instructions: String = instructionsFrom()
-    override val initialPrompt: String = initialPromptFrom(description)
+    override val instructions: String by lazy { instructionsFrom() }
+    override val initialPrompt: String by lazy { initialPromptFrom(description) }
+    override val neededInputs: List<AgentInput> = listOf(descriptionArg)
+
+    override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
+        description = inputs[descriptionArg.key]?.value ?: ""
+    }
 
     override suspend fun executeHumanAssistance(): String {
         // TODO: Implement human verification

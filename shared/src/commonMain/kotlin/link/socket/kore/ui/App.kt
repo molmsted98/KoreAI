@@ -23,11 +23,10 @@ import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.agent.MODEL_NAME
+import link.socket.kore.model.agent.bundled.CreateCodeAgent
 import link.socket.kore.model.agent.bundled.FixJsonAgent
-import link.socket.kore.model.agent.bundled.GenerateCodeAgent
 import link.socket.kore.model.agent.bundled.GenerateSubagentAgent
 import link.socket.kore.model.agent.bundled.ModifyFileAgent
-import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationScreen
 import link.socket.kore.ui.home.HomeScreen
@@ -42,41 +41,22 @@ val openAI = OpenAI(
     logging = LoggingConfig(logLevel = LogLevel.All),
 )
 
-// TODO: Allow conversations to persist across app sessions
-private val existingAgentConversations = listOf(
-    Conversation(
-        title = "Family Info Example",
-        model = ModelId(MODEL_NAME),
-        agent = FamilyAgent(openAI, CoroutineScope(Dispatchers.IO)),
-    )
-)
-
-// TODO: Inject Coroutine scopes into Agents
-// TODO: Allow user specification of default values
+// TODO: Inject OpenAI & CoroutineScope into Agents
 private val agentList: List<KoreAgent> = listOf(
     GenerateSubagentAgent(
         openAI = openAI,
-        description = "Create an Android screen that displays a list of items containing names and images " +
-            "of the most popular cereal brands in the US.",
         scope = CoroutineScope(Dispatchers.IO),
     ),
-    FamilyAgent(openAI, CoroutineScope(Dispatchers.IO)),
-    GenerateCodeAgent(
+    CreateCodeAgent(
         openAI = openAI,
-        description = "How should I parse a .csv file to display in an Android app?",
-        technologies = listOf("Kotlin", "Android"),
         scope = CoroutineScope(Dispatchers.IO),
     ),
     ModifyFileAgent(
         openAI = openAI,
-        filepath = "",
-        description = "",
-        technologies = emptyList(),
         scope = CoroutineScope(Dispatchers.IO),
     ),
     FixJsonAgent(
         openAI = openAI,
-        invalidJson = "{foo\"bar",
         scope = CoroutineScope(Dispatchers.IO),
     ),
 )
@@ -123,7 +103,6 @@ fun App() {
                 selectedConversation?.agent?.let { agent ->
                     when (agent) {
                         is KoreAgent.HumanAndLLMAssisted -> agent.initialize()
-                        is KoreAgent.LLMAssisted -> agent.initialize()
                         is KoreAgent.HumanAssisted -> agent.executeHumanAssistance()
                     }
                 }
@@ -163,7 +142,7 @@ fun App() {
                 Screen.HOME -> {
                     HomeScreen(
                         agentList = agentList,
-                        agentConversationsList = existingAgentConversations,
+                        agentConversationsList = emptyList(), // TODO: Cache recent conversations
                         onCreateConversationSelected = {
                             selectedConversation = null
                             selectedScreen = Screen.CONVERSATION

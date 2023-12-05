@@ -29,7 +29,7 @@ import link.socket.kore.ui.theme.iconAlpha
 import link.socket.kore.ui.theme.iconButtonSize
 
 @Composable
-fun ChatTextEntry(
+fun ConversationTextEntry(
     modifier: Modifier = Modifier,
     textFieldValue: TextFieldValue,
     onTextChanged: (TextFieldValue) -> Unit,

@@ -13,6 +13,7 @@ import kotlinx.serialization.json.put
 import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
+import link.socket.kore.ui.conversation.selector.AgentInput
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import java.io.IOException
@@ -21,8 +22,10 @@ sealed interface KoreAgent : LLMAgent {
 
     val name: String
 
-    interface HumanAssisted : KoreAgent {
+    val neededInputs: List<AgentInput>
+    fun parseNeededInputs(inputs: Map<String, AgentInput>)
 
+    interface HumanAssisted : KoreAgent {
         suspend fun executeHumanAssistance(): String
     }
 
@@ -116,10 +119,6 @@ sealed interface KoreAgent : LLMAgent {
 
             return response
         }
-    }
-
-    abstract class LLMAssisted : KoreAgent, LLMAgent {
-
     }
 
     fun callCreateFile(args: JsonObject): String {

@@ -1,4 +1,4 @@
-package link.socket.kore.ui.conversation
+package link.socket.kore.ui.conversation.chat
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
