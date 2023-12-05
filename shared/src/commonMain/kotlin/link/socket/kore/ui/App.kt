@@ -26,6 +26,7 @@ import link.socket.kore.model.agent.bundled.FixJsonAgent
 import link.socket.kore.model.agent.bundled.GenerateCodeAgent
 import link.socket.kore.model.agent.bundled.GenerateSubagentAgent
 import link.socket.kore.model.agent.bundled.ModifyFileAgent
+import link.socket.kore.model.agent.bundled.ReadFileAgent
 import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationScreen
@@ -73,6 +74,10 @@ private val agentList: List<KoreAgent> = listOf(
         folderPath = "Test",
         fileName = "test.txt",
         fileContent = "Here is some test content",
+    ),
+    ReadFileAgent(
+        folderPath = "Test",
+        fileName = "test.txt",
     ),
     FixJsonAgent(
         openAI = openAI,
