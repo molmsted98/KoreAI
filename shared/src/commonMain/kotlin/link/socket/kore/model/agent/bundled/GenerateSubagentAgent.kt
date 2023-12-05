@@ -1,11 +1,13 @@
 package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
 
 data class GenerateSubagentAgent(
     override val openAI: OpenAI,
-    private val description: String,
+    override val scope: CoroutineScope,
+    val description: String,
 ) : KoreAgent.HumanAndLLMAssisted() {
 
     companion object {

@@ -31,6 +31,7 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
                 implementation(compose.materialIconsExtended)
+                implementation(kotlin("reflect"))
             }
         }
         val androidMain by getting {

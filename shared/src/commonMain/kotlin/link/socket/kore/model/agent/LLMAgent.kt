@@ -10,6 +10,7 @@ import com.aallam.openai.api.chat.ToolCall
 import com.aallam.openai.api.core.FinishReason
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
 
@@ -17,6 +18,8 @@ const val MODEL_NAME = "gpt-4-1106-preview"
 
 interface LLMAgent {
     val openAI: OpenAI
+    val scope: CoroutineScope
+
     val instructions: String
     val initialPrompt: String
 
@@ -81,7 +84,7 @@ interface LLMAgent {
 
         val functionArgs = argumentsAsJson()
 
-        return functionTool.definition.function.invoke(functionArgs) as? String
+        return functionTool.definition(functionArgs) as? String
             ?: error("Function $name did not return String")
     }
 

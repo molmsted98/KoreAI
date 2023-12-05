@@ -9,6 +9,7 @@ import com.aallam.openai.api.assistant.Function
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
@@ -16,6 +17,7 @@ import link.socket.kore.model.tool.FunctionProvider
 @OptIn(BetaOpenAI::class)
 data class KoreAssistant(
     override val openAI: OpenAI,
+    override val scope: CoroutineScope,
     private val existingAssistantId: AssistantId?,
     private val modelId: ModelId,
     private val name: String,

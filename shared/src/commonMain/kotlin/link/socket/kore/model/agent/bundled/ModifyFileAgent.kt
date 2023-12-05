@@ -1,10 +1,12 @@
 package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
 
 data class ModifyFileAgent(
     override val openAI: OpenAI,
+    override val scope: CoroutineScope,
     val filepath: String,
     val description: String,
     val technologies: List<String>,

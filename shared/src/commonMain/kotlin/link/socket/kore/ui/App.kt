@@ -16,6 +16,8 @@ import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
@@ -42,12 +44,15 @@ val openAI = OpenAI(
     logging = LoggingConfig(logLevel = LogLevel.All),
 )
 
+// TODO: Inject Coroutine scopes into Agents
+val agentScope = CoroutineScope(Dispatchers.IO)
+
 // TODO: Allow conversations to persist across app sessions
 private val existingAgentConversations = listOf(
     Conversation(
         title = "Family Info Example",
         model = ModelId(MODEL_NAME),
-        agent = FamilyAgent(openAI),
+        agent = FamilyAgent(openAI, agentScope),
     )
 )
 
@@ -57,18 +62,21 @@ private val agentList: List<KoreAgent> = listOf(
         openAI = openAI,
         description = "Create an Android screen that displays a list of items containing names and images " +
             "of the most popular cereal brands in the US.",
+        scope = agentScope,
     ),
-    FamilyAgent(openAI),
+    FamilyAgent(openAI, agentScope),
     GenerateCodeAgent(
         openAI = openAI,
-        description = "How should I parse a .csv file to display in a Kotlin Multiplatform app?",
-        technologies = listOf("Kotlin")
+        description = "How should I parse a .csv file to display in an Android app?",
+        technologies = listOf("Kotlin", "Android"),
+        scope = agentScope,
     ),
     ModifyFileAgent(
         openAI = openAI,
         filepath = "",
         description = "",
         technologies = emptyList(),
+        scope = agentScope,
     ),
     CreateFileAgent(
         folderPath = "Test",
@@ -82,6 +90,7 @@ private val agentList: List<KoreAgent> = listOf(
     FixJsonAgent(
         openAI = openAI,
         invalidJson = "{foo\"bar",
+        scope = agentScope,
     ),
 )
 

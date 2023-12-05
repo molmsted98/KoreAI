@@ -1,6 +1,7 @@
 package link.socket.kore.model.agent.example
 
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
@@ -12,7 +13,8 @@ import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
 
 data class FamilyAgent(
-    override val openAI: OpenAI
+    override val openAI: OpenAI,
+    override val scope: CoroutineScope,
 ) : KoreAgent.HumanAndLLMAssisted()  {
 
     companion object {
@@ -33,10 +35,10 @@ data class FamilyAgent(
 
     override val availableFunctions: Map<String, FunctionProvider> = mapOf(
         FunctionProvider.provide(
-            name = "parentName",
-            description = "Get the name of a particular parent based on their role.",
-            function = ::callParentName,
-            parameterList = listOf(
+            "parentName",
+            "Get the name of a particular parent based on their role.",
+            ::callParentName,
+            listOf(
                 ParameterDefinition(
                     name = "role",
                     isRequired = true,
