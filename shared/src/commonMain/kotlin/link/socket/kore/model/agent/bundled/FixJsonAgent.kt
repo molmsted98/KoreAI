@@ -8,7 +8,7 @@ data class FixJsonAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
     val invalidJson: String,
-) : KoreAgent.HumanAndLLMAssisted() {
+) : KoreAgent.HumanAndLLMAssisted(scope) {
 
     companion object {
         const val NAME = "Clean JSON"
@@ -27,7 +27,7 @@ data class FixJsonAgent(
     override val instructions: String = INSTRUCTIONS
     override val initialPrompt: String = initialPromptFrom(invalidJson)
 
-    override suspend fun executeHumanAssisted(): String {
+    override suspend fun executeHumanAssistance(): String {
         // TODO: Implement human verification
         return "Test"
     }

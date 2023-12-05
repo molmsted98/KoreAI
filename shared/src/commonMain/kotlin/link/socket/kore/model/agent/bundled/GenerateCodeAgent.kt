@@ -4,7 +4,6 @@ import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
 
-
 /*
  * This Agent is responsible for generating code based on the user's description and list of technologies,
  * for creating a file on the local disk with the generated code, and for showing the file in the user's
@@ -19,7 +18,7 @@ data class GenerateCodeAgent(
     override val scope: CoroutineScope,
     val description: String,
     val technologies: List<String>,
-) : KoreAgent.HumanAndLLMAssisted() {
+) : KoreAgent.HumanAndLLMAssisted(scope) {
 
     companion object {
         const val NAME = "Write Code"
@@ -30,7 +29,8 @@ data class GenerateCodeAgent(
                 "You are tasked with generating code that can be executed, using only the languages or frameworks " +
                 "that you are a specified expert in.\n" +
                 "After generating the requested code, you should ask the user to verify the file's contents, " +
-                "and then you should save the generated code file to their local disk."
+                "and then you should save the generated code file to their local disk.\n" +
+                "All generated files should be placed in a folder called KoreAI-Test in the user's home directory."
 
         private fun initialPromptFrom(description: String): String =
                 "The description of the task is:\n" +
@@ -43,7 +43,7 @@ data class GenerateCodeAgent(
     override val instructions: String = instructionsFrom(technologies)
     override val initialPrompt: String = initialPromptFrom(description)
 
-    override suspend fun executeHumanAssisted(): String {
+    override suspend fun executeHumanAssistance(): String {
         // TODO: Implement human verification
         return "Test"
     }

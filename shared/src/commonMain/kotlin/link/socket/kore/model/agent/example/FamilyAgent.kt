@@ -15,7 +15,7 @@ import link.socket.kore.model.tool.ParameterDefinition
 data class FamilyAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
-) : KoreAgent.HumanAndLLMAssisted()  {
+) : KoreAgent.HumanAndLLMAssisted(scope)  {
 
     companion object {
         const val NAME = "Family Information"
@@ -56,7 +56,7 @@ data class FamilyAgent(
         )
     )
 
-    override suspend fun executeHumanAssisted(): String {
+    override suspend fun executeHumanAssistance(): String {
         // TODO: Implement human verification
         return "Test"
     }

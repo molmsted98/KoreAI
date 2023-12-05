@@ -1,4 +1,4 @@
-package link.kore
+package link.socket.kore
 
 import MainView
 import android.os.Bundle

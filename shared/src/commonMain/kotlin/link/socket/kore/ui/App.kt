@@ -23,12 +23,10 @@ import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.agent.MODEL_NAME
-import link.socket.kore.model.agent.bundled.CreateFileAgent
 import link.socket.kore.model.agent.bundled.FixJsonAgent
 import link.socket.kore.model.agent.bundled.GenerateCodeAgent
 import link.socket.kore.model.agent.bundled.GenerateSubagentAgent
 import link.socket.kore.model.agent.bundled.ModifyFileAgent
-import link.socket.kore.model.agent.bundled.ReadFileAgent
 import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationScreen
@@ -36,61 +34,50 @@ import link.socket.kore.ui.home.HomeScreen
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.theme.themeShapes
 import link.socket.kore.ui.theme.themeTypography
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.hours
 
 val openAI = OpenAI(
     token = KotlinConfig.openai_api_key,
-    timeout = Timeout(socket = 180.seconds),
+    timeout = Timeout(socket = 1.hours),
     logging = LoggingConfig(logLevel = LogLevel.All),
 )
-
-// TODO: Inject Coroutine scopes into Agents
-val agentScope = CoroutineScope(Dispatchers.IO)
 
 // TODO: Allow conversations to persist across app sessions
 private val existingAgentConversations = listOf(
     Conversation(
         title = "Family Info Example",
         model = ModelId(MODEL_NAME),
-        agent = FamilyAgent(openAI, agentScope),
+        agent = FamilyAgent(openAI, CoroutineScope(Dispatchers.IO)),
     )
 )
 
+// TODO: Inject Coroutine scopes into Agents
 // TODO: Allow user specification of default values
 private val agentList: List<KoreAgent> = listOf(
     GenerateSubagentAgent(
         openAI = openAI,
         description = "Create an Android screen that displays a list of items containing names and images " +
             "of the most popular cereal brands in the US.",
-        scope = agentScope,
+        scope = CoroutineScope(Dispatchers.IO),
     ),
-    FamilyAgent(openAI, agentScope),
+    FamilyAgent(openAI, CoroutineScope(Dispatchers.IO)),
     GenerateCodeAgent(
         openAI = openAI,
         description = "How should I parse a .csv file to display in an Android app?",
         technologies = listOf("Kotlin", "Android"),
-        scope = agentScope,
+        scope = CoroutineScope(Dispatchers.IO),
     ),
     ModifyFileAgent(
         openAI = openAI,
         filepath = "",
         description = "",
         technologies = emptyList(),
-        scope = agentScope,
-    ),
-    CreateFileAgent(
-        folderPath = "Test",
-        fileName = "test.txt",
-        fileContent = "Here is some test content",
-    ),
-    ReadFileAgent(
-        folderPath = "Test",
-        fileName = "test.txt",
+        scope = CoroutineScope(Dispatchers.IO),
     ),
     FixJsonAgent(
         openAI = openAI,
         invalidJson = "{foo\"bar",
-        scope = agentScope,
+        scope = CoroutineScope(Dispatchers.IO),
     ),
 )
 
@@ -137,8 +124,7 @@ fun App() {
                     when (agent) {
                         is KoreAgent.HumanAndLLMAssisted -> agent.initialize()
                         is KoreAgent.LLMAssisted -> agent.initialize()
-                        is KoreAgent.HumanAssisted -> agent.executeHumanAssisted()
-                        is KoreAgent.Unassisted -> agent.executeUnassisted()
+                        is KoreAgent.HumanAssisted -> agent.executeHumanAssistance()
                     }
                 }
             }

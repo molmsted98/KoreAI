@@ -8,7 +8,7 @@ data class GenerateSubagentAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
     val description: String,
-) : KoreAgent.HumanAndLLMAssisted() {
+) : KoreAgent.HumanAndLLMAssisted(scope) {
 
     companion object {
         const val NAME = "Delegate Tasks"
@@ -45,7 +45,7 @@ data class GenerateSubagentAgent(
     override val instructions: String = instructionsFrom()
     override val initialPrompt: String = initialPromptFrom(description)
 
-    override suspend fun executeHumanAssisted(): String {
+    override suspend fun executeHumanAssistance(): String {
         // TODO: Implement human verification
         return "Test"
     }
