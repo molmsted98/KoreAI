@@ -7,8 +7,13 @@ sealed interface KoreAgent {
 
     val name: String
 
-    interface Unassisted : KoreAgent
-    interface HumanAssisted : KoreAgent
+    interface Unassisted : KoreAgent {
+        suspend fun executeUnassisted(): String
+    }
+
+    interface HumanAssisted : KoreAgent {
+        suspend fun executeHumanAssisted(): String
+    }
 
     abstract class HumanAndLLMAssisted : LLMAssisted(), HumanAssisted
 

@@ -6,7 +6,7 @@ import link.socket.kore.model.agent.KoreAgent
 data class GenerateSubagentAgent(
     override val openAI: OpenAI,
     private val description: String,
-) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
+) : KoreAgent.HumanAndLLMAssisted() {
 
     companion object {
         const val NAME = "Delegate Tasks"
@@ -42,4 +42,9 @@ data class GenerateSubagentAgent(
     override val name: String = NAME
     override val instructions: String = instructionsFrom()
     override val initialPrompt: String = initialPromptFrom(description)
+
+    override suspend fun executeHumanAssisted(): String {
+        // TODO: Implement human verification
+        return "Test"
+    }
 }

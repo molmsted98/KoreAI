@@ -8,7 +8,7 @@ data class ModifyFileAgent(
     val filepath: String,
     val description: String,
     val technologies: List<String>,
-) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
+) : KoreAgent.HumanAndLLMAssisted() {
 
     companion object {
         const val NAME = "Change File"
@@ -35,4 +35,9 @@ data class ModifyFileAgent(
     override val name: String = NAME
     override val instructions: String = instructionsFrom(technologies)
     override val initialPrompt: String = initialPromptFrom(filepath, description)
+
+    override suspend fun executeHumanAssisted(): String {
+        // TODO: Implement human verification
+        return "Test"
+    }
 }

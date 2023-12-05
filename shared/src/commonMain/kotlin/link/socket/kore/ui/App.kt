@@ -21,11 +21,11 @@ import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.agent.MODEL_NAME
+import link.socket.kore.model.agent.bundled.CreateFileAgent
 import link.socket.kore.model.agent.bundled.FixJsonAgent
 import link.socket.kore.model.agent.bundled.GenerateCodeAgent
 import link.socket.kore.model.agent.bundled.GenerateSubagentAgent
 import link.socket.kore.model.agent.bundled.ModifyFileAgent
-import link.socket.kore.model.agent.bundled.SaveFileAgent
 import link.socket.kore.model.agent.example.FamilyAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationScreen
@@ -69,9 +69,10 @@ private val agentList: List<KoreAgent> = listOf(
         description = "",
         technologies = emptyList(),
     ),
-    SaveFileAgent(
-        filepath = "",
-        fileContent = "",
+    CreateFileAgent(
+        folderPath = "Test",
+        fileName = "test.txt",
+        fileContent = "Here is some test content",
     ),
     FixJsonAgent(
         openAI = openAI,
@@ -118,7 +119,14 @@ fun App() {
             }
 
             scope.launch {
-                (selectedConversation?.agent as? LLMAgent)?.initialize()
+                selectedConversation?.agent?.let { agent ->
+                    when (agent) {
+                        is KoreAgent.HumanAndLLMAssisted -> agent.initialize()
+                        is KoreAgent.LLMAssisted -> agent.initialize()
+                        is KoreAgent.HumanAssisted -> agent.executeHumanAssisted()
+                        is KoreAgent.Unassisted -> agent.executeUnassisted()
+                    }
+                }
             }
 
             agentInitialized = true

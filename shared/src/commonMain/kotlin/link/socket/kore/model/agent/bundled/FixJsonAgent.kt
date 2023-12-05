@@ -6,7 +6,7 @@ import link.socket.kore.model.agent.KoreAgent
 data class FixJsonAgent(
     override val openAI: OpenAI,
     val invalidJson: String,
-) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
+) : KoreAgent.HumanAndLLMAssisted() {
 
     companion object {
         const val NAME = "Clean JSON"
@@ -24,4 +24,9 @@ data class FixJsonAgent(
     override val name: String = NAME
     override val instructions: String = INSTRUCTIONS
     override val initialPrompt: String = initialPromptFrom(invalidJson)
+
+    override suspend fun executeHumanAssisted(): String {
+        // TODO: Implement human verification
+        return "Test"
+    }
 }

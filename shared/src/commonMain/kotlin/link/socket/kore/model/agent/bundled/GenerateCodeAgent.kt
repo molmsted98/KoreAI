@@ -7,7 +7,7 @@ data class GenerateCodeAgent(
     override val openAI: OpenAI,
     val description: String,
     val technologies: List<String>,
-) : KoreAgent.HumanAssisted, KoreAgent.LLMAssisted() {
+) : KoreAgent.HumanAndLLMAssisted() {
 
     companion object {
         const val NAME = "Write Code"
@@ -29,4 +29,9 @@ data class GenerateCodeAgent(
     override val name: String = NAME
     override val instructions: String = instructionsFrom(technologies)
     override val initialPrompt: String = initialPromptFrom(description, technologies)
+
+    override suspend fun executeHumanAssisted(): String {
+        // TODO: Implement human verification
+        return "Test"
+    }
 }

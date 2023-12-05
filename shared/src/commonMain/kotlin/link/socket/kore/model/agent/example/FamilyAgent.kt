@@ -53,6 +53,11 @@ data class FamilyAgent(
             )
         )
     )
+
+    override suspend fun executeHumanAssisted(): String {
+        // TODO: Implement human verification
+        return "Test"
+    }
 }
 
 private fun callParentName(args: JsonObject): String {
