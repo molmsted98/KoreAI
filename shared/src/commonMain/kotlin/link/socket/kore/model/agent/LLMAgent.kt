@@ -12,6 +12,8 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.conversation.ChatHistory
+import link.socket.kore.model.conversation.KoreMessage
+import link.socket.kore.model.tool.FunctionDefinition
 import link.socket.kore.model.tool.FunctionProvider
 
 const val MODEL_NAME = "gpt-4-1106-preview"
@@ -23,14 +25,11 @@ interface LLMAgent {
     val instructions: String
     val initialPrompt: String
 
-    val initialSystemMessage
-        get() = ChatMessage(
-            role = ChatRole.System,
-            content = instructions,
-        )
+    val initialSystemMessage: KoreMessage.System
+        get() = KoreMessage.System(instructions)
 
-    val initialPromptMessage
-        get() = ChatMessage(
+    val initialPromptMessage: KoreMessage
+        get() = KoreMessage.Text(
             role = ChatRole.User,
             content = initialPrompt,
         )
@@ -48,7 +47,12 @@ interface LLMAgent {
 
     suspend fun initialize() {
         if (chatHistory is ChatHistory.Threaded.Uninitialized) {
-            chatHistory = ChatHistory.NonThreaded(listOf(initialSystemMessage, initialPromptMessage))
+            chatHistory = ChatHistory.NonThreaded(
+                listOf(
+                    initialSystemMessage,
+                    initialPromptMessage,
+                )
+            )
         }
     }
 
@@ -71,25 +75,47 @@ interface LLMAgent {
         toolCalls?.forEach { call ->
             when (call) {
                 is ToolCall.Function -> {
-                    val functionResponse = call.function.execute()
-                    updateChatHistory(call.function, functionResponse)
+                    updateChatHistory(call.function.execute())
                 }
             }
         }
     }
 
-    fun FunctionCall.execute(): String {
+    fun FunctionCall.execute(): KoreMessage {
         val functionTool = availableFunctions[name]
             ?: error("Function $name not found")
 
         val functionArgs = argumentsAsJson()
 
-        return functionTool.definition(functionArgs) as? String
-            ?: error("Function $name did not return String")
+        return when (val definition = functionTool.definition) {
+            is FunctionDefinition.StringReturn -> {
+                val content = definition(functionArgs) as? String
+                    ?: error("Function $name did not return String")
+
+                KoreMessage.Text(
+                    role = ChatRole.Function,
+                    functionName = nameOrNull,
+                    content = content,
+                )
+            }
+            is FunctionDefinition.CSVReturn -> {
+                val content = (definition(functionArgs) as? List<List<String>>)
+                    ?: error("Function $name did not return CSV")
+
+                KoreMessage.CSV(
+                    role = ChatRole.Function,
+                    functionName = nameOrNull,
+                    csvContent = content,
+                )
+            }
+        }
     }
 
+    fun getChatKoreMessages(): List<KoreMessage> =
+        chatHistory.getKoreMessages()
+
     fun getChatMessages(): List<ChatMessage> =
-        chatHistory.getMessages()
+        chatHistory.getChatMessages()
             // TODO: Add configurable role filter
             .filter { it.messageContent is TextContent }
             .filter { it.content?.isNotEmpty() == true }
@@ -113,14 +139,14 @@ interface LLMAgent {
         chatHistory = chatHistory.appendMessage(chatMessage)
     }
 
-    private fun updateChatHistory(function: FunctionCall, response: String) {
-        chatHistory = chatHistory.appendFunctionCallResponse(function, response)
+    private fun updateChatHistory(koreMessage: KoreMessage) {
+        chatHistory = chatHistory.appendKoreMessage(koreMessage)
     }
 
     fun updateCompletionRequest() {
         completionRequest = ChatCompletionRequest(
             model = ModelId(MODEL_NAME),
-            messages = chatHistory.getMessages(),
+            messages = chatHistory.getChatMessages(),
             tools = tools.ifEmpty { null },
         )
     }

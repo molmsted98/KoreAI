@@ -23,6 +23,7 @@ import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.agent.MODEL_NAME
+import link.socket.kore.model.agent.bundled.CapabilityAgent
 import link.socket.kore.model.agent.bundled.CreateCodeAgent
 import link.socket.kore.model.agent.bundled.FixJsonAgent
 import link.socket.kore.model.agent.bundled.GenerateSubagentAgent
@@ -44,6 +45,10 @@ val openAI = OpenAI(
 // TODO: Inject OpenAI & CoroutineScope into Agents
 private val agentList: List<KoreAgent> = listOf(
     GenerateSubagentAgent(
+        openAI = openAI,
+        scope = CoroutineScope(Dispatchers.IO),
+    ),
+    CapabilityAgent(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),

@@ -1,6 +1,8 @@
 package link.socket.kore.ui.conversation.chat
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,12 +22,14 @@ import androidx.compose.material.icons.twotone.ReplayCircleFilled
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.core.Role
+import link.socket.kore.model.conversation.KoreMessage
 import link.socket.kore.ui.theme.iconAlpha
 import link.socket.kore.ui.theme.iconButtonSize
 import link.socket.kore.ui.theme.nonContentCardColor
@@ -37,7 +41,7 @@ import link.socket.kore.ui.theme.themeTypography
 @Composable
 fun ChatMessage(
     modifier: Modifier = Modifier,
-    message: ChatMessage,
+    message: KoreMessage,
     displaySnackbar: (String) -> Unit,
     showRegenerate: Boolean,
 ) {
@@ -113,17 +117,46 @@ fun ChatMessage(
             }
 
             // Content
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                style = themeTypography().body1,
-                textAlign = if (message.role == Role.User) {
-                    TextAlign.End
-                } else {
-                    TextAlign.Start
-                },
-                text = message.content ?: "",
-            )
+            when (message) {
+                is KoreMessage.System,
+                is KoreMessage.Text -> {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        style = themeTypography().body1,
+                        textAlign = if (message.role == Role.User) {
+                            TextAlign.End
+                        } else {
+                            TextAlign.Start
+                        },
+                        text = message.chatMessage.content ?: "",
+                    )
+                }
+                is KoreMessage.CSV -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        message.csvContent.forEach { line ->
+                            Row {
+                                val colWidth = (1f / line.size)
+                                for (cell in line) {
+                                    Text(
+                                        modifier = Modifier
+                                            .border(BorderStroke(1.dp, Color.DarkGray))
+                                            .padding(2.dp)
+                                            .fillMaxWidth(colWidth),
+                                        text = cell,
+                                        overflow = TextOverflow.Ellipsis,
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 1,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // Actions
             if (message.role != Role.User) {
@@ -155,7 +188,7 @@ fun ChatMessage(
                             .requiredSize(iconButtonSize),
                         onClick = {
                             clipboardManager.setText(
-                                AnnotatedString(message.content ?: ""),
+                                AnnotatedString(message.chatMessage.content ?: ""),
                             )
                             displaySnackbar("Copied to clipboard")
                         }

@@ -14,11 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.core.Role
+import link.socket.kore.model.conversation.KoreMessage
 
 @Composable
 fun ChatHistory(
     modifier: Modifier = Modifier,
-    messages: List<ChatMessage>,
+    messages: List<KoreMessage>,
     isLoading: Boolean,
     displaySnackbar: (String) -> Unit,
 ) {

@@ -15,11 +15,6 @@ data class FixJsonAgent(
     companion object {
         const val NAME = "Clean JSON"
 
-        private val invalidJsonArg = AgentInput.StringArg(
-            key = "Invalid JSON",
-            value = "",
-        )
-
         private const val INSTRUCTIONS =
             "You are a helpful assistant that is an expert in understanding JSON parsing."
 
@@ -28,6 +23,11 @@ data class FixJsonAgent(
         ) = "The given string is not a valid JSON:\n" +
             "$invalidJson\n\n" +
             "Plan your solution step-by-step before you fix this and produce a valid JSON."
+
+        private val invalidJsonArg = AgentInput.StringArg(
+            key = "Invalid JSON",
+            value = "",
+        )
     }
 
     override val name: String = NAME

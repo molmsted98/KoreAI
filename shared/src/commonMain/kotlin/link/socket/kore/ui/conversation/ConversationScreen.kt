@@ -164,7 +164,7 @@ fun ConversationScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 72.dp),
-                        messages = (agent as? LLMAgent)?.getChatMessages() ?: emptyList(),
+                        messages = (agent as? LLMAgent)?.getChatKoreMessages() ?: emptyList(),
                         isLoading = isLoading,
                         displaySnackbar = displaySnackbar,
                     )

@@ -25,17 +25,6 @@ data class CreateCodeAgent(
     companion object {
         const val NAME = "Write Code"
 
-        private val descriptionArg = AgentInput.StringArg(
-                key = "Code Description",
-                value = "",
-            )
-
-        private val technologiesArg = AgentInput.ListArg(
-                key = "Technology List",
-                textFieldLabel = "Technology Name",
-                listValue = emptyList(),
-            )
-
         private fun instructionsFrom(technologies: String): String =
             "You are a helpful assistant that is an expert programmer in:\n" +
                 "$technologies.\n" +
@@ -50,6 +39,17 @@ data class CreateCodeAgent(
                 "$description\n" +
                 "\n\n" +
                 "Plan your solution step-by-step before you start coding."
+
+        private val descriptionArg = AgentInput.StringArg(
+            key = "Code Description",
+            value = "",
+        )
+
+        private val technologiesArg = AgentInput.ListArg(
+            key = "Technology List",
+            textFieldLabel = "Technology Name",
+            listValue = emptyList(),
+        )
     }
 
     override val name: String = NAME

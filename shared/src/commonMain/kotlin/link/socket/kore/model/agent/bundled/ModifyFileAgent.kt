@@ -17,22 +17,6 @@ data class ModifyFileAgent(
     companion object {
         const val NAME = "Modify File"
 
-        private val filePathArg = AgentInput.StringArg(
-            key = "File Path",
-            value = "",
-        )
-
-        private val descriptionArg = AgentInput.StringArg(
-            key = "Code Description",
-            value = "",
-        )
-
-        private val technologiesArg = AgentInput.ListArg(
-            key = "Technology List",
-            textFieldLabel = "Technology Name",
-            listValue = emptyList(),
-        )
-
         private fun instructionsFrom(technologies: String): String =
             "You are a helpful assistant that is an expert programmer in:\n" +
                 "$technologies.\n"
@@ -50,6 +34,22 @@ data class ModifyFileAgent(
                 "\n\n" +
                 "Plan your solution step-by-step before making the necessary changes to this file."
         }
+
+        private val filePathArg = AgentInput.StringArg(
+            key = "File Path",
+            value = "",
+        )
+
+        private val descriptionArg = AgentInput.StringArg(
+            key = "Code Description",
+            value = "",
+        )
+
+        private val technologiesArg = AgentInput.ListArg(
+            key = "Technology List",
+            textFieldLabel = "Technology Name",
+            listValue = emptyList(),
+        )
     }
 
     override val name: String = NAME

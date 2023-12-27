@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -41,7 +43,8 @@ fun ConversationAgentSetup(
     }
 
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .wrapContentHeight(),
     ) {
         Text(
             modifier = Modifier
@@ -53,6 +56,7 @@ fun ConversationAgentSetup(
 
         LazyColumn(
             modifier = Modifier
+                .wrapContentHeight()
                 .fillMaxWidth(),
         ) {
             items(selectionState.neededInputs) { input ->
@@ -132,19 +136,55 @@ private fun ListInput(
     input: AgentInput.ListArg,
     onValueChanged: (AgentInput.ListArg) -> Unit,
 ) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var itemCount by remember { mutableStateOf(1) }
 
-    TextField(
-        modifier = modifier,
-        value = textFieldValue,
-        onValueChange = { value ->
-            textFieldValue = value
-            onValueChanged(
-                input.copy(listValue = listOf(value.text))
+    val inputs by remember {
+        mutableStateOf(
+            mutableListOf("")
+        )
+    }
+
+    Column(
+        modifier = modifier
+            .wrapContentHeight(),
+    ) {
+        for (index in 0..<itemCount) {
+            var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+
+            TextField(
+                modifier = modifier,
+                value = textFieldValue,
+                onValueChange = { value ->
+                    textFieldValue = value
+                    if (inputs.getOrNull(index) == null) {
+                        inputs.add(index, value.text)
+                    } else {
+                        inputs[index] = value.text
+                    }
+                    onValueChanged(
+                        input.copy(listValue = inputs)
+                    )
+                },
+                label = { Text(input.textFieldLabel) },
             )
-        },
-        label = { Text(input.textFieldLabel) },
-    )
 
-    Spacer(modifier = Modifier.requiredHeight(8.dp))
+            Spacer(modifier = Modifier.requiredHeight(8.dp))
+        }
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(),
+            onClick = {
+                itemCount++
+            },
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                style = themeTypography().button,
+                text = "Add List Item",
+            )
+        }
+    }
 }
