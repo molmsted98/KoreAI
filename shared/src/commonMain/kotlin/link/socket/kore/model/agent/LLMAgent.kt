@@ -1,12 +1,6 @@
 package link.socket.kore.model.agent
 
-import com.aallam.openai.api.chat.ChatCompletionRequest
-import com.aallam.openai.api.chat.ChatMessage
-import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.chat.FunctionCall
-import com.aallam.openai.api.chat.TextContent
-import com.aallam.openai.api.chat.Tool
-import com.aallam.openai.api.chat.ToolCall
+import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.core.FinishReason
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
@@ -23,6 +17,17 @@ interface LLMAgent {
     val scope: CoroutineScope
 
     val instructions: String
+        get() = "You are running within the confines of a library API, which has been developed to simplify " +
+                "access to specialized LLM Agents. In this context, there are two types of humans that you may " +
+                "be interacting with; developer-users (referred to as Developers) and end-users (referred to as Users).\n\n" +
+                "The Developer will be configuring your parameters before initializing the Chat session, and " +
+                "the User will be conversing with you in the Chat session. \n\n" +
+                "Unless otherwise stated in the subsequent instructions, your responses should be precise and " +
+                "to-the-point; there is no need to go into detail about explanations unless you have been told to do so.\n\n" +
+                "Since you are a specialized Agent, with further instructions about your specialty given below, " +
+                "you should avoid responding to any Chat prompts which fall outside of your area of specialty and instead " +
+                "coerce the User into using your specialized skills."
+
     val initialPrompt: String
 
     val initialSystemMessage: KoreMessage.System

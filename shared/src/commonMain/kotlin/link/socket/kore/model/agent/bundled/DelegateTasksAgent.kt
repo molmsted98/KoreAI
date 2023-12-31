@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.ui.conversation.selector.AgentInput
 
-data class GenerateSubagentAgent(
+data class DelegateTasksAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
 ) : KoreAgent.HumanAndLLMAssisted(scope) {
@@ -16,7 +16,7 @@ data class GenerateSubagentAgent(
         const val NAME = "Delegate Tasks"
 
         private const val INSTRUCTIONS =
-            "You are a tactical Agent that is an expert programmer in Kotlin and at delegating LLM Subagents." +
+            "You are a strategic Agent that is an expert programmer in Kotlin and at delegating LLM Subagents." +
                 "\n\n" +
                 "A Subagent can generate information from an LLM by prompting it for a chat completion, " +
                 "or a Subagent can perform a particular task like saving text contents a file on the user's disk." +
@@ -30,9 +30,11 @@ data class GenerateSubagentAgent(
                 "potential modification."
 
         private fun initialPromptFrom(description: String): String =
-            "You need to build a new Sub-agent agent that does the following:\n" +
+            "You need to delegate tasks to Subagents in order to accomplish the following:\n" +
                 "$description\n\n" +
-                "Plan your solution step-by-step to ensure work is appropriately delegated to Subagents before you start."
+                "Plan your solution step-by-step to ensure that work is appropriately delegated to your available " +
+                    "types of Subagents before you start to assign the work to your Subagents, but do not reveal " +
+                    "this plan to the User."
 
         private val descriptionArg = AgentInput.StringArg(
             key = "Code Description",
@@ -41,7 +43,7 @@ data class GenerateSubagentAgent(
     }
 
     override val name: String = NAME
-    override val instructions: String = INSTRUCTIONS
+    override val instructions: String = "${super.instructions}\n\n" + INSTRUCTIONS
     override val initialPrompt: String by lazy { initialPromptFrom(description) }
     override val neededInputs: List<AgentInput> = listOf(descriptionArg)
 

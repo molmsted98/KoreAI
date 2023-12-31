@@ -23,10 +23,10 @@ import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.agent.MODEL_NAME
-import link.socket.kore.model.agent.bundled.CapabilityAgent
-import link.socket.kore.model.agent.bundled.CreateCodeAgent
-import link.socket.kore.model.agent.bundled.FixJsonAgent
-import link.socket.kore.model.agent.bundled.GenerateSubagentAgent
+import link.socket.kore.model.agent.bundled.LocalCapabilitiesAgent
+import link.socket.kore.model.agent.bundled.WriteCodeAgent
+import link.socket.kore.model.agent.bundled.CleanJsonAgent
+import link.socket.kore.model.agent.bundled.DelegateTasksAgent
 import link.socket.kore.model.agent.bundled.ModifyFileAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationScreen
@@ -44,15 +44,15 @@ val openAI = OpenAI(
 
 // TODO: Inject OpenAI & CoroutineScope into Agents
 private val agentList: List<KoreAgent> = listOf(
-    GenerateSubagentAgent(
+    DelegateTasksAgent(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),
-    CapabilityAgent(
+    LocalCapabilitiesAgent(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),
-    CreateCodeAgent(
+    WriteCodeAgent(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),
@@ -60,7 +60,7 @@ private val agentList: List<KoreAgent> = listOf(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),
-    FixJsonAgent(
+    CleanJsonAgent(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),

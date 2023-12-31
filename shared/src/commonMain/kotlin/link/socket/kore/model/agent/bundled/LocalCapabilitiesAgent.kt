@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.ui.conversation.selector.AgentInput
 
-data class CapabilityAgent(
+data class LocalCapabilitiesAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
 ) : KoreAgent.HumanAndLLMAssisted(scope) {
@@ -25,9 +25,7 @@ data class CapabilityAgent(
 
     override val name: String = NAME
     override val instructions: String by lazy {
-        instructionsFrom(
-            agentFunctions.map { (key, _) -> key }
-        )
+        "${super.instructions}\n\n" + instructionsFrom(agentFunctions.map { (key, _) -> key })
     }
     override val initialPrompt: String = INITIAL_PROMPT
     override val neededInputs: List<AgentInput> = emptyList()

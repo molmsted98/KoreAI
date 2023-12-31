@@ -18,7 +18,7 @@ data class ModifyFileAgent(
         const val NAME = "Modify File"
 
         private fun instructionsFrom(technologies: String): String =
-            "You are a helpful assistant that is an expert programmer in:\n" +
+            "You are an Agent that is an expert programmer in:\n" +
                 "$technologies.\n"
 
         private fun initialPromptFrom(filepath: String, description: String): String {
@@ -32,7 +32,8 @@ data class ModifyFileAgent(
                 "The description of the changes to make is:\n" +
                 "$description\n" +
                 "\n\n" +
-                "Plan your solution step-by-step before making the necessary changes to this file."
+                "Plan your solution step-by-step before making the necessary changes to this file, but do not " +
+                    "reveal this plan to the User."
         }
 
         private val filePathArg = AgentInput.StringArg(
@@ -53,7 +54,9 @@ data class ModifyFileAgent(
     }
 
     override val name: String = NAME
-    override val instructions: String by lazy { instructionsFrom(technologies) }
+    override val instructions: String by lazy {
+        "${super.instructions}\n\n" + instructionsFrom(technologies)
+    }
     override val initialPrompt: String by lazy { initialPromptFrom(filePath, description) }
     override val neededInputs: List<AgentInput> = listOf(filePathArg, descriptionArg, technologiesArg)
 

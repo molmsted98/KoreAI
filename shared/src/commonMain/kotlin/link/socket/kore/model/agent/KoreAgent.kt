@@ -43,6 +43,10 @@ sealed interface KoreAgent : LLMAgent, AgentCapabilities {
         override val scope: CoroutineScope,
     ) : KoreAgent, HumanAssisted {
 
+        override val instructions: String = "${super<KoreAgent>.instructions}\n\n" +
+                "You are an Agent that can provide answers to Chat prompts through both LLM completion, " +
+                "or through Developer intervention via the CLI that was used to configure your Chat session."
+
         override var chatHistory: ChatHistory = ChatHistory.Threaded.Uninitialized
             set(value) {
                 field = value
