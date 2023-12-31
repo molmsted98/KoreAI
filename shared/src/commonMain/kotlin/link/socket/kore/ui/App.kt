@@ -146,7 +146,6 @@ fun App() {
             when (selectedScreen) {
                 Screen.HOME -> {
                     HomeScreen(
-                        agentList = agentList,
                         agentConversationsList = emptyList(), // TODO: Cache recent conversations
                         onCreateConversationSelected = {
                             selectedConversation = null

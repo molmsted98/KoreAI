@@ -1,21 +1,13 @@
 package link.socket.kore.ui.conversation.selector
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -48,8 +40,9 @@ fun ConversationAgentSetup(
     ) {
         Text(
             modifier = Modifier
-                .fillMaxWidth(),
-            style = themeTypography().h6,
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            style = themeTypography().subtitle1,
             text = selectionState.agentName,
             textAlign = TextAlign.Center,
         )
@@ -57,7 +50,8 @@ fun ConversationAgentSetup(
         LazyColumn(
             modifier = Modifier
                 .wrapContentHeight()
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
         ) {
             items(selectionState.neededInputs) { input ->
                 when (input) {
@@ -100,6 +94,7 @@ fun ConversationAgentSetup(
                             .fillMaxWidth(),
                         style = themeTypography().button,
                         text = "Submit",
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
@@ -184,6 +179,7 @@ private fun ListInput(
                     .fillMaxWidth(),
                 style = themeTypography().button,
                 text = "Add List Item",
+                textAlign = TextAlign.Center,
             )
         }
     }

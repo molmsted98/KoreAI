@@ -10,33 +10,28 @@ import link.socket.kore.ui.widget.header.HeaderButtonItem
 @Composable
 fun ConversationAgentSelector(
     modifier: Modifier = Modifier,
-    drawerExpanded: Boolean,
     agentList: List<KoreAgent>,
     onAgentSelected: (KoreAgent) -> Unit,
 ) {
-    if (!drawerExpanded) {
-        LazyRow(
-            modifier = modifier,
-        ) {
-            item {
-                HeaderButtonItem(
-                    text = "+",
-                    onClick = {
-                        // TODO: Navigation to Agent creation
-                    }
-                )
-            }
-
-            items(agentList) { agent ->
-                HeaderButtonItem(
-                    text = agent.name,
-                    onClick = {
-                        onAgentSelected(agent)
-                    }
-                )
-            }
+    LazyRow(
+        modifier = modifier,
+    ) {
+        item {
+            HeaderButtonItem(
+                text = "+",
+                onClick = {
+                    // TODO: Navigation to Agent creation
+                }
+            )
         }
-    } else {
-        // TODO: Display Agent list
+
+        items(agentList) { agent ->
+            HeaderButtonItem(
+                text = agent.name,
+                onClick = {
+                    onAgentSelected(agent)
+                }
+            )
+        }
     }
 }

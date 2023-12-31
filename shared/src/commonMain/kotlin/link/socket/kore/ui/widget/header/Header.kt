@@ -1,18 +1,11 @@
 package link.socket.kore.ui.widget.header
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.ArrowBack
-import androidx.compose.material.icons.twotone.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,22 +14,11 @@ import androidx.compose.ui.unit.dp
 import link.socket.kore.ui.theme.headerHeight
 import link.socket.kore.ui.theme.themeTypography
 
-data class SelectionConfig(
-    val selectionEnabled: Boolean,
-    val selectedTitle: String,
-    val firstOption: String,
-    val secondOption: String,
-    val onSecondOptionSelected: () -> Unit,
-)
-
 @Composable
 fun Header(
     modifier: Modifier = Modifier,
-    selectionConfig: SelectionConfig?,
+    title: String,
     displayBackIcon: Boolean,
-    displayMenuIcon: Boolean,
-    drawerExpanded: Boolean,
-    onExpandDrawer: () -> Unit,
     onBackClicked: () -> Unit,
 ) {
     Row(
@@ -61,39 +43,13 @@ fun Header(
             Spacer(modifier = Modifier.requiredWidth(64.dp))
         }
 
-        selectionConfig?.apply {
-            if (selectionEnabled) {
-                if (drawerExpanded) {
-                    SelectionHeader(selectionConfig = this)
-                } else {
-                    Text(
-                        style = themeTypography().h6,
-                        text = firstOption,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            } else {
-                Text(
-                    style = themeTypography().h6,
-                    text = selectedTitle,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
-
-        if (displayMenuIcon) {
-            IconButton(
-                modifier = Modifier
-                    .requiredSize(64.dp),
-                onClick = onExpandDrawer,
-            ) {
-                Image(
-                    imageVector = Icons.TwoTone.Menu,
-                    contentDescription = "Menu",
-                )
-            }
-        } else {
-            Spacer(modifier = Modifier.requiredWidth(64.dp))
-        }
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 64.dp),
+            style = themeTypography().h6,
+            text = title,
+            textAlign = TextAlign.Center,
+        )
     }
 }

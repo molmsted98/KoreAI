@@ -1,21 +1,11 @@
 package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
@@ -25,7 +15,6 @@ import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.chat.ChatHistory
-import link.socket.kore.ui.conversation.selector.AgentInput
 import link.socket.kore.ui.conversation.selector.AgentSelectionState
 import link.socket.kore.ui.conversation.selector.ConversationHeader
 import link.socket.kore.ui.theme.themeColors
@@ -53,18 +42,7 @@ fun ConversationScreen(
                 partiallySelectedAgent != null ->
                     AgentSelectionState.PartiallySelected(
                         agent = partiallySelectedAgent!!,
-                        // TODO: Move inputs to Agent definition
-                        neededInputs = listOf(
-                            AgentInput.StringArg(
-                                key = "Code Description",
-                                value = ""
-                            ),
-                            AgentInput.ListArg(
-                                key = "Technology List",
-                                textFieldLabel = "Technology Name",
-                                listValue = emptyList(),
-                            )
-                        )
+                        neededInputs = partiallySelectedAgent!!.neededInputs,
                     )
 
                 existingConversation != null ->
@@ -86,9 +64,10 @@ fun ConversationScreen(
     }
 
     val onHeaderAgentSelection: (KoreAgent) -> Unit = { agent ->
-        partiallySelectedAgent = agent
-        scope.launch {
-            scaffoldState.drawerState.close()
+        if (agent.neededInputs.isNotEmpty()) {
+            partiallySelectedAgent = agent
+        } else {
+            onAgentSelected(agent)
         }
     }
 
@@ -108,12 +87,6 @@ fun ConversationScreen(
             topBar = {
                 ConversationHeader(
                     selectionState = selectionState.value,
-                    drawerExpanded = scaffoldState.drawerState.isOpen,
-                    onExpandDrawer = {
-                        scope.launch {
-                            scaffoldState.drawerState.open()
-                        }
-                    },
                     onAgentSelected = onHeaderAgentSelection,
                     onHeaderAgentSubmission = onHeaderAgentSubmission,
                     onBackClicked = onBackClicked,

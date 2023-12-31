@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.ui.widget.header.Header
-import link.socket.kore.ui.widget.header.SelectionConfig
 
 sealed class AgentSelectionState {
 
@@ -57,14 +56,12 @@ sealed class AgentInput(
 fun ConversationHeader(
     modifier: Modifier = Modifier,
     selectionState: AgentSelectionState,
-    drawerExpanded: Boolean,
-    onExpandDrawer: () -> Unit,
     onAgentSelected: (KoreAgent) -> Unit,
     onHeaderAgentSubmission: (AgentSelectionState.PartiallySelected) -> Unit,
     onBackClicked: () -> Unit,
 ) {
     val selectionEnabled = remember(selectionState) {
-        derivedStateOf { selectionState !is AgentSelectionState.Unselected }
+        derivedStateOf { selectionState !is AgentSelectionState.Selected }
     }
 
     Surface(
@@ -77,19 +74,12 @@ fun ConversationHeader(
                 .fillMaxWidth(),
         ) {
             Header(
-                selectionConfig = SelectionConfig(
-                    selectionEnabled = selectionEnabled.value,
-                    selectedTitle = "${selectionState.agentName} Agent",
-                    firstOption = "Select an Agent",
-                    secondOption = "Create Your Own",
-                    onSecondOptionSelected = {
-                        // TODO: Navigation to Agent creation
-                    },
-                ),
+                title = if (selectionEnabled.value) {
+                    "Select an Agent"
+                } else {
+                    selectionState.agentName ?: ""
+                },
                 displayBackIcon = true,
-                displayMenuIcon = selectionState is AgentSelectionState.Unselected,
-                drawerExpanded = drawerExpanded,
-                onExpandDrawer = onExpandDrawer,
                 onBackClicked = onBackClicked,
             )
 
@@ -98,18 +88,19 @@ fun ConversationHeader(
                     ConversationAgentSelector(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        drawerExpanded = drawerExpanded,
                         agentList = selectionState.agentList,
                         onAgentSelected = onAgentSelected,
                     )
                 }
                 is AgentSelectionState.PartiallySelected -> {
-                    ConversationAgentSetup(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        selectionState = selectionState,
-                        onHeaderAgentSubmission = onHeaderAgentSubmission,
-                    )
+                    if (selectionState.neededInputs.isNotEmpty()) {
+                        ConversationAgentSetup(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            selectionState = selectionState,
+                            onHeaderAgentSubmission = onHeaderAgentSubmission,
+                        )
+                    }
                 }
                 is AgentSelectionState.Selected -> {
                     // no-op
