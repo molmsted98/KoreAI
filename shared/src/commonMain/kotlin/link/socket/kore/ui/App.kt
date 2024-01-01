@@ -3,13 +3,7 @@ package link.socket.kore.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
@@ -23,11 +17,7 @@ import link.kore.shared.config.KotlinConfig
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.agent.MODEL_NAME
-import link.socket.kore.model.agent.bundled.LocalCapabilitiesAgent
-import link.socket.kore.model.agent.bundled.WriteCodeAgent
-import link.socket.kore.model.agent.bundled.CleanJsonAgent
-import link.socket.kore.model.agent.bundled.DelegateTasksAgent
-import link.socket.kore.model.agent.bundled.ModifyFileAgent
+import link.socket.kore.model.agent.bundled.*
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationScreen
 import link.socket.kore.ui.home.HomeScreen
@@ -44,6 +34,10 @@ val openAI = OpenAI(
 
 // TODO: Inject OpenAI & CoroutineScope into Agents
 private val agentList: List<KoreAgent> = listOf(
+    CreateAgentAgent(
+        openAI = openAI,
+        scope = CoroutineScope(Dispatchers.IO),
+    ),
     DelegateTasksAgent(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),

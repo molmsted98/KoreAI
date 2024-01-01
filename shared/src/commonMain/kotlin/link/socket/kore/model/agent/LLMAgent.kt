@@ -118,6 +118,7 @@ interface LLMAgent {
 
     fun getChatKoreMessages(): List<KoreMessage> =
         chatHistory.getKoreMessages()
+            .filter { it.chatMessage.content?.isNotEmpty() == true }
 
     fun getChatMessages(): List<ChatMessage> =
         chatHistory.getChatMessages()
