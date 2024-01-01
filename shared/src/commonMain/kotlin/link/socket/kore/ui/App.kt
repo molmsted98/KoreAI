@@ -58,6 +58,10 @@ private val agentList: List<KoreAgent> = listOf(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),
+    FinancialAgent(
+        openAI = openAI,
+        scope = CoroutineScope(Dispatchers.IO),
+    ),
 )
 
 enum class Screen {
