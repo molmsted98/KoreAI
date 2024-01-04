@@ -18,13 +18,13 @@ data class CreateAgentAgent(
         private const val INSTRUCTIONS =
             "You are an Agent that is an expert in writing a LLM Agent descriptions, which includes both the " +
                     "system instructions and the initial Chat prompt for the Agent as described by the Developer. " +
-                    "You should use your own system instructions and initial Chat prompt as an example of what the " +
+                    "You should use your own system instructions and initial User Chat prompt as an example of what the " +
                     "Developer is looking for in your response."
 
         private fun initialPromptFrom(description: String): String =
                 "You are tasked with defining an Agent that is follows this description:\n" +
                         "$description\n\n" +
-                        "Your output should only be the Agent's system instructions and their initial Chat prompt."
+                        "Your output should only be the Agent's system instructions and their initial User Chat prompt."
 
         private val descriptionArg = AgentInput.StringArg(
             key = "Agent Description",
