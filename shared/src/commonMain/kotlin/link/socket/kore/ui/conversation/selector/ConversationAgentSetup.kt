@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.ui.theme.themeTypography
 
 @Composable
@@ -119,7 +120,7 @@ private fun StringInput(
                 input.copy(value = value.text)
             )
         },
-        label = { Text(input.key) },
+        label = { Text(input.name) },
     )
 
     Spacer(modifier = Modifier.requiredHeight(8.dp))
@@ -160,7 +161,7 @@ private fun ListInput(
                         input.copy(listValue = inputs)
                     )
                 },
-                label = { Text(input.textFieldLabel) },
+                label = { Text(input.name) },
             )
 
             Spacer(modifier = Modifier.requiredHeight(8.dp))

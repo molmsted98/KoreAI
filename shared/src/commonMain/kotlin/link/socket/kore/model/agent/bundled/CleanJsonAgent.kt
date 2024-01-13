@@ -2,8 +2,8 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.ui.conversation.selector.AgentInput
 
 data class CleanJsonAgent(
     override val openAI: OpenAI,
@@ -26,7 +26,8 @@ data class CleanJsonAgent(
                 "this plan to the User."
 
         private val invalidJsonArg = AgentInput.StringArg(
-            key = "Invalid JSON",
+            key = "invalidJson",
+            name = "Invalid JSON",
             value = "",
         )
 

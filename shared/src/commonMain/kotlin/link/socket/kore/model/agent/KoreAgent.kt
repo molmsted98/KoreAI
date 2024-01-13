@@ -10,7 +10,6 @@ import link.socket.kore.model.agent.capability.IOCapability
 import link.socket.kore.model.agent.capability.LLMCapability
 import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
-import link.socket.kore.ui.conversation.selector.AgentInput
 
 sealed interface KoreAgent : LLMAgent {
 

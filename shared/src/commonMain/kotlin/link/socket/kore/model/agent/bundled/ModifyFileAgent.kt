@@ -2,8 +2,8 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.ui.conversation.selector.AgentInput
 
 data class ModifyFileAgent(
     override val openAI: OpenAI,
@@ -37,18 +37,20 @@ data class ModifyFileAgent(
         }
 
         private val filePathArg = AgentInput.StringArg(
-            key = "File Path",
+            key = "filePath",
+            name = "File Path",
             value = "",
         )
 
         private val descriptionArg = AgentInput.StringArg(
-            key = "Code Description",
+            key = "codeDescription",
+            name = "Code Description",
             value = "",
         )
 
         private val technologiesArg = AgentInput.ListArg(
-            key = "Technology List",
-            textFieldLabel = "Technology Name",
+            key = "technologyList",
+            name = "Technology Name",
             listValue = emptyList(),
         )
 

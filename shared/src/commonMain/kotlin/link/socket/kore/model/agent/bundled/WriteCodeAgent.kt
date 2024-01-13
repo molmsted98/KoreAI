@@ -2,8 +2,8 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.ui.conversation.selector.AgentInput
 
 /*
  * This Agent is responsible for generating code based on the user's description and list of technologies,
@@ -41,13 +41,14 @@ data class WriteCodeAgent(
                 "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User."
 
         private val descriptionArg = AgentInput.StringArg(
-            key = "Code Description",
+            key = "codeDescription",
+            name = "Code Description",
             value = "",
         )
 
         private val technologiesArg = AgentInput.ListArg(
-            key = "Technology List",
-            textFieldLabel = "Technology Name",
+            key = "technologyList",
+            name = "Technology Name",
             listValue = emptyList(),
         )
 

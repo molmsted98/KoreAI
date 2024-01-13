@@ -6,10 +6,10 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.bundled.*
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
-import link.socket.kore.ui.conversation.selector.AgentInput
 
 sealed interface AgentCapability : Capability {
 

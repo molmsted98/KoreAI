@@ -2,8 +2,8 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.ui.conversation.selector.AgentInput
 
 data class DefineAgentAgent(
     override val openAI: OpenAI,
@@ -27,7 +27,8 @@ data class DefineAgentAgent(
                         "Your output should only be the Agent's system instructions and their initial User Chat prompt."
 
         private val descriptionArg = AgentInput.StringArg(
-            key = "Agent Description",
+            key = "agentDescription",
+            name = "Agent Description",
             value = "",
         )
 

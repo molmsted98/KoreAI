@@ -2,8 +2,8 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.ui.conversation.selector.AgentInput
 
 data class DelegateTasksAgent(
     override val openAI: OpenAI,
@@ -38,7 +38,8 @@ data class DelegateTasksAgent(
                     "types of Subagents before you start to assign the work to your Subagents."
 
         private val descriptionArg = AgentInput.StringArg(
-            key = "Code Description",
+            key = "codeDescription",
+            name = "Code Description",
             value = "",
         )
 
