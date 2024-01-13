@@ -50,22 +50,19 @@ data class WriteCodeAgent(
             textFieldLabel = "Technology Name",
             listValue = emptyList(),
         )
+
+        val INPUTS = listOf(descriptionArg, technologiesArg)
     }
 
     override val name: String = NAME
-    override val instructions: String by lazy {
-        "${super.instructions}\n\n" + instructionsFrom(technologies)
-    }
-    override val initialPrompt: String by lazy { initialPromptFrom(description) }
-    override val neededInputs: List<AgentInput> = listOf(descriptionArg, technologiesArg)
+    override val instructions: String
+        get() = "${super.instructions}\n\n" + instructionsFrom(technologies)
+    override val initialPrompt: String
+        get() = initialPromptFrom(description)
+    override val neededInputs: List<AgentInput> = INPUTS
 
     override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
         description = inputs[descriptionArg.key]?.value ?: ""
         technologies = inputs[technologiesArg.key]?.value ?: ""
-    }
-
-    override suspend fun executeHumanAssistance(): String {
-        // TODO: Implement human verification
-        return "Test"
     }
 }

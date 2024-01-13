@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.ui.conversation.selector.AgentInput
 
-data class CreateAgentAgent(
+data class DefineAgentAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
 ) : KoreAgent.HumanAndLLMAssisted(scope) {
@@ -13,7 +13,7 @@ data class CreateAgentAgent(
     private lateinit var description: String
 
     companion object {
-        const val NAME = "Create Agent"
+        const val NAME = "Define Agent"
 
         private const val INSTRUCTIONS =
             "You are an Agent that is an expert in writing a LLM Agent descriptions, which includes both the " +
@@ -30,19 +30,16 @@ data class CreateAgentAgent(
             key = "Agent Description",
             value = "",
         )
+
+        val INPUTS = listOf(descriptionArg)
     }
 
     override val name: String = NAME
     override val instructions: String = "${super.instructions}\n\n" + INSTRUCTIONS
     override val initialPrompt: String by lazy { initialPromptFrom(description) }
-    override val neededInputs: List<AgentInput> = listOf(descriptionArg)
+    override val neededInputs: List<AgentInput> = INPUTS
 
     override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
         description = inputs[descriptionArg.key]?.value ?: ""
-    }
-
-    override suspend fun executeHumanAssistance(): String {
-        // TODO: Implement human verification
-        return "Test"
     }
 }

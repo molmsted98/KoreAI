@@ -24,16 +24,11 @@ data class LocalCapabilitiesAgent(
     }
 
     override val name: String = NAME
-    override val instructions: String by lazy {
-        "${super.instructions}\n\n" + instructionsFrom(agentFunctions.map { (key, _) -> key })
-    }
+    override val instructions: String
+        get() = "${super.instructions}\n\n" + instructionsFrom(availableFunctions.map { (key, _) -> key })
     override val initialPrompt: String = INITIAL_PROMPT
     override val neededInputs: List<AgentInput> = emptyList()
 
     override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-    }
-
-    override suspend fun executeHumanAssistance(): String {
-        TODO("Not yet implemented")
     }
 }

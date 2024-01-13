@@ -29,19 +29,17 @@ data class CleanJsonAgent(
             key = "Invalid JSON",
             value = "",
         )
+
+        val INPUTS = listOf(invalidJsonArg)
     }
 
     override val name: String = NAME
     override val instructions: String = "${super.instructions}\n\n" + INSTRUCTIONS
-    override val initialPrompt: String by lazy { initialPromptFrom(invalidJson) }
-    override val neededInputs: List<AgentInput> by lazy { listOf(invalidJsonArg) }
+    override val initialPrompt: String
+        get() = initialPromptFrom(invalidJson)
+    override val neededInputs: List<AgentInput> = INPUTS
 
     override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
         invalidJson = inputs[invalidJsonArg.key]?.value ?: ""
-    }
-
-    override suspend fun executeHumanAssistance(): String {
-        // TODO: Implement human verification
-        return "Test"
     }
 }

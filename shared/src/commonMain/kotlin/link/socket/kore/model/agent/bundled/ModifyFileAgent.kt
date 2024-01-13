@@ -51,23 +51,20 @@ data class ModifyFileAgent(
             textFieldLabel = "Technology Name",
             listValue = emptyList(),
         )
+
+        val INPUTS = listOf(filePathArg, descriptionArg, technologiesArg)
     }
 
     override val name: String = NAME
-    override val instructions: String by lazy {
-        "${super.instructions}\n\n" + instructionsFrom(technologies)
-    }
-    override val initialPrompt: String by lazy { initialPromptFrom(filePath, description) }
-    override val neededInputs: List<AgentInput> = listOf(filePathArg, descriptionArg, technologiesArg)
+    override val instructions: String
+        get() = "${super.instructions}\n\n" + instructionsFrom(technologies)
+    override val initialPrompt: String
+        get() = initialPromptFrom(filePath, description)
+    override val neededInputs: List<AgentInput> = INPUTS
 
     override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
         filePath = inputs[filePathArg.key]?.value ?: ""
         description = inputs[descriptionArg.key]?.value ?: ""
         technologies = inputs[technologiesArg.key]?.value ?: ""
-    }
-
-    override suspend fun executeHumanAssistance(): String {
-        // TODO: Implement human verification
-        return "Test"
     }
 }

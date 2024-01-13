@@ -41,19 +41,17 @@ data class DelegateTasksAgent(
             key = "Code Description",
             value = "",
         )
+
+        val INPUTS = listOf(descriptionArg)
     }
 
     override val name: String = NAME
     override val instructions: String = "${super.instructions}\n\n" + INSTRUCTIONS
-    override val initialPrompt: String by lazy { initialPromptFrom(description) }
-    override val neededInputs: List<AgentInput> = listOf(descriptionArg)
+    override val initialPrompt: String
+        get() = initialPromptFrom(description)
+    override val neededInputs: List<AgentInput> = INPUTS
 
     override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
         description = inputs[descriptionArg.key]?.value ?: ""
-    }
-
-    override suspend fun executeHumanAssistance(): String {
-        // TODO: Implement human verification
-        return "Test"
     }
 }

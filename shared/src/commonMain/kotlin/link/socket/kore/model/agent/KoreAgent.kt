@@ -4,13 +4,15 @@ package link.socket.kore.model.agent
 
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import link.socket.kore.model.agent.capability.AgentCapabilities
+import link.socket.kore.model.agent.capability.AgentCapability
+import link.socket.kore.model.agent.capability.HumanCapability
+import link.socket.kore.model.agent.capability.IOCapability
+import link.socket.kore.model.agent.capability.LLMCapability
 import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.ui.conversation.selector.AgentInput
 
-sealed interface KoreAgent : AgentCapabilities {
+sealed interface KoreAgent : LLMAgent {
 
     val name: String
 
@@ -21,23 +23,15 @@ sealed interface KoreAgent : AgentCapabilities {
         suspend fun executeHumanAssistance(): String
 
         override val availableFunctions: Map<String, FunctionProvider>
-            get() = agentFunctions.plus(
-                FunctionProvider.provide(
-                    "executeHumanAssisted",
-                    "Prompts the user through a CLI to either enter text, or to confirm text that you have generated",
-                    ::callHumanAssistance,
-                ),
+            get() = mapOf(
+                AgentCapability.GetAgents.impl,
+                AgentCapability.PromptAgent(openAI, scope).impl,
+                HumanCapability.PromptHuman(this, scope).impl,
+                IOCapability.CreateFile.impl,
+                IOCapability.ReadFile.impl,
+                IOCapability.ParseCsv.impl,
+                LLMCapability.PromptLLM(openAI, scope).impl,
             )
-
-        fun callHumanAssistance(): String {
-            var response = ""
-
-            scope.launch {
-                response = executeHumanAssistance()
-            }
-
-            return response
-        }
     }
 
     abstract class HumanAndLLMAssisted(
@@ -55,5 +49,9 @@ sealed interface KoreAgent : AgentCapabilities {
             }
 
         override var completionRequest: ChatCompletionRequest? = null
+
+        override suspend fun executeHumanAssistance(): String {
+            TODO("Not yet implemented")
+        }
     }
 }

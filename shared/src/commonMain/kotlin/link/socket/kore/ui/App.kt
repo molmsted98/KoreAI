@@ -34,7 +34,7 @@ val openAI = OpenAI(
 
 // TODO: Inject OpenAI & CoroutineScope into Agents
 private val agentList: List<KoreAgent> = listOf(
-    CreateAgentAgent(
+    DefineAgentAgent(
         openAI = openAI,
         scope = CoroutineScope(Dispatchers.IO),
     ),
