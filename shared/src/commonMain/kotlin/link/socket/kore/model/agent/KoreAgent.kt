@@ -5,11 +5,12 @@ package link.socket.kore.model.agent
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import link.socket.kore.model.agent.capability.AgentCapabilities
 import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.ui.conversation.selector.AgentInput
 
-sealed interface KoreAgent : LLMAgent, AgentCapabilities {
+sealed interface KoreAgent : AgentCapabilities {
 
     val name: String
 

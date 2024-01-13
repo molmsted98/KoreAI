@@ -86,7 +86,7 @@ interface LLMAgent {
         }
     }
 
-    fun FunctionCall.execute(): KoreMessage {
+    suspend fun FunctionCall.execute(): KoreMessage {
         val functionTool = availableFunctions[name]
             ?: error("Function $name not found")
 
@@ -94,7 +94,7 @@ interface LLMAgent {
 
         return when (val definition = functionTool.definition) {
             is FunctionDefinition.StringReturn -> {
-                val content = definition(functionArgs) as? String
+                val content = definition.execute(functionArgs) as? String
                     ?: error("Function $name did not return String")
 
                 KoreMessage.Text(
