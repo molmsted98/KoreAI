@@ -42,10 +42,12 @@ interface LLMAgent {
     var chatHistory: ChatHistory
     var completionRequest: ChatCompletionRequest?
 
-    suspend fun initialize() {
+    suspend fun initialize(initialMessage: KoreMessage? = null) {
         if (chatHistory is ChatHistory.Threaded.Uninitialized) {
             chatHistory = ChatHistory.NonThreaded(
-                listOf(initialSystemMessage)
+                initialMessage?.let { message ->
+                    listOf(initialSystemMessage, message)
+                } ?: listOf(initialSystemMessage)
             )
         }
     }

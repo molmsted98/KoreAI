@@ -1,5 +1,6 @@
 package link.socket.kore.model.agent.capability
 
+import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.JsonObject
@@ -8,6 +9,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.bundled.*
+import link.socket.kore.model.conversation.KoreMessage
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
 
@@ -113,8 +115,13 @@ sealed interface AgentCapability : Capability {
                 else -> throw IllegalArgumentException("Unknown Agent $agentName")
             }
 
+            val initialMessage = KoreMessage.Text(
+                role = ChatRole.User,
+                content = prompt,
+            )
+
             return with(agent) {
-                initialize()
+                initialize(initialMessage)
                 execute()
                 getChatMessages().lastOrNull()?.content ?: ""
             }

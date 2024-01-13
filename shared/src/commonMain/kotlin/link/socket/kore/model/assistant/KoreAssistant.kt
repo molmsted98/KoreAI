@@ -9,6 +9,7 @@ import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.conversation.ChatHistory
+import link.socket.kore.model.conversation.KoreMessage
 import link.socket.kore.model.tool.FunctionProvider
 
 @OptIn(BetaOpenAI::class)
@@ -40,7 +41,7 @@ data class KoreAssistant(
 
     private lateinit var assistant: Assistant
 
-    override suspend fun initialize() {
+    override suspend fun initialize(initialMessage: KoreMessage?) {
         // TODO: Query for existing assistant if `assistantId` is passed
 
         assistant = openAI.assistant(
