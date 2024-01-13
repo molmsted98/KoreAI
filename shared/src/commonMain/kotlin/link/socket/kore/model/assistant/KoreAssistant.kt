@@ -1,10 +1,7 @@
 package link.socket.kore.model.assistant
 
 import com.aallam.openai.api.BetaOpenAI
-import com.aallam.openai.api.assistant.Assistant
-import com.aallam.openai.api.assistant.AssistantId
-import com.aallam.openai.api.assistant.AssistantRequest
-import com.aallam.openai.api.assistant.AssistantTool
+import com.aallam.openai.api.assistant.*
 import com.aallam.openai.api.assistant.Function
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.model.ModelId
@@ -22,7 +19,6 @@ data class KoreAssistant(
     private val modelId: ModelId,
     private val name: String,
     override val instructions: String,
-    override val initialPrompt: String,
     override val availableFunctions: Map<String, FunctionProvider>,
 ) : LLMAgent {
 

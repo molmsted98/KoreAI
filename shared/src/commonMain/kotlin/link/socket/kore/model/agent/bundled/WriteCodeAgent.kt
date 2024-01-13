@@ -19,7 +19,6 @@ data class WriteCodeAgent(
     override val scope: CoroutineScope,
 ) : KoreAgent.HumanAndLLMAssisted(scope) {
 
-    private lateinit var description: String
     private lateinit var technologies: String
 
     companion object {
@@ -32,19 +31,8 @@ data class WriteCodeAgent(
                 "that you are a specified expert in.\n" +
                 "After generating the requested code, you should ask the user to verify the file's contents and make " +
                 "any requested changes, and then you should save the generated code file to their local disk.\n" +
-                "All generated files should be placed in a folder called 'KoreAI-Test' in the user's home directory."
-
-        private fun initialPromptFrom(description: String): String =
-            "The description of the task is:\n" +
-                "$description\n" +
-                "\n\n" +
+                "All generated files should be placed in a folder called 'KoreAI-Test' in the user's home directory.\n" +
                 "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User."
-
-        private val descriptionArg = AgentInput.StringArg(
-            key = "codeDescription",
-            name = "Code Description",
-            value = "",
-        )
 
         private val technologiesArg = AgentInput.ListArg(
             key = "technologyList",
@@ -52,18 +40,15 @@ data class WriteCodeAgent(
             listValue = emptyList(),
         )
 
-        val INPUTS = listOf(descriptionArg, technologiesArg)
+        val INPUTS = listOf(technologiesArg)
     }
 
     override val name: String = NAME
     override val instructions: String
         get() = "${super.instructions}\n\n" + instructionsFrom(technologies)
-    override val initialPrompt: String
-        get() = initialPromptFrom(description)
     override val neededInputs: List<AgentInput> = INPUTS
 
     override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-        description = inputs[descriptionArg.key]?.value ?: ""
         technologies = inputs[technologiesArg.key]?.value ?: ""
     }
 }

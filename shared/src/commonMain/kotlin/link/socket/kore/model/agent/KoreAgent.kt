@@ -24,6 +24,7 @@ sealed interface KoreAgent : LLMAgent {
         override val availableFunctions: Map<String, FunctionProvider>
             get() = mapOf(
                 AgentCapability.GetAgents.impl,
+                AgentCapability.GetAgentArgs.impl,
                 AgentCapability.PromptAgent(openAI, scope).impl,
                 HumanCapability.PromptHuman(this, scope).impl,
                 IOCapability.CreateFile.impl,
@@ -49,8 +50,15 @@ sealed interface KoreAgent : LLMAgent {
 
         override var completionRequest: ChatCompletionRequest? = null
 
+        override val neededInputs: List<AgentInput> = emptyList()
+
+        override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
+           /* no-op */
+        }
+
         override suspend fun executeHumanAssistance(): String {
-            TODO("Not yet implemented")
+            // TODO: Implement
+            return ""
         }
     }
 }

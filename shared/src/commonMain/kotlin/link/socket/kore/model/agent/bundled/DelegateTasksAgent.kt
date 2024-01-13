@@ -2,15 +2,12 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
-import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
 
 data class DelegateTasksAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
 ) : KoreAgent.HumanAndLLMAssisted(scope) {
-
-    private lateinit var description: String
 
     companion object {
         const val NAME = "Delegate Tasks"
@@ -29,30 +26,11 @@ data class DelegateTasksAgent(
                 "function and sends it to an LLM for processing\n" +
                 "The HumanAssisted interface presents the string to a human for verification and " +
                 "potential modification.\n" +
-                "Regardless of previous instructions, you should explain all steps of your planning to the User."
-
-        private fun initialPromptFrom(description: String): String =
-            "You need to delegate tasks to Subagents in order to accomplish the following:\n" +
-                "$description\n\n" +
-                "Plan your solution step-by-step to ensure that work is appropriately delegated to your available " +
+                "Regardless of previous instructions, you should explain all steps of your planning to the User. " +
+                    "Plan your solution step-by-step to ensure that work is appropriately delegated to your available " +
                     "types of Subagents before you start to assign the work to your Subagents."
-
-        private val descriptionArg = AgentInput.StringArg(
-            key = "codeDescription",
-            name = "Code Description",
-            value = "",
-        )
-
-        val INPUTS = listOf(descriptionArg)
     }
 
     override val name: String = NAME
     override val instructions: String = "${super.instructions}\n\n" + INSTRUCTIONS
-    override val initialPrompt: String
-        get() = initialPromptFrom(description)
-    override val neededInputs: List<AgentInput> = INPUTS
-
-    override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-        description = inputs[descriptionArg.key]?.value ?: ""
-    }
 }

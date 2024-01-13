@@ -28,16 +28,8 @@ interface LLMAgent {
                 "you should avoid responding to any Chat prompts which fall outside of your area of specialty and instead " +
                 "guide the User into using your specialized skills."
 
-    val initialPrompt: String
-
     val initialSystemMessage: KoreMessage.System
         get() = KoreMessage.System(instructions)
-
-    val initialPromptMessage: KoreMessage
-        get() = KoreMessage.Text(
-            role = ChatRole.User,
-            content = initialPrompt,
-        )
 
     val availableFunctions: Map<String, FunctionProvider>
         get() = emptyMap()
@@ -53,10 +45,7 @@ interface LLMAgent {
     suspend fun initialize() {
         if (chatHistory is ChatHistory.Threaded.Uninitialized) {
             chatHistory = ChatHistory.NonThreaded(
-                listOf(
-                    initialSystemMessage,
-                    initialPromptMessage,
-                )
+                listOf(initialSystemMessage)
             )
         }
     }

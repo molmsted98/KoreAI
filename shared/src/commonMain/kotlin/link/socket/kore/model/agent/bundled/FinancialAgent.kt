@@ -2,15 +2,12 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
-import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
 
 data class FinancialAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
 ) : KoreAgent.HumanAndLLMAssisted(scope) {
-
-    private lateinit var description: String
 
     companion object {
         const val NAME = "Financial Agent"
@@ -34,27 +31,8 @@ data class FinancialAgent(
                     "checking mechanisms to identify and prompt for resolution of any inconsistent or ambiguous " +
                     "transaction data. You must include adequate user documentation for both Developers and " +
                     "Users to interact with your functionalities effectively."
-
-        private fun initialPromptFrom(description: String): String =
-                "You are tasked with parsing the following financial request from the User\n" +
-                        "$description\n\n"
-
-        private val descriptionArg = AgentInput.StringArg(
-            key = "financialDescription",
-            name = "Financial Description",
-            value = "",
-        )
-
-        val INPUTS = listOf(descriptionArg)
     }
 
     override val name: String = NAME
     override val instructions: String = "${super.instructions}\n\n" + INSTRUCTIONS
-    override val initialPrompt: String
-        get() = initialPromptFrom(description)
-    override val neededInputs: List<AgentInput> = INPUTS
-
-    override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-        description = inputs[descriptionArg.key]?.value ?: ""
-    }
 }

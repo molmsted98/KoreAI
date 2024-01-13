@@ -18,15 +18,35 @@ sealed interface AgentCapability : Capability {
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provide(
                 "getAgents",
-                "Returns a list of available LLM Agents, along with .",
+                "Returns a list of available LLM Agents.",
                 ::getAgents,
             )
 
         private fun getAgents(): String = listOf(
-            CleanJsonAgent.NAME to CleanJsonAgent.INPUTS,
-            DefineAgentAgent.NAME to DefineAgentAgent.INPUTS,
-            DelegateTasksAgent.NAME to DelegateTasksAgent.INPUTS,
-            FinancialAgent.NAME to FinancialAgent.INPUTS,
+            CleanJsonAgent.NAME,
+            DefineAgentAgent.NAME,
+            DelegateTasksAgent.NAME,
+            FinancialAgent.NAME,
+            LocalCapabilitiesAgent.NAME,
+            ModifyFileAgent.NAME,
+            WriteCodeAgent.NAME,
+        ).joinToString(", ")
+    }
+
+    data object GetAgentArgs : AgentCapability {
+
+        override val impl: Pair<String, FunctionProvider> =
+            FunctionProvider.provide(
+                "getAgentArgs",
+                "Returns a list of available LLM Agents, along with their respective arguments.",
+                ::getAgents,
+            )
+
+        private fun getAgents(): String = listOf(
+            CleanJsonAgent.NAME to emptyList(),
+            DefineAgentAgent.NAME to emptyList(),
+            DelegateTasksAgent.NAME to emptyList(),
+            FinancialAgent.NAME to emptyList(),
             LocalCapabilitiesAgent.NAME to emptyList(),
             ModifyFileAgent.NAME to ModifyFileAgent.INPUTS,
             WriteCodeAgent.NAME to WriteCodeAgent.INPUTS,
@@ -79,10 +99,10 @@ sealed interface AgentCapability : Capability {
         private suspend fun promptAgent(
             openAI: OpenAI,
             scope: CoroutineScope,
-            agent: String,
+            agentName: String,
             prompt: String,
         ): String {
-            val agent = when (agent) {
+            val agent = when (agentName) {
                 CleanJsonAgent.NAME -> CleanJsonAgent(openAI, scope)
                 DefineAgentAgent.NAME -> DefineAgentAgent(openAI, scope)
                 DelegateTasksAgent.NAME -> DelegateTasksAgent(openAI, scope)
@@ -90,7 +110,7 @@ sealed interface AgentCapability : Capability {
                 LocalCapabilitiesAgent.NAME -> LocalCapabilitiesAgent(openAI, scope)
                 ModifyFileAgent.NAME -> ModifyFileAgent(openAI, scope)
                 WriteCodeAgent.NAME -> WriteCodeAgent(openAI, scope)
-                else -> throw IllegalArgumentException("Unknown Agent $agent")
+                else -> throw IllegalArgumentException("Unknown Agent $agentName")
             }
 
             return with(agent) {
