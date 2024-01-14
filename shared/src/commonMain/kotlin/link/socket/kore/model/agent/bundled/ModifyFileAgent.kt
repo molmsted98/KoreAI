@@ -2,13 +2,15 @@ package link.socket.kore.model.agent.bundled
 
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
+import link.socket.kore.data.ConversationRepository
 import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
 
 data class ModifyFileAgent(
+    override val conversationRepository: ConversationRepository,
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
-) : KoreAgent.HumanAndLLMAssisted(scope) {
+) : KoreAgent.HumanAndLLMAssisted(conversationRepository, openAI, scope) {
 
     private lateinit var filePath: String
     private lateinit var technologies: String

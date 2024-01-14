@@ -2,53 +2,60 @@
 
 package link.socket.kore.model.agent
 
+import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
-import link.socket.kore.model.agent.capability.AgentCapability
-import link.socket.kore.model.agent.capability.HumanCapability
-import link.socket.kore.model.agent.capability.IOCapability
-import link.socket.kore.model.agent.capability.LLMCapability
+import link.socket.kore.data.ConversationRepository
+import link.socket.kore.model.capability.AgentCapability
+import link.socket.kore.model.capability.HumanCapability
+import link.socket.kore.model.capability.IOCapability
+import link.socket.kore.model.capability.LLMCapability
 import link.socket.kore.model.tool.FunctionProvider
 
-sealed interface KoreAgent : LLMAgent {
+abstract class KoreAgent(
+    open val conversationRepository: ConversationRepository,
+    override val openAI: OpenAI,
+    override val scope: CoroutineScope,
+) : LLMAgent {
 
-    val name: String
+    abstract val name: String
 
-    val neededInputs: List<AgentInput>
-    fun parseNeededInputs(inputs: Map<String, AgentInput>)
+    open val neededInputs: List<AgentInput> = emptyList()
 
-    interface HumanAssisted : KoreAgent {
-        suspend fun executeHumanAssistance(): String
+    open fun parseNeededInputs(inputs: Map<String, AgentInput>) {
+        /* no-op */
+    }
+
+    abstract class HumanAssisted(
+        override val conversationRepository: ConversationRepository,
+        override val openAI: OpenAI,
+        override val scope: CoroutineScope,
+    ) : KoreAgent(conversationRepository, openAI, scope) {
+
+        suspend fun executeHumanAssistance(): String {
+            return "TODO"
+        }
 
         override val availableFunctions: Map<String, FunctionProvider>
             get() = mapOf(
                 AgentCapability.GetAgents.impl,
                 AgentCapability.GetAgentArgs.impl,
-                AgentCapability.PromptAgent(openAI, scope).impl,
+                AgentCapability.PromptAgent(conversationRepository, openAI, scope).impl,
                 HumanCapability.PromptHuman(this, scope).impl,
                 IOCapability.CreateFile.impl,
                 IOCapability.ReadFile.impl,
                 IOCapability.ParseCsv.impl,
-                LLMCapability.PromptLLM(openAI, scope).impl,
+                LLMCapability.PromptLLM(conversationRepository, openAI, scope).impl,
             )
     }
 
     abstract class HumanAndLLMAssisted(
+        override val conversationRepository: ConversationRepository,
+        override val openAI: OpenAI,
         override val scope: CoroutineScope,
-    ) : KoreAgent, HumanAssisted {
+    ) : HumanAssisted(conversationRepository, openAI, scope) {
 
-        override val instructions: String = "${super<KoreAgent>.instructions}\n\n" +
+        override val instructions: String = "${super.instructions}\n\n" +
                 "You are an Agent that can provide answers to Chat prompts through both LLM completion, " +
                 "or through Developer intervention via the CLI that was used to configure your Chat session."
-
-        override val neededInputs: List<AgentInput> = emptyList()
-
-        override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-           /* no-op */
-        }
-
-        override suspend fun executeHumanAssistance(): String {
-            // TODO: Implement
-            return ""
-        }
     }
 }

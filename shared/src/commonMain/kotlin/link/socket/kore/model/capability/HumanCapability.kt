@@ -1,4 +1,4 @@
-package link.socket.kore.model.agent.capability
+package link.socket.kore.model.capability
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

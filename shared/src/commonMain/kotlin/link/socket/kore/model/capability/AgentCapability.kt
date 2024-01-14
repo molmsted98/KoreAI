@@ -1,4 +1,4 @@
-package link.socket.kore.model.agent.capability
+package link.socket.kore.model.capability
 
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.client.OpenAI
@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import link.socket.kore.data.ConversationRepository
 import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.bundled.*
 import link.socket.kore.model.conversation.KoreMessage
@@ -21,7 +22,7 @@ sealed interface AgentCapability : Capability {
             FunctionProvider.provide(
                 "getAgents",
                 "Returns a list of available LLM Agents.",
-                ::getAgents,
+                GetAgents::getAgents,
             )
 
         private fun getAgents(): String = listOf(
@@ -41,7 +42,7 @@ sealed interface AgentCapability : Capability {
             FunctionProvider.provide(
                 "getAgentArgs",
                 "Returns a list of available LLM Agents, along with their respective arguments.",
-                ::getAgents,
+                GetAgentArgs::getAgents,
             )
 
         private fun getAgents(): String = listOf(
@@ -63,6 +64,7 @@ sealed interface AgentCapability : Capability {
     }
 
     data class PromptAgent(
+        val conversationRepository: ConversationRepository,
         val openAI: OpenAI,
         val scope: CoroutineScope,
     ) : AgentCapability {
@@ -98,6 +100,7 @@ sealed interface AgentCapability : Capability {
                 )
             )
 
+        // TODO: Change return type to List
         private suspend fun promptAgent(
             openAI: OpenAI,
             scope: CoroutineScope,
@@ -105,13 +108,13 @@ sealed interface AgentCapability : Capability {
             prompt: String,
         ): String {
             val agent = when (agentName) {
-                CleanJsonAgent.NAME -> CleanJsonAgent(openAI, scope)
-                DefineAgentAgent.NAME -> DefineAgentAgent(openAI, scope)
-                DelegateTasksAgent.NAME -> DelegateTasksAgent(openAI, scope)
-                FinancialAgent.NAME -> FinancialAgent(openAI, scope)
-                LocalCapabilitiesAgent.NAME -> LocalCapabilitiesAgent(openAI, scope)
-                ModifyFileAgent.NAME -> ModifyFileAgent(openAI, scope)
-                WriteCodeAgent.NAME -> WriteCodeAgent(openAI, scope)
+                CleanJsonAgent.NAME -> CleanJsonAgent(conversationRepository, openAI, scope)
+                DefineAgentAgent.NAME -> DefineAgentAgent(conversationRepository, openAI, scope)
+                DelegateTasksAgent.NAME -> DelegateTasksAgent(conversationRepository, openAI, scope)
+                FinancialAgent.NAME -> FinancialAgent(conversationRepository, openAI, scope)
+                LocalCapabilitiesAgent.NAME -> LocalCapabilitiesAgent(conversationRepository, openAI, scope)
+                ModifyFileAgent.NAME -> ModifyFileAgent(conversationRepository, openAI, scope)
+                WriteCodeAgent.NAME -> WriteCodeAgent(conversationRepository, openAI, scope)
                 else -> throw IllegalArgumentException("Unknown Agent $agentName")
             }
 
@@ -120,8 +123,16 @@ sealed interface AgentCapability : Capability {
                 content = prompt,
             )
 
-            // TODO: Integrate with new ConversationRepository
-            return "TODO"
+            val conversationId = conversationRepository.createConversation(agent, initialMessage)
+            conversationRepository.runConversation(conversationId)
+
+            return conversationRepository
+                .getValue(conversationId)
+                ?.chatHistory
+                ?.getKoreMessages()
+                ?.lastOrNull()
+                ?.chatMessage
+                ?.content ?: ""
         }
     }
 }

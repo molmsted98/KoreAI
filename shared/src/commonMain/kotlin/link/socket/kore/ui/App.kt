@@ -5,62 +5,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.aallam.openai.api.http.Timeout
-import com.aallam.openai.api.logging.LogLevel
-import com.aallam.openai.client.LoggingConfig
-import com.aallam.openai.client.OpenAI
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import link.kore.shared.config.KotlinConfig
 import link.socket.kore.Application
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.model.agent.bundled.*
 import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.ui.conversation.ConversationScreen
 import link.socket.kore.ui.home.HomeScreen
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.theme.themeShapes
 import link.socket.kore.ui.theme.themeTypography
-import kotlin.time.Duration.Companion.hours
-
-val openAI = OpenAI(
-    token = KotlinConfig.openai_api_key,
-    timeout = Timeout(socket = 1.hours),
-    logging = LoggingConfig(logLevel = LogLevel.All),
-)
-
-// TODO: Inject OpenAI & CoroutineScope into Agents
-private val agentList: List<KoreAgent> = listOf(
-    DefineAgentAgent(
-        openAI = openAI,
-        scope = CoroutineScope(Dispatchers.IO),
-    ),
-    DelegateTasksAgent(
-        openAI = openAI,
-        scope = CoroutineScope(Dispatchers.IO),
-    ),
-    LocalCapabilitiesAgent(
-        openAI = openAI,
-        scope = CoroutineScope(Dispatchers.IO),
-    ),
-    WriteCodeAgent(
-        openAI = openAI,
-        scope = CoroutineScope(Dispatchers.IO),
-    ),
-    ModifyFileAgent(
-        openAI = openAI,
-        scope = CoroutineScope(Dispatchers.IO),
-    ),
-    CleanJsonAgent(
-        openAI = openAI,
-        scope = CoroutineScope(Dispatchers.IO),
-    ),
-    FinancialAgent(
-        openAI = openAI,
-        scope = CoroutineScope(Dispatchers.IO),
-    ),
-)
 
 enum class Screen {
     HOME, CONVERSATION;
@@ -135,7 +88,7 @@ fun App() {
                             .fillMaxSize(),
                         existingConversation = selectedConversation.value,
                         isLoading = isLoading,
-                        agentList = agentList,
+                        agentList = application.agentList,
                         onAgentSelected = onAgentSelected,
                         onChatSent = { input ->
                             selectedConversationId?.let { id ->

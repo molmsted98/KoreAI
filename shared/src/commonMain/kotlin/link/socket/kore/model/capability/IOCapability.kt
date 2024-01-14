@@ -1,4 +1,4 @@
-package link.socket.kore.model.agent.capability
+package link.socket.kore.model.capability
 
 import com.lordcodes.turtle.ShellLocation
 import kotlinx.serialization.json.JsonObject
