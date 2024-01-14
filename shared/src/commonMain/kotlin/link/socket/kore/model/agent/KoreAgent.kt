@@ -2,13 +2,11 @@
 
 package link.socket.kore.model.agent
 
-import com.aallam.openai.api.chat.ChatCompletionRequest
 import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.capability.AgentCapability
 import link.socket.kore.model.agent.capability.HumanCapability
 import link.socket.kore.model.agent.capability.IOCapability
 import link.socket.kore.model.agent.capability.LLMCapability
-import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.tool.FunctionProvider
 
 sealed interface KoreAgent : LLMAgent {
@@ -41,14 +39,6 @@ sealed interface KoreAgent : LLMAgent {
         override val instructions: String = "${super<KoreAgent>.instructions}\n\n" +
                 "You are an Agent that can provide answers to Chat prompts through both LLM completion, " +
                 "or through Developer intervention via the CLI that was used to configure your Chat session."
-
-        override var chatHistory: ChatHistory = ChatHistory.Threaded.Uninitialized
-            set(value) {
-                field = value
-                updateCompletionRequest()
-            }
-
-        override var completionRequest: ChatCompletionRequest? = null
 
         override val neededInputs: List<AgentInput> = emptyList()
 

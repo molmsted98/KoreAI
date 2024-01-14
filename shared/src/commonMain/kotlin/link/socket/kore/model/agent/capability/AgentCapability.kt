@@ -120,11 +120,8 @@ sealed interface AgentCapability : Capability {
                 content = prompt,
             )
 
-            return with(agent) {
-                initialize(initialMessage)
-                execute()
-                getChatMessages().lastOrNull()?.content ?: ""
-            }
+            // TODO: Integrate with new ConversationRepository
+            return "TODO"
         }
     }
 }

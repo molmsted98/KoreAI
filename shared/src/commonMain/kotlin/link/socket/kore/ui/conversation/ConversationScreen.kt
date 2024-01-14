@@ -12,7 +12,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.model.agent.LLMAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.chat.ChatHistory
 import link.socket.kore.ui.conversation.selector.AgentSelectionState
@@ -27,7 +26,7 @@ fun ConversationScreen(
     isLoading: Boolean,
     agentList: List<KoreAgent>,
     onAgentSelected: (KoreAgent) -> Unit,
-    onChatSent: () -> Unit,
+    onChatSent: (String) -> Unit,
     onBackClicked: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -94,21 +93,14 @@ fun ConversationScreen(
             },
             bottomBar = {
                 if (selectionState.value is AgentSelectionState.Selected) {
-                    (existingConversation?.agent as? KoreAgent.HumanAndLLMAssisted)?.let { assistedAgent ->
-                        val onSendClicked: () -> Unit = {
-                            assistedAgent.addUserChat(textFieldValue.text)
-                            onChatSent()
-                        }
-
-                        ConversationTextEntry(
-                            modifier = Modifier
-                                .requiredHeight(72.dp)
-                                .align(Alignment.BottomCenter),
-                            textFieldValue = textFieldValue,
-                            onSendClicked = onSendClicked,
-                            onTextChanged = { textFieldValue = it },
-                        )
-                    }
+                    ConversationTextEntry(
+                        modifier = Modifier
+                            .requiredHeight(72.dp)
+                            .align(Alignment.BottomCenter),
+                        textFieldValue = textFieldValue,
+                        onSendClicked = { onChatSent(textFieldValue.text) },
+                        onTextChanged = { textFieldValue = it },
+                    )
                 }
             },
             snackbarHost = { snackbarState ->
@@ -131,13 +123,13 @@ fun ConversationScreen(
                     .padding(contentPadding),
             ) {
                 if (selectionState.value is AgentSelectionState.Selected) {
-                    val agent = existingConversation?.agent
+                    val messages = existingConversation?.getChatKoreMessages() ?: emptyList()
 
                     ChatHistory(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 72.dp),
-                        messages = (agent as? LLMAgent)?.getChatKoreMessages() ?: emptyList(),
+                        messages = messages,
                         isLoading = isLoading,
                         displaySnackbar = displaySnackbar,
                     )

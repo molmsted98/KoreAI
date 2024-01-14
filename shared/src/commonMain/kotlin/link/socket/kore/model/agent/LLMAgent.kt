@@ -11,6 +11,7 @@ import link.socket.kore.model.tool.FunctionDefinition
 import link.socket.kore.model.tool.FunctionProvider
 
 const val MODEL_NAME = "gpt-4-1106-preview"
+val MODEL_ID = ModelId(MODEL_NAME)
 
 interface LLMAgent {
     val openAI: OpenAI
@@ -39,43 +40,32 @@ interface LLMAgent {
             entry.value.definition.tool
         }.toList()
 
-    var chatHistory: ChatHistory
-    var completionRequest: ChatCompletionRequest?
+    suspend fun execute(completionRequest: ChatCompletionRequest): Pair<List<KoreMessage>, Boolean> {
+        val completion = openAI.chatCompletion(completionRequest)
+        val response = completion.choices.first()
+        val responseMessage = KoreMessage.Text(
+            role = ChatRole.Assistant,
+            content = response.message.content ?: "",
+        )
 
-    suspend fun initialize(initialMessage: KoreMessage? = null) {
-        if (chatHistory is ChatHistory.Threaded.Uninitialized) {
-            chatHistory = ChatHistory.NonThreaded(
-                initialMessage?.let { message ->
-                    listOf(initialSystemMessage, message)
-                } ?: listOf(initialSystemMessage)
-            )
+        return if (response.finishReason == FinishReason.ToolCalls) {
+            listOf(
+                responseMessage,
+                *response.message.executePendingToolCalls().toTypedArray()
+            ) to true
+        } else {
+            listOf(responseMessage) to false
         }
     }
 
-    suspend fun execute(): Boolean =
-        completionRequest?.let { request ->
-            val completion = openAI.chatCompletion(request)
-            val response = completion.choices.first()
-
-            updateChatHistory(response.message)
-
-            return if (response.finishReason == FinishReason.ToolCalls) {
-                response.message.executePendingToolCalls()
-                true
-            } else {
-                false
-            }
-        } ?: error("No CompletionRequest found to execute")
-
-    suspend fun ChatMessage.executePendingToolCalls() {
-        toolCalls?.forEach { call ->
+    suspend fun ChatMessage.executePendingToolCalls(): List<KoreMessage> =
+        toolCalls?.map { call ->
             when (call) {
                 is ToolCall.Function -> {
-                    updateChatHistory(call.function.execute())
+                    call.function.execute()
                 }
             }
-        }
-    }
+        } ?: emptyList()
 
     suspend fun FunctionCall.execute(): KoreMessage {
         val functionTool = availableFunctions[name]
@@ -107,44 +97,10 @@ interface LLMAgent {
         }
     }
 
-    fun getChatKoreMessages(): List<KoreMessage> =
-        chatHistory.getKoreMessages()
-            .filter { it.chatMessage.content?.isNotEmpty() == true }
-
-    fun getChatMessages(): List<ChatMessage> =
-        chatHistory.getChatMessages()
-            // TODO: Add configurable role filter
-            .filter { it.messageContent is TextContent }
-            .filter { it.content?.isNotEmpty() == true }
-
-    fun logChatHistory() {
-        getChatMessages()
-            .map(ChatMessage::content)
-            .forEach(::println)
-    }
-
-    fun addUserChat(input: String) {
-        updateChatHistory(
-            ChatMessage(
-                role = ChatRole.User,
-                content = input,
-            )
-        )
-    }
-
-    private fun updateChatHistory(chatMessage: ChatMessage) {
-        chatHistory = chatHistory.appendMessage(chatMessage)
-    }
-
-    private fun updateChatHistory(koreMessage: KoreMessage) {
-        chatHistory = chatHistory.appendKoreMessage(koreMessage)
-    }
-
-    fun updateCompletionRequest() {
-        completionRequest = ChatCompletionRequest(
-            model = ModelId(MODEL_NAME),
+    fun createCompletionRequest(chatHistory: ChatHistory): ChatCompletionRequest =
+        ChatCompletionRequest(
+            model = MODEL_ID,
             messages = chatHistory.getChatMessages(),
             tools = tools.ifEmpty { null },
         )
-    }
 }

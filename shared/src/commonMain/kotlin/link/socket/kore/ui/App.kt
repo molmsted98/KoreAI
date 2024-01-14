@@ -7,18 +7,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
-import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import link.kore.shared.config.KotlinConfig
+import link.socket.kore.Application
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.model.agent.LLMAgent
-import link.socket.kore.model.agent.MODEL_NAME
 import link.socket.kore.model.agent.bundled.*
-import link.socket.kore.model.conversation.Conversation
+import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.ui.conversation.ConversationScreen
 import link.socket.kore.ui.home.HomeScreen
 import link.socket.kore.ui.theme.themeColors
@@ -76,67 +74,41 @@ fun App() {
         shapes = themeShapes(),
     ) {
         val scope = rememberCoroutineScope()
+        val application = remember(scope) { Application(scope) }
 
         var selectedScreen by remember { mutableStateOf(Screen.HOME) }
-        var selectedConversation by remember { mutableStateOf<Conversation?>(null) }
+        var selectedConversationId by remember { mutableStateOf<ConversationId?>(null) }
 
-        var agentInitialized by remember { mutableStateOf(false) }
-        var shouldRerun by remember { mutableStateOf(true) }
+        val selectedConversationValue = selectedConversationId?.let { id ->
+            application
+                .conversationRepository
+                .observeValue(id)
+                .collectAsState(null)
+        } ?: mutableStateOf(null)
+
+        val selectedConversation = remember(selectedConversationId, selectedConversationValue) {
+            derivedStateOf {
+                if (selectedConversationId != null) {
+                    selectedConversationValue.value
+                } else {
+                    null
+                }
+            }
+        }
+
         var isLoading by remember { mutableStateOf(false) }
 
         val onAgentSelected: (KoreAgent) -> Unit = { newAgent ->
-            // Initialize new Agent in the Conversation before continuing
-            shouldRerun = false
-            agentInitialized = false
-            isLoading = true
-
             // Construct Conversation if this is the initial Agent selection
-            selectedConversation = if (selectedConversation == null) {
-                // TODO: Allow selection of these parameters
-                Conversation(
-                    title = "New Conversation",
-                    model = ModelId(MODEL_NAME),
-                    agent = newAgent,
-                )
-            } else {
-                selectedConversation?.copy(agent = newAgent)
-            }
+            if (selectedConversation.value == null) {
+                val conversationId = application.conversationRepository.createConversation(newAgent)
+                selectedConversationId = conversationId
 
-            scope.launch {
-                selectedConversation?.agent?.let { agent ->
-                    when (agent) {
-                        is KoreAgent.HumanAndLLMAssisted -> agent.initialize()
-                        is KoreAgent.HumanAssisted -> agent.executeHumanAssistance()
-                    }
+                scope.launch {
+                    isLoading = true
+                    application.conversationRepository.runConversation(conversationId)
+                    isLoading = false
                 }
-            }
-
-            agentInitialized = true
-            shouldRerun = true
-        }
-
-        LaunchedEffect(selectedConversation) {
-            if (selectedConversation == null) {
-                agentInitialized = false
-                shouldRerun = false
-                isLoading = false
-            }
-        }
-
-        LaunchedEffect(selectedConversation, shouldRerun, agentInitialized) {
-            if (selectedConversation?.agent != null && shouldRerun) {
-                isLoading = true
-            }
-
-            if (agentInitialized) {
-                (selectedConversation?.agent as? LLMAgent)?.apply {
-                    do {
-                        shouldRerun = execute()
-                    } while (shouldRerun)
-                    logChatHistory()
-                }
-
-                isLoading = false
             }
         }
 
@@ -146,11 +118,11 @@ fun App() {
                     HomeScreen(
                         agentConversationsList = emptyList(), // TODO: Cache recent conversations
                         onCreateConversationSelected = {
-                            selectedConversation = null
+                            selectedConversationId = null
                             selectedScreen = Screen.CONVERSATION
                         },
                         onConversationSelected = { newConversation ->
-                            selectedConversation = newConversation
+                            selectedConversationId = newConversation.id
                             onAgentSelected(newConversation.agent)
                             selectedScreen = Screen.CONVERSATION
                         }
@@ -161,15 +133,21 @@ fun App() {
                     ConversationScreen(
                         modifier = Modifier
                             .fillMaxSize(),
-                        existingConversation = selectedConversation,
+                        existingConversation = selectedConversation.value,
                         isLoading = isLoading,
                         agentList = agentList,
                         onAgentSelected = onAgentSelected,
-                        onChatSent = {
-                            shouldRerun = true
+                        onChatSent = { input ->
+                            selectedConversationId?.let { id ->
+                                scope.launch {
+                                    isLoading = true
+                                    application.conversationRepository.addUserChat(id, input)
+                                    isLoading = false
+                                }
+                            }
                         },
                         onBackClicked = {
-                            selectedConversation = null
+                            selectedConversationId = null
                             selectedScreen = Screen.HOME
                         }
                     )

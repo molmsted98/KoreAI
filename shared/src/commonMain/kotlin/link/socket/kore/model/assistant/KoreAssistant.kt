@@ -3,12 +3,10 @@ package link.socket.kore.model.assistant
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.assistant.*
 import com.aallam.openai.api.assistant.Function
-import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.LLMAgent
-import link.socket.kore.model.conversation.ChatHistory
 import link.socket.kore.model.conversation.KoreMessage
 import link.socket.kore.model.tool.FunctionProvider
 
@@ -22,9 +20,6 @@ data class KoreAssistant(
     override val instructions: String,
     override val availableFunctions: Map<String, FunctionProvider>,
 ) : LLMAgent {
-
-    override var chatHistory: ChatHistory = ChatHistory.Threaded.Uninitialized
-    override var completionRequest: ChatCompletionRequest? = null
 
     private val assistantTools: List<AssistantTool> = tools.map { tool ->
         AssistantTool.FunctionTool(
@@ -41,7 +36,7 @@ data class KoreAssistant(
 
     private lateinit var assistant: Assistant
 
-    override suspend fun initialize(initialMessage: KoreMessage?) {
+    suspend fun initialize(initialMessage: KoreMessage?) {
         // TODO: Query for existing assistant if `assistantId` is passed
 
         assistant = openAI.assistant(

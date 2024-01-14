@@ -10,7 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import link.socket.kore.model.agent.LLMAgent
+import link.socket.kore.model.conversation.ChatHistory.Threaded.Uninitialized.getChatMessages
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.theme.agentCardHeight
 import link.socket.kore.ui.theme.themeTypography
@@ -48,21 +48,14 @@ fun ConversationCard(
             )
 
             Text(
-                modifier = Modifier
-                    .padding(bottom = 16.dp),
                 style = themeTypography().body1,
-                text = "${conversation.model.id.uppercase()} Model",
-            )
-
-            Text(
-                style = themeTypography().body1,
-                text = (conversation.agent as? LLMAgent)?.getChatPreview() ?: "",
+                text = getChatPreview(),
             )
         }
     }
 }
 
-private fun LLMAgent.getChatPreview(): String =
+private fun getChatPreview(): String =
     getChatMessages()
         .lastOrNull()
         ?.content
