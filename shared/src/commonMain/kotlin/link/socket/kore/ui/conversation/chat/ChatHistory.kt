@@ -23,7 +23,12 @@ fun ChatHistory(
     LazyColumn(
         modifier = modifier,
         state = listState,
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(
+            start = 8.dp,
+            top = 16.dp,
+            end = 8.dp,
+            bottom = 72.dp,
+        ),
     ) {
         itemsIndexed(messages) { index, message ->
             ChatMessage(

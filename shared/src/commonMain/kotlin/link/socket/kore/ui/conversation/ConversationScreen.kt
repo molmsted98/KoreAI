@@ -129,8 +129,7 @@ fun ConversationScreen(
 
                     ChatHistory(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 72.dp),
+                            .fillMaxSize(),
                         listState = listState,
                         messages = messages,
                         isLoading = isLoading,
