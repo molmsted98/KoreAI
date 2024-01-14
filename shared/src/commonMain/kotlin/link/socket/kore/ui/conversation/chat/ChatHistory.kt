@@ -1,30 +1,28 @@
 package link.socket.kore.ui.conversation.chat
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.core.Role
 import link.socket.kore.model.conversation.KoreMessage
 
 @Composable
 fun ChatHistory(
     modifier: Modifier = Modifier,
+    listState: LazyListState,
     messages: List<KoreMessage>,
     isLoading: Boolean,
     displaySnackbar: (String) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
+        state = listState,
         contentPadding = PaddingValues(8.dp),
     ) {
         itemsIndexed(messages) { index, message ->

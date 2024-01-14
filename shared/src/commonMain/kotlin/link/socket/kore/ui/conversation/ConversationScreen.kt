@@ -2,6 +2,7 @@ package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
@@ -22,6 +23,7 @@ import link.socket.kore.ui.widget.SmallSnackbarHost
 @Composable
 fun ConversationScreen(
     modifier: Modifier = Modifier,
+    listState: LazyListState,
     existingConversation: Conversation?,
     isLoading: Boolean,
     agentList: List<KoreAgent>,
@@ -129,6 +131,7 @@ fun ConversationScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 72.dp),
+                        listState = listState,
                         messages = messages,
                         isLoading = isLoading,
                         displaySnackbar = displaySnackbar,
