@@ -3,15 +3,7 @@ package link.socket.kore.ui.conversation.chat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -29,14 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.core.Role
+import com.mikepenz.markdown.compose.Markdown
 import link.socket.kore.model.conversation.KoreMessage
-import link.socket.kore.ui.theme.iconAlpha
-import link.socket.kore.ui.theme.iconButtonSize
-import link.socket.kore.ui.theme.nonContentCardColor
-import link.socket.kore.ui.theme.separatorIconSize
-import link.socket.kore.ui.theme.themeColors
-import link.socket.kore.ui.theme.themeShapes
-import link.socket.kore.ui.theme.themeTypography
+import link.socket.kore.ui.theme.*
 
 @Composable
 fun ChatMessage(
@@ -120,17 +107,23 @@ fun ChatMessage(
             when (message) {
                 is KoreMessage.System,
                 is KoreMessage.Text -> {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        style = themeTypography().body1,
-                        textAlign = if (message.role == Role.User) {
-                            TextAlign.End
-                        } else {
-                            TextAlign.Start
-                        },
-                        text = message.chatMessage.content ?: "",
-                    )
+                    val messageContent = message.chatMessage.content ?: ""
+
+                    if (message.role == Role.User) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            style = themeTypography().body1,
+                            textAlign = TextAlign.End,
+                            text = messageContent,
+                        )
+                    } else {
+                        Markdown(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            content = messageContent
+                        )
+                    }
                 }
                 is KoreMessage.CSV -> {
                     Column(

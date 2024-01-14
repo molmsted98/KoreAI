@@ -26,6 +26,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-okhttp:2.3.6")
                 implementation("com.lordcodes.turtle:turtle:0.5.0")
                 implementation("com.squareup.okio:okio:3.6.0")
+                implementation("com.mikepenz:multiplatform-markdown-renderer:0.12.0")
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
