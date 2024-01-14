@@ -1,6 +1,6 @@
 package link.socket.kore.model.capability
 
-import com.lordcodes.turtle.ShellLocation
+//import com.lordcodes.turtle.ShellLocation
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -9,9 +9,6 @@ import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.LLMCSVFunction1
 import link.socket.kore.model.tool.LLMFunction1
 import link.socket.kore.model.tool.ParameterDefinition
-import okio.FileSystem
-import okio.Path.Companion.toPath
-import java.io.IOException
 
 sealed interface IOCapability : Capability {
 
@@ -91,19 +88,20 @@ sealed interface IOCapability : Capability {
             fileName: String,
             fileContent: String,
         ): String {
-            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
-            val filePath = "$workingDirPath/$fileName".toPath()
-
-            println(filePath)
-            try {
-                FileSystem.SYSTEM.write(filePath) {
-                    writeUtf8(fileContent)
-                }
-            } catch (e: IOException) {
-                return "File $fileName creation failed with exception: $e."
-            }
-
-            return "File $fileName created successfully."
+//            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
+//            val filePath = "$workingDirPath/$fileName".toPath()
+//
+//            println(filePath)
+//            try {
+//                FileSystem.SYSTEM.write(filePath) {
+//                    writeUtf8(fileContent)
+//                }
+//            } catch (e: IOException) {
+//                return "File $fileName creation failed with exception: $e."
+//            }
+//
+//            return "File $fileName created successfully."
+            return "TODO"
         }
     }
 
@@ -131,22 +129,23 @@ sealed interface IOCapability : Capability {
             folderPath: String,
             fileName: String,
         ): String {
-            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
-            val filePath = "$workingDirPath/$fileName".toPath()
-            var result = ""
-
-            try {
-                FileSystem.SYSTEM.read(filePath) {
-                    while (true) {
-                        val line = readUtf8Line() ?: break
-                        result += (line + "\n")
-                    }
-                }
-            } catch (e: IOException) {
-                return "Reading file $fileName failed with exception: $e."
-            }
-
-            return result
+//            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
+//            val filePath = "$workingDirPath/$fileName".toPath()
+//            var result = ""
+//
+//            try {
+//                FileSystem.SYSTEM.read(filePath) {
+//                    while (true) {
+//                        val line = readUtf8Line() ?: break
+//                        result += (line + "\n")
+//                    }
+//                }
+//            } catch (e: IOException) {
+//                return "Reading file $fileName failed with exception: $e."
+//            }
+//
+//            return result
+            return "TODO"
         }
     }
 
@@ -168,22 +167,23 @@ sealed interface IOCapability : Capability {
             folderPath: String,
             fileName: String,
         ): List<List<String>> {
-            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
-            val filePath = "$workingDirPath/$fileName".toPath()
-            val lines = mutableListOf<String>()
-
-            try {
-                FileSystem.SYSTEM.read(filePath) {
-                    while (true) {
-                        val line = readUtf8Line() ?: break
-                        lines.add(line)
-                    }
-                }
-            } catch (e: IOException) {
-                return listOf(listOf("Reading file $fileName failed with exception: $e."))
-            }
-
-            return lines.map { it.split(",") }
+//            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
+//            val filePath = "$workingDirPath/$fileName".toPath()
+//            val lines = mutableListOf<String>()
+//
+//            try {
+//                FileSystem.SYSTEM.read(filePath) {
+//                    while (true) {
+//                        val line = readUtf8Line() ?: break
+//                        lines.add(line)
+//                    }
+//                }
+//            } catch (e: IOException) {
+//                return listOf(listOf("Reading file $fileName failed with exception: $e."))
+//            }
+//
+//            return lines.map { it.split(",") }
+            return listOf(listOf("TODO"))
         }
     }
 

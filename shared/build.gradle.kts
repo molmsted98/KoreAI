@@ -1,5 +1,6 @@
 
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import java.io.FileInputStream
 import java.util.*
 
@@ -18,13 +19,23 @@ kotlin {
     androidTarget()
     jvm()
 
+    val xcf = XCFramework()
+    val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+
+    iosTargets.forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            xcf.add(this)
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation("com.aallam.openai:openai-client:3.6.0")
                 implementation("io.ktor:ktor-client-core:2.3.6")
-                implementation("io.ktor:ktor-client-okhttp:2.3.6")
-                implementation("com.lordcodes.turtle:turtle:0.5.0")
+                // TODO: Re-enable for Android/JVM
+//                implementation("com.lordcodes.turtle:turtle:0.5.0")
                 implementation("com.squareup.okio:okio:3.6.0")
                 implementation("com.mikepenz:multiplatform-markdown-renderer:0.12.0")
                 implementation(compose.runtime)
@@ -41,11 +52,26 @@ kotlin {
                 api("androidx.activity:activity-compose:1.7.2")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.10.1")
+                implementation("io.ktor:ktor-client-okhttp:2.3.6")
             }
         }
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
+                implementation("io.ktor:ktor-client-okhttp:2.3.6")
+            }
+        }
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+
+            dependencies {
+                implementation("io.ktor:ktor-client-darwin:2.3.6")
             }
         }
     }

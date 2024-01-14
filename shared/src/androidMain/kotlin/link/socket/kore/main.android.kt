@@ -1,3 +1,5 @@
+package link.socket.kore
+
 import androidx.compose.runtime.Composable
 import link.socket.kore.ui.App
 

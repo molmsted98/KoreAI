@@ -22,8 +22,7 @@ abstract class Repository<Key : Any, Value>(
         }
     }
 
-    fun getValue(key: Key): Value? =
-        values.getOrDefault(key, null)
+    fun getValue(key: Key): Value? = values[key]
 
     fun observeValue(key: Key): StateFlow<Value?> =
         valuesFlow

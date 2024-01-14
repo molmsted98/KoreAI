@@ -5,7 +5,7 @@ import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.model.conversation.KoreMessage
-import java.util.*
+import link.socket.kore.util.randomUUID
 
 class ConversationRepository(
     override val scope: CoroutineScope,
@@ -17,7 +17,7 @@ class ConversationRepository(
         agent: KoreAgent,
         initialMessage: KoreMessage? = null,
     ): ConversationId {
-        val key = UUID.randomUUID().toString()
+        val key = randomUUID()
         selectedConversation = key
 
         val conversation = Conversation(
