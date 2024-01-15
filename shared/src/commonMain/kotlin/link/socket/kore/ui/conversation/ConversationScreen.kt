@@ -1,7 +1,10 @@
 package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
@@ -10,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.conversation.Conversation
@@ -97,7 +99,6 @@ fun ConversationScreen(
                 if (selectionState.value is AgentSelectionState.Selected) {
                     ConversationTextEntry(
                         modifier = Modifier
-                            .requiredHeight(72.dp)
                             .align(Alignment.BottomCenter),
                         textFieldValue = textFieldValue,
                         onSendClicked = { onChatSent(textFieldValue.text) },

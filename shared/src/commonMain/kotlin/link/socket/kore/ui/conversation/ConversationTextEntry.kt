@@ -1,24 +1,15 @@
 package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AddCircleOutline
 import androidx.compose.material.icons.twotone.ArrowUpward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
@@ -46,14 +37,19 @@ fun ConversationTextEntry(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .heightIn(min = 72.dp),
         elevation = 8.dp,
     ) {
         Row(
             modifier = modifier
-                .padding(8.dp),
+                .padding(
+                    start = 16.dp,
+                    top = 20.dp,
+                    end = 16.dp,
+                    bottom = 28.dp,
+                ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             IconButton(
                 modifier = Modifier
@@ -69,11 +65,13 @@ fun ConversationTextEntry(
                 )
             }
 
-            Spacer(modifier = Modifier.requiredWidth(8.dp))
-
             TextField(
                 modifier = Modifier
-                    .fillMaxWidth(.90f)
+                    .wrapContentHeight()
+                    .fillMaxWidth(.92f)
+                    .padding(
+                        horizontal = 8.dp,
+                    )
                     .onPreviewKeyEvent { event ->
                         if (event.key == Key.Enter) {
                             onTextInputCompleted()
@@ -82,12 +80,18 @@ fun ConversationTextEntry(
                             false
                         }
                     },
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = Color.Gray,
+                    disabledTextColor = Color.Transparent,
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
                 value = textFieldValue,
                 onValueChange = onTextChanged,
                 label = { Text("Your message...") },
             )
-
-            Spacer(modifier = Modifier.requiredWidth(8.dp))
 
             IconButton(
                 modifier = Modifier

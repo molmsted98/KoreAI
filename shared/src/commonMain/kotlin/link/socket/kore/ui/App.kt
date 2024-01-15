@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,8 +22,11 @@ enum class Screen {
     HOME, CONVERSATION;
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun App() {
+fun App(
+    modifier: Modifier = Modifier,
+) {
     MaterialTheme(
         colors = themeColors(),
         typography = themeTypography(),
@@ -87,7 +91,9 @@ fun App() {
             }
         }
 
-        Box {
+        Box(
+            modifier = modifier,
+        ) {
             when (selectedScreen) {
                 Screen.HOME -> {
                     HomeScreen(

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.ConversationCard
 import link.socket.kore.ui.conversation.CreateConversationCard
-import link.socket.kore.ui.theme.themeTypography
 
 @Composable
 fun HomeScreen(
@@ -33,6 +31,9 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize(),
             scaffoldState = scaffoldState,
+            topBar = {
+                HomeHeader()
+            }
         ) { contentPadding ->
             LazyColumn(
                 modifier = Modifier
@@ -44,19 +45,12 @@ fun HomeScreen(
                     ),
             ) {
                 item {
-                    Text(
-                        modifier = Modifier
-                            .padding(
-                                top = 48.dp,
-                                bottom = 16.dp,
-                            ),
-                        style = themeTypography().h4,
-                        text = "Agent Conversations",
-                    )
-
                     CreateConversationCard(
                         modifier = Modifier
-                            .padding(bottom = 8.dp),
+                            .padding(
+                                top = 24.dp,
+                                bottom = 8.dp,
+                            ),
                         onClick = onCreateConversationSelected,
                     )
                 }
