@@ -8,7 +8,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import link.socket.kore.data.ConversationRepository
-import link.socket.kore.model.agent.AgentInput
+import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.conversation.KoreMessage
 import link.socket.kore.model.tool.FunctionProvider
@@ -61,16 +61,12 @@ sealed interface LLMCapability : Capability {
             instructions: String,
             prompt: String,
         ): String {
-            val tempAgent = object : KoreAgent(conversationRepository, openAI, scope) {
-                override val openAI: OpenAI = openAI
-                override val scope: CoroutineScope = scope
+            val agentDefinition = object : AgentDefinition {
                 override val name: String = ""
                 override val instructions: String = instructions
-                override val neededInputs: List<AgentInput> = emptyList()
-                override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-                    /* no-op */
-                }
             }
+
+            val tempAgent = KoreAgent.HumanAndLLMAssisted(conversationRepository, openAI, scope, agentDefinition)
 
             val initialMessage = KoreMessage.Text(
                 role = ChatRole.User,

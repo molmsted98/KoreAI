@@ -15,6 +15,7 @@ abstract class KoreAgent(
     open val conversationRepository: ConversationRepository,
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
+    open val agentDefinition: AgentDefinition,
 ) : LLMAgent {
 
     abstract val name: String
@@ -29,7 +30,8 @@ abstract class KoreAgent(
         override val conversationRepository: ConversationRepository,
         override val openAI: OpenAI,
         override val scope: CoroutineScope,
-    ) : KoreAgent(conversationRepository, openAI, scope) {
+        override val agentDefinition: AgentDefinition,
+    ) : KoreAgent(conversationRepository, openAI, scope, agentDefinition) {
 
         suspend fun executeHumanAssistance(): String {
             return "TODO"
@@ -48,14 +50,18 @@ abstract class KoreAgent(
             )
     }
 
-    abstract class HumanAndLLMAssisted(
+    class HumanAndLLMAssisted(
         override val conversationRepository: ConversationRepository,
         override val openAI: OpenAI,
         override val scope: CoroutineScope,
-    ) : HumanAssisted(conversationRepository, openAI, scope) {
+        override val agentDefinition: AgentDefinition,
+    ) : HumanAssisted(conversationRepository, openAI, scope, agentDefinition) {
+
+        override val name: String = agentDefinition.name
 
         override val instructions: String = "${super.instructions}\n\n" +
                 "You are an Agent that can provide answers to Chat prompts through both LLM completion, " +
-                "or through Developer intervention via the CLI that was used to configure your Chat session."
+                "or through Developer intervention via the CLI that was used to configure your Chat session. \n\n" +
+                agentDefinition.instructions
     }
 }

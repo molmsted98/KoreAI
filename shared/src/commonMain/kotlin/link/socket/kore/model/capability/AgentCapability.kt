@@ -9,7 +9,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import link.socket.kore.data.ConversationRepository
 import link.socket.kore.model.agent.AgentInput
-import link.socket.kore.model.agent.bundled.*
+import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.model.agent.bundled.agentList
+import link.socket.kore.model.agent.bundled.getAgentDefinition
 import link.socket.kore.model.conversation.KoreMessage
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
@@ -25,15 +27,7 @@ sealed interface AgentCapability : Capability {
                 GetAgents::getAgents,
             )
 
-        private fun getAgents(): String = listOf(
-            CleanJsonAgent.NAME,
-            DefineAgentAgent.NAME,
-            DelegateTasksAgent.NAME,
-            FinancialAgent.NAME,
-            LocalCapabilitiesAgent.NAME,
-            ModifyFileAgent.NAME,
-            WriteCodeAgent.NAME,
-        ).joinToString(", ")
+        private fun getAgents(): String = agentList.joinToString(", ") { it.name }
     }
 
     data object GetAgentArgs : AgentCapability {
@@ -42,19 +36,11 @@ sealed interface AgentCapability : Capability {
             FunctionProvider.provide(
                 "getAgentArgs",
                 "Returns a list of available LLM Agents, along with their respective arguments.",
-                GetAgentArgs::getAgents,
+                GetAgentArgs::getAgentArgs,
             )
 
-        private fun getAgents(): String = listOf(
-            CleanJsonAgent.NAME to emptyList(),
-            DefineAgentAgent.NAME to emptyList(),
-            DelegateTasksAgent.NAME to emptyList(),
-            FinancialAgent.NAME to emptyList(),
-            LocalCapabilitiesAgent.NAME to emptyList(),
-            ModifyFileAgent.NAME to ModifyFileAgent.INPUTS,
-            WriteCodeAgent.NAME to WriteCodeAgent.INPUTS,
-        ).joinToString("\n\n") { (name, inputs) ->
-            "$name(" + (inputs.joinToString(", ") { input ->
+        private fun getAgentArgs(): String = agentList.joinToString("\n\n") { agent ->
+            "${agent.name}(" + (agent.inputs.joinToString(", ") { input ->
                 input.key + ": " + when (input) {
                     is AgentInput.StringArg -> "String"
                     is AgentInput.ListArg -> "List<String>"
@@ -107,16 +93,12 @@ sealed interface AgentCapability : Capability {
             agentName: String,
             prompt: String,
         ): String {
-            val agent = when (agentName) {
-                CleanJsonAgent.NAME -> CleanJsonAgent(conversationRepository, openAI, scope)
-                DefineAgentAgent.NAME -> DefineAgentAgent(conversationRepository, openAI, scope)
-                DelegateTasksAgent.NAME -> DelegateTasksAgent(conversationRepository, openAI, scope)
-                FinancialAgent.NAME -> FinancialAgent(conversationRepository, openAI, scope)
-                LocalCapabilitiesAgent.NAME -> LocalCapabilitiesAgent(conversationRepository, openAI, scope)
-                ModifyFileAgent.NAME -> ModifyFileAgent(conversationRepository, openAI, scope)
-                WriteCodeAgent.NAME -> WriteCodeAgent(conversationRepository, openAI, scope)
-                else -> throw IllegalArgumentException("Unknown Agent $agentName")
-            }
+            val agent = KoreAgent.HumanAndLLMAssisted(
+                conversationRepository,
+                openAI,
+                scope,
+                agentName.getAgentDefinition(),
+            )
 
             val initialMessage = KoreMessage.Text(
                 role = ChatRole.User,

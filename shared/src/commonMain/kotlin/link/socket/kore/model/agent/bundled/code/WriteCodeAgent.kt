@@ -1,10 +1,7 @@
-package link.socket.kore.model.agent.bundled
+package link.socket.kore.model.agent.bundled.code
 
-import com.aallam.openai.client.OpenAI
-import kotlinx.coroutines.CoroutineScope
-import link.socket.kore.data.ConversationRepository
+import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
-import link.socket.kore.model.agent.KoreAgent
 
 /*
  * This Agent is responsible for generating code based on the user's description and list of technologies,
@@ -15,19 +12,29 @@ import link.socket.kore.model.agent.KoreAgent
  * @param description an overview of what the generated code should accomplish
  * @param technologies a list of code technologies (i.e. languages, frameworks) for the Agent to use
  */
-data class WriteCodeAgent(
-    override val conversationRepository: ConversationRepository,
-    override val openAI: OpenAI,
-    override val scope: CoroutineScope,
-) : KoreAgent.HumanAndLLMAssisted(conversationRepository, openAI, scope) {
+data object WriteCodeAgent : AgentDefinition {
 
     private lateinit var technologies: String
 
-    companion object {
-        const val NAME = "Write Code"
+    private val technologiesArg = AgentInput.ListArg(
+        key = "technologyList",
+        name = "Technology Name",
+        listValue = emptyList(),
+    )
 
-        private fun instructionsFrom(technologies: String): String =
-            "You are an Agent that is an expert programmer in:\n" +
+    override val name: String = "Write Code"
+
+    override val instructions: String
+        get() = instructionsFrom(technologies)
+
+    override val inputs: List<AgentInput> = listOf(technologiesArg)
+
+    override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
+        technologies = inputs[technologiesArg.key]?.value ?: ""
+    }
+
+    private fun instructionsFrom(technologies: String): String =
+        "You are an Agent that is an expert programmer in:\n" +
                 "$technologies.\n" +
                 "You are tasked with generating code that can be executed, using only the languages or frameworks " +
                 "that you are a specified expert in.\n" +
@@ -35,22 +42,4 @@ data class WriteCodeAgent(
                 "any requested changes, and then you should save the generated code file to their local disk.\n" +
                 "All generated files should be placed in a folder called 'KoreAI-Test' in the user's home directory.\n" +
                 "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User."
-
-        private val technologiesArg = AgentInput.ListArg(
-            key = "technologyList",
-            name = "Technology Name",
-            listValue = emptyList(),
-        )
-
-        val INPUTS = listOf(technologiesArg)
-    }
-
-    override val name: String = NAME
-    override val instructions: String
-        get() = "${super.instructions}\n\n" + instructionsFrom(technologies)
-    override val neededInputs: List<AgentInput> = INPUTS
-
-    override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-        technologies = inputs[technologiesArg.key]?.value ?: ""
-    }
 }

@@ -7,10 +7,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import link.socket.kore.Application
+import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.model.agent.bundled.agentList
 import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.ui.conversation.ConversationScreen
 import link.socket.kore.ui.home.HomeScreen
@@ -77,9 +78,15 @@ fun App(
             }
         }
 
-        val onAgentSelected: (KoreAgent) -> Unit = { newAgent ->
+        val onAgentSelected: (AgentDefinition) -> Unit = { agentDefinition ->
             // Construct Conversation if this is the initial Agent selection
             if (selectedConversation.value == null) {
+                val newAgent = KoreAgent.HumanAndLLMAssisted(
+                    application.conversationRepository,
+                    application.openAI,
+                    CoroutineScope(Dispatchers.IO),
+                    agentDefinition,
+                )
                 val conversationId = application.conversationRepository.createConversation(newAgent)
                 selectedConversationId = conversationId
 
@@ -104,7 +111,7 @@ fun App(
                         },
                         onConversationSelected = { newConversation ->
                             selectedConversationId = newConversation.id
-                            onAgentSelected(newConversation.agent)
+                            onAgentSelected(newConversation.agent.agentDefinition)
                             selectedScreen = Screen.CONVERSATION
                         }
                     )
@@ -117,7 +124,7 @@ fun App(
                         listState = conversationListState,
                         existingConversation = selectedConversation.value,
                         isLoading = isLoading,
-                        agentList = application.agentList,
+                        agentList = agentList,
                         onAgentSelected = onAgentSelected,
                         onChatSent = { input ->
                             selectedConversationId?.let { id ->

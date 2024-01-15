@@ -9,14 +9,14 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.ui.widget.header.Header
 
 @Composable
 fun ConversationHeader(
     modifier: Modifier = Modifier,
     selectionState: AgentSelectionState,
-    onAgentSelected: (KoreAgent) -> Unit,
+    onAgentSelected: (AgentDefinition) -> Unit,
     onHeaderAgentSubmission: (AgentSelectionState.PartiallySelected) -> Unit,
     onBackClicked: () -> Unit,
 ) {

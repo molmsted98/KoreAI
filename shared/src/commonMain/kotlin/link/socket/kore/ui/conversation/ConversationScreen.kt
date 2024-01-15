@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.launch
-import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.conversation.chat.ChatHistory
 import link.socket.kore.ui.conversation.selector.AgentSelectionState
@@ -28,8 +28,8 @@ fun ConversationScreen(
     listState: LazyListState,
     existingConversation: Conversation?,
     isLoading: Boolean,
-    agentList: List<KoreAgent>,
-    onAgentSelected: (KoreAgent) -> Unit,
+    agentList: List<AgentDefinition>,
+    onAgentSelected: (AgentDefinition) -> Unit,
     onChatSent: (String) -> Unit,
     onBackClicked: () -> Unit,
 ) {
@@ -37,7 +37,7 @@ fun ConversationScreen(
     val scaffoldState = rememberScaffoldState()
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
 
-    var partiallySelectedAgent by remember { mutableStateOf<KoreAgent?>(null) }
+    var partiallySelectedAgent by remember { mutableStateOf<AgentDefinition?>(null) }
 
     val selectionState = remember(existingConversation, partiallySelectedAgent) {
         derivedStateOf {
@@ -45,11 +45,11 @@ fun ConversationScreen(
                 partiallySelectedAgent != null ->
                     AgentSelectionState.PartiallySelected(
                         agent = partiallySelectedAgent!!,
-                        neededInputs = partiallySelectedAgent!!.neededInputs,
+                        neededInputs = partiallySelectedAgent!!.inputs,
                     )
 
                 existingConversation != null ->
-                    AgentSelectionState.Selected(existingConversation.agent)
+                    AgentSelectionState.Selected(existingConversation.agent.agentDefinition)
 
                 else ->
                     AgentSelectionState.Unselected(agentList)
@@ -66,8 +66,8 @@ fun ConversationScreen(
         }
     }
 
-    val onHeaderAgentSelection: (KoreAgent) -> Unit = { agent ->
-        if (agent.neededInputs.isNotEmpty()) {
+    val onHeaderAgentSelection: (AgentDefinition) -> Unit = { agent ->
+        if (agent.inputs.isNotEmpty()) {
             partiallySelectedAgent = agent
         } else {
             onAgentSelected(agent)
