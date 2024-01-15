@@ -1,4 +1,4 @@
-package link.socket.kore.ui.conversation.selector
+package link.socket.kore.ui.selection
 
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items

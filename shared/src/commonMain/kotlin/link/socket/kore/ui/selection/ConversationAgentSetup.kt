@@ -1,4 +1,4 @@
-package link.socket.kore.ui.conversation.selector
+package link.socket.kore.ui.selection
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,14 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import link.socket.kore.Application
 import link.socket.kore.model.agent.AgentInput
+import link.socket.kore.model.agent.KoreAgent
+import link.socket.kore.ui.createAgent
 import link.socket.kore.ui.theme.themeTypography
 
 @Composable
 fun ConversationAgentSetup(
     modifier: Modifier = Modifier,
+    application: Application,
     selectionState: AgentSelectionState.PartiallySelected,
-    onHeaderAgentSubmission: (AgentSelectionState.PartiallySelected) -> Unit,
+    onHeaderAgentSubmission: (KoreAgent) -> Unit,
 ) {
     val inputs by remember {
         mutableStateOf(
@@ -82,11 +86,9 @@ fun ConversationAgentSetup(
                         .fillMaxWidth(),
                     onClick = {
                         onHeaderAgentSubmission(
-                            selectionState.copy(
-                                agent = selectionState.agent.apply {
-                                    parseNeededInputs(inputs)
-                                }
-                            )
+                            application.createAgent(selectionState.agent).apply {
+                                parseNeededInputs(inputs)
+                            }
                         )
                     },
                 ) {

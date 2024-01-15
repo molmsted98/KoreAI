@@ -89,6 +89,10 @@ fun ConversationTextEntry(
 
                 TextField(
                     modifier = Modifier
+                        .padding(
+                            top = 4.dp,
+                            bottom = 8.dp,
+                        )
                         .wrapContentHeight()
                         .fillMaxWidth(.9f)
                         .onPreviewKeyEvent { event ->

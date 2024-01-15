@@ -4,7 +4,7 @@ import link.socket.kore.model.agent.AgentDefinition
 
 object TechAgent : AgentDefinition {
 
-    override val name: String = "Tech Agent"
+    override val name: String = "Tech Support"
 
     override val instructions: String =
         "You are an Agent that specializes in providing troubleshooting help and advice for gadgets and software. " +

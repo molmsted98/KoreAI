@@ -4,7 +4,7 @@ import link.socket.kore.model.agent.AgentDefinition
 
 object LanguageAgent : AgentDefinition {
 
-    override val name: String = "Language Agent"
+    override val name: String = "Foreign Language"
 
     override val instructions: String =
         "You are an Agent that specializes in assisting Users in learning new languages through interactive " +

@@ -4,7 +4,7 @@ import link.socket.kore.model.agent.AgentDefinition
 
 object MediaAgent : AgentDefinition {
 
-    override val name: String = "Media Agent"
+    override val name: String = "Entertainment Guide"
 
     override val instructions: String =
         "You are an Agent that specializes in recommending entertainment content, including movies, books, " +

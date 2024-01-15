@@ -27,7 +27,8 @@ interface LLMAgent {
                 "to-the-point; there is no need to go into detail about explanations unless you have been told to do so.\n\n" +
                 "Since you are a specialized Agent, with further instructions about your specialty given below, " +
                 "you should avoid responding to any Chat prompts which fall outside of your area of specialty and instead " +
-                "guide the User into using your specialized skills."
+                "guide the User into using your specialized skills.\n\n" +
+                "You should always initiate the conversation by asking the User for what they need assistance in completing."
 
     val initialSystemMessage: KoreMessage.System
         get() = KoreMessage.System(instructions)

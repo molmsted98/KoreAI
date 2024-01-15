@@ -5,25 +5,33 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.*
 import link.socket.kore.Application
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.bundled.agentList
+import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.ui.conversation.ConversationScreen
 import link.socket.kore.ui.home.HomeScreen
+import link.socket.kore.ui.selection.SelectionScreen
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.theme.themeShapes
 import link.socket.kore.ui.theme.themeTypography
 
 enum class Screen {
-    HOME, CONVERSATION;
+    HOME, SELECTION, CONVERSATION;
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+fun Application.createAgent(agentDefinition: AgentDefinition): KoreAgent =
+    KoreAgent.HumanAndLLMAssisted(
+        conversationRepository,
+        openAI,
+        CoroutineScope(Dispatchers.IO),
+        agentDefinition,
+    )
+
 @Composable
 fun App(
     modifier: Modifier = Modifier,
@@ -41,12 +49,19 @@ fun App(
 
         val conversationListState = rememberLazyListState()
 
-        val selectedConversationValue = selectedConversationId?.let { id ->
+        val allConversations: State<Map<ConversationId, Conversation>> =
             application
                 .conversationRepository
-                .observeValue(id)
-                .collectAsState(null)
-        } ?: mutableStateOf(null)
+                .observeValues()
+                .collectAsState()
+
+        val selectedConversationValue: State<Conversation?> =
+            selectedConversationId?.let { id ->
+                application
+                    .conversationRepository
+                    .observeValue(id)
+                    .collectAsState(null)
+            } ?: mutableStateOf(null)
 
         val selectedConversation = remember(selectedConversationId, selectedConversationValue) {
             derivedStateOf {
@@ -78,23 +93,19 @@ fun App(
             }
         }
 
-        val onAgentSelected: (AgentDefinition) -> Unit = { agentDefinition ->
-            // Construct Conversation if this is the initial Agent selection
-            if (selectedConversation.value == null) {
-                val newAgent = KoreAgent.HumanAndLLMAssisted(
-                    application.conversationRepository,
-                    application.openAI,
-                    CoroutineScope(Dispatchers.IO),
-                    agentDefinition,
-                )
-                val conversationId = application.conversationRepository.createConversation(newAgent)
-                selectedConversationId = conversationId
+        val onConversationSelected: (ConversationId) -> Unit = { conversationId ->
+            selectedConversationId = conversationId
+            selectedScreen = Screen.CONVERSATION
+        }
 
-                scope.launch {
-                    onExecutingConversation()
-                    application.conversationRepository.runConversation(conversationId)
-                    onConversationFinishedExecuting()
-                }
+        val onNewConversation: (KoreAgent) -> Unit = { agent ->
+            val newId = application.conversationRepository.createConversation(agent)
+            onConversationSelected(newId)
+
+            scope.launch {
+                onExecutingConversation()
+                application.conversationRepository.runConversation(selectedConversationId!!)
+                onConversationFinishedExecuting()
             }
         }
 
@@ -104,42 +115,54 @@ fun App(
             when (selectedScreen) {
                 Screen.HOME -> {
                     HomeScreen(
-                        agentConversationsList = emptyList(), // TODO: Cache recent conversations
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        agentConversationsList = allConversations.value.values.toList(),
                         onCreateConversationSelected = {
-                            selectedConversationId = null
-                            selectedScreen = Screen.CONVERSATION
+                            selectedScreen = Screen.SELECTION
                         },
-                        onConversationSelected = { newConversation ->
-                            selectedConversationId = newConversation.id
-                            onAgentSelected(newConversation.agent.agentDefinition)
-                            selectedScreen = Screen.CONVERSATION
+                        onConversationSelected = { conversation ->
+                            onConversationSelected(conversation.id)
                         }
                     )
                 }
 
-                Screen.CONVERSATION -> {
-                    ConversationScreen(
+                Screen.SELECTION -> {
+                    SelectionScreen(
                         modifier = Modifier
                             .fillMaxSize(),
-                        listState = conversationListState,
-                        existingConversation = selectedConversation.value,
-                        isLoading = isLoading,
+                        application = application,
                         agentList = agentList,
-                        onAgentSelected = onAgentSelected,
-                        onChatSent = { input ->
-                            selectedConversationId?.let { id ->
-                                scope.launch {
-                                    onExecutingConversation()
-                                    application.conversationRepository.addUserChat(id, input)
-                                    onConversationFinishedExecuting()
-                                }
-                            }
-                        },
+                        onAgentSelected = onNewConversation,
                         onBackClicked = {
-                            selectedConversationId = null
                             selectedScreen = Screen.HOME
-                        }
+                        },
                     )
+                }
+
+                Screen.CONVERSATION -> {
+                    selectedConversation.value?.let {
+                        ConversationScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            listState = conversationListState,
+                            conversation = it,
+                            isLoading = isLoading,
+                            onChatSent = { input ->
+                                selectedConversationId?.let { id ->
+                                    scope.launch {
+                                        onExecutingConversation()
+                                        application.conversationRepository.addUserChat(id, input)
+                                        onConversationFinishedExecuting()
+                                    }
+                                }
+                            },
+                            onBackClicked = {
+                                selectedConversationId = null
+                                selectedScreen = Screen.HOME
+                            }
+                        )
+                    }
                 }
             }
         }

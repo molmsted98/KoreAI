@@ -1,4 +1,4 @@
-package link.socket.kore.ui.conversation.chat
+package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

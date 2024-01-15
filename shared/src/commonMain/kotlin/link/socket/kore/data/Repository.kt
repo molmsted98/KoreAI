@@ -24,6 +24,8 @@ abstract class Repository<Key : Any, Value>(
 
     fun getValue(key: Key): Value? = values[key]
 
+    fun observeValues(): StateFlow<Map<Key, Value>> = valuesFlow
+
     fun observeValue(key: Key): StateFlow<Value?> =
         valuesFlow
             .map { it[key] }

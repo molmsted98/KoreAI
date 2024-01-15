@@ -1,4 +1,4 @@
-package link.socket.kore.ui.conversation.selector
+package link.socket.kore.ui.selection
 
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput

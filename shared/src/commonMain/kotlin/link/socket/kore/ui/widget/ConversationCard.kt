@@ -1,4 +1,4 @@
-package link.socket.kore.ui.conversation
+package link.socket.kore.ui.widget
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,9 +10,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import link.socket.kore.model.conversation.ChatHistory.Threaded.Uninitialized.getChatMessages
 import link.socket.kore.model.conversation.Conversation
-import link.socket.kore.ui.theme.agentCardHeight
+import link.socket.kore.ui.theme.conversationCardHeight
 import link.socket.kore.ui.theme.themeTypography
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -25,13 +24,16 @@ fun ConversationCard(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .requiredHeight(agentCardHeight),
+            .requiredHeight(conversationCardHeight),
         elevation = 2.dp,
         onClick = onClick,
     ) {
         Column(
             modifier = Modifier
-                .padding(8.dp),
+                .padding(
+                    horizontal = 12.dp,
+                    vertical = 8.dp,
+                ),
         ) {
             Text(
                 modifier = Modifier
@@ -49,14 +51,15 @@ fun ConversationCard(
 
             Text(
                 style = themeTypography().body1,
-                text = getChatPreview(),
+                text = conversation.getChatPreview(),
             )
         }
     }
 }
 
-private fun getChatPreview(): String =
-    getChatMessages()
+private fun Conversation.getChatPreview(): String =
+    getChatKoreMessages()
         .lastOrNull()
+        ?.chatMessage
         ?.content
         ?: "..."

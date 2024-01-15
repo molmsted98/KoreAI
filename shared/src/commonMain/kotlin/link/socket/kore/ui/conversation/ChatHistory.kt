@@ -1,4 +1,4 @@
-package link.socket.kore.ui.conversation.chat
+package link.socket.kore.ui.conversation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

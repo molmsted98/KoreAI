@@ -13,8 +13,8 @@ val iconAlpha = 0.5f
 val separatorIconSize = 4.dp
 val iconButtonSize = 48.dp
 val headerHeight = 64.dp
-val createCardHeight = 80.dp
-val agentCardHeight = 256.dp
+val conversationCardHeight = 128.dp
+val agentCardHeight = 64.dp
 
 @Composable
 fun themeColors() = MaterialTheme.colors.copy(

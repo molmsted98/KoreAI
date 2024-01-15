@@ -1,18 +1,19 @@
 package link.socket.kore.ui.home
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import link.socket.kore.model.conversation.Conversation
-import link.socket.kore.ui.conversation.ConversationCard
-import link.socket.kore.ui.conversation.CreateConversationCard
+import link.socket.kore.ui.widget.ConversationCard
 
 @Composable
 fun HomeScreen(
@@ -33,6 +34,24 @@ fun HomeScreen(
             scaffoldState = scaffoldState,
             topBar = {
                 HomeHeader()
+            },
+            floatingActionButton = {
+                Box(
+                    modifier = Modifier
+                        .padding(
+                            end = 8.dp,
+                            bottom = 16.dp,
+                        )
+                ) {
+                    FloatingActionButton(
+                        onClick = onCreateConversationSelected,
+                    ) {
+                        Icon(
+                            imageVector = Icons.TwoTone.Add,
+                            contentDescription = "Create Conversation"
+                        )
+                    }
+                }
             }
         ) { contentPadding ->
             LazyColumn(
@@ -45,13 +64,9 @@ fun HomeScreen(
                     ),
             ) {
                 item {
-                    CreateConversationCard(
+                    Spacer(
                         modifier = Modifier
-                            .padding(
-                                top = 24.dp,
-                                bottom = 8.dp,
-                            ),
-                        onClick = onCreateConversationSelected,
+                            .requiredHeight(24.dp)
                     )
                 }
 

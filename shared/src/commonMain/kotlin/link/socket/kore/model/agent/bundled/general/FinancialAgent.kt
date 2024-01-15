@@ -4,7 +4,7 @@ import link.socket.kore.model.agent.AgentDefinition
 
 object FinancialAgent : AgentDefinition {
 
-    override val name: String = "Financial Agent"
+    override val name: String = "Finances"
 
     override val instructions: String =
         "You are an Agent with a specialty in processing transaction data and creating categorized " +
