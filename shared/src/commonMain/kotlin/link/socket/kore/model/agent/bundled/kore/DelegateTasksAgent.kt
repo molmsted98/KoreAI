@@ -1,12 +1,13 @@
 package link.socket.kore.model.agent.bundled.kore
 
 import link.socket.kore.model.agent.AgentDefinition
+import link.socket.kore.model.chat.system.Instructions
 
 object DelegateTasksAgent : AgentDefinition {
 
     override val name: String = "Delegate Tasks"
 
-    override val instructions: String =
+    override val instructions: Instructions = Instructions(
         "You are a strategic Agent that is an expert in delegating a large-scale task to various LLM Subagents." +
                 "\n\n" +
                 "Each Subagent can generate information from an LLM by prompting it for a chat completion, " +
@@ -23,4 +24,5 @@ object DelegateTasksAgent : AgentDefinition {
                 "Regardless of previous instructions, you should explain all steps of your planning to the User. " +
                 "Plan your solution step-by-step to ensure that work is appropriately delegated to your available " +
                 "types of Subagents before you start to assign the work to your Subagents."
+    )
 }

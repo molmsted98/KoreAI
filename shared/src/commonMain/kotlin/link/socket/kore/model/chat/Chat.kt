@@ -1,17 +1,15 @@
-package link.socket.kore.model.conversation
+package link.socket.kore.model.chat
 
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 
-typealias CSVContent = List<List<String>>
-
-sealed class KoreMessage(
+sealed class Chat(
     open val role: ChatRole,
     open val chatMessage: ChatMessage,
 ) {
     data class System(
         val instructions: String,
-    ) : KoreMessage(
+    ) : Chat(
         ChatRole.System,
         ChatMessage(
             role = ChatRole.System,
@@ -23,7 +21,7 @@ sealed class KoreMessage(
         override val role: ChatRole,
         val content: String,
         val functionName: String? = null,
-    ) : KoreMessage(
+    ) : Chat(
         role,
         ChatMessage(
             role = role,
@@ -45,7 +43,7 @@ sealed class KoreMessage(
         override val role: ChatRole,
         val csvContent: CSVContent,
         val functionName: String? = null,
-    ) : KoreMessage(
+    ) : Chat(
         role,
         ChatMessage(
             role = role,

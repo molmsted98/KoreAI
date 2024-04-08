@@ -2,6 +2,7 @@ package link.socket.kore.model.agent.bundled.code
 
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
+import link.socket.kore.model.chat.system.Instructions
 
 /*
  * This Agent is responsible for generating code based on the user's description and list of technologies,
@@ -24,8 +25,8 @@ data object WriteCodeAgent : AgentDefinition {
 
     override val name: String = "Write Code"
 
-    override val instructions: String
-        get() = instructionsFrom(technologies)
+    override val instructions: Instructions
+        get() = Instructions(instructionsFrom(technologies))
 
     override val inputs: List<AgentInput> = listOf(technologiesArg)
 

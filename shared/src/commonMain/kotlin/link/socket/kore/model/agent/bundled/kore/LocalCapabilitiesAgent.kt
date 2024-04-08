@@ -2,6 +2,7 @@ package link.socket.kore.model.agent.bundled.kore
 
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
+import link.socket.kore.model.chat.system.Instructions
 
 data object LocalCapabilitiesAgent : AgentDefinition {
 
@@ -15,8 +16,8 @@ data object LocalCapabilitiesAgent : AgentDefinition {
 
     override val name: String = "Local Capabilities"
 
-    override val instructions: String
-        get() = instructionsFrom(capabilities)
+    override val instructions: Instructions
+        get() = Instructions(instructionsFrom(capabilities))
 
     override val inputs: List<AgentInput> = listOf(capabilitiesArg)
 

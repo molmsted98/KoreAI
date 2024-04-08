@@ -12,7 +12,7 @@ import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.bundled.agentList
 import link.socket.kore.model.agent.bundled.getAgentDefinition
-import link.socket.kore.model.conversation.KoreMessage
+import link.socket.kore.model.chat.Chat
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
 
@@ -100,7 +100,7 @@ sealed interface AgentCapability : Capability {
                 agentName.getAgentDefinition(),
             )
 
-            val initialMessage = KoreMessage.Text(
+            val initialMessage = Chat.Text(
                 role = ChatRole.User,
                 content = prompt,
             )
@@ -110,7 +110,7 @@ sealed interface AgentCapability : Capability {
 
             return conversationRepository
                 .getValue(conversationId)
-                ?.chatHistory
+                ?.conversationHistory
                 ?.getKoreMessages()
                 ?.lastOrNull()
                 ?.chatMessage

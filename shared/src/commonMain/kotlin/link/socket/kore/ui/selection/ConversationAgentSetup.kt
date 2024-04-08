@@ -85,11 +85,10 @@ fun ConversationAgentSetup(
                     modifier = Modifier
                         .fillMaxWidth(),
                     onClick = {
-                        onHeaderAgentSubmission(
-                            application.createAgent(selectionState.agent).apply {
-                                parseNeededInputs(inputs)
-                            }
-                        )
+                        val agent = application.createAgent(selectionState.agent).apply {
+                            parseNeededInputs(inputs)
+                        }
+                        onHeaderAgentSubmission(agent)
                     },
                 ) {
                     Text(

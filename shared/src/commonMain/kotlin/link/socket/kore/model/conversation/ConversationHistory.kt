@@ -4,18 +4,19 @@ import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.assistant.AssistantId
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.thread.ThreadId
+import link.socket.kore.model.chat.Chat
 
 @OptIn(BetaOpenAI::class)
-sealed interface ChatHistory {
+sealed interface ConversationHistory {
 
     sealed class Threaded(
         open val assistantId: AssistantId?,
-        open val chatMessages: Map<ThreadId, List<KoreMessage>>,
-    ) : ChatHistory {
+        open val chatMessages: Map<ThreadId, List<Chat>>,
+    ) : ConversationHistory {
 
         data object Uninitialized : Threaded(null, emptyMap()) {
 
-            override fun getKoreMessages(): List<KoreMessage> = emptyList()
+            override fun getKoreMessages(): List<Chat> = emptyList()
 
             override fun getChatMessages(): List<ChatMessage> = emptyList()
 
@@ -23,17 +24,17 @@ sealed interface ChatHistory {
                 error("Attempt to appendMessage $message to ChatHistory.Threaded.Uninitialized")
             }
 
-            override fun appendKoreMessage(message: KoreMessage): ChatHistory {
+            override fun appendKoreMessage(message: Chat): ConversationHistory {
                 TODO("Not yet implemented")
             }
         }
 
         data class Initialized(
             override val assistantId: AssistantId,
-            override val chatMessages: Map<ThreadId, List<KoreMessage>>,
+            override val chatMessages: Map<ThreadId, List<Chat>>,
         ) : Threaded(assistantId, chatMessages) {
 
-            override fun getKoreMessages(): List<KoreMessage> {
+            override fun getKoreMessages(): List<Chat> {
                 TODO("Not yet implemented")
             }
 
@@ -47,29 +48,45 @@ sealed interface ChatHistory {
                 return this
             }
 
-            override fun appendKoreMessage(message: KoreMessage): ChatHistory {
+            override fun appendKoreMessage(message: Chat): ConversationHistory {
                 TODO("Not yet implemented")
             }
         }
     }
 
     data class NonThreaded(
-        val messages: List<KoreMessage>,
-    ) : ChatHistory {
+        val messages: List<Chat>,
+    ) : ConversationHistory {
 
-        override fun getKoreMessages(): List<KoreMessage> = messages
+        override fun getKoreMessages(): List<Chat> = messages
 
         override fun getChatMessages(): List<ChatMessage> = messages.map { it.chatMessage }
 
         override fun appendMessage(message: ChatMessage): NonThreaded =
             NonThreaded(messages.append(message))
 
-        override fun appendKoreMessage(message: KoreMessage): ChatHistory =
+        override fun appendKoreMessage(message: Chat): ConversationHistory =
             NonThreaded(messages.append(message))
     }
 
-    fun getKoreMessages(): List<KoreMessage>
+    fun getKoreMessages(): List<Chat>
     fun getChatMessages(): List<ChatMessage>
-    fun appendMessage(message: ChatMessage): ChatHistory
-    fun appendKoreMessage(message: KoreMessage): ChatHistory
+    fun appendMessage(message: ChatMessage): ConversationHistory
+    fun appendKoreMessage(message: Chat): ConversationHistory
 }
+
+fun List<Chat>.append(
+    newMessage: ChatMessage,
+): List<Chat> =
+    mutableListOf(
+        *this.toTypedArray(),
+        Chat.Text.fromChatMessage(newMessage),
+    )
+
+fun List<Chat>.append(
+    newMessage: Chat
+): List<Chat> =
+    mutableListOf(
+        *this.toTypedArray(),
+        newMessage,
+    )

@@ -22,13 +22,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.core.Role
 import com.mikepenz.markdown.compose.Markdown
-import link.socket.kore.model.conversation.KoreMessage
+import link.socket.kore.model.chat.Chat
 import link.socket.kore.ui.theme.*
 
 @Composable
 fun ChatMessage(
     modifier: Modifier = Modifier,
-    message: KoreMessage,
+    message: Chat,
     displaySnackbar: (String) -> Unit,
     showRegenerate: Boolean,
 ) {
@@ -105,8 +105,8 @@ fun ChatMessage(
 
             // Content
             when (message) {
-                is KoreMessage.System,
-                is KoreMessage.Text -> {
+                is Chat.System,
+                is Chat.Text -> {
                     val messageContent = message.chatMessage.content ?: ""
 
                     if (message.role == Role.User) {
@@ -125,7 +125,7 @@ fun ChatMessage(
                         )
                     }
                 }
-                is KoreMessage.CSV -> {
+                is Chat.CSV -> {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(),

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.model.conversation.ConversationId
-import link.socket.kore.model.conversation.KoreMessage
+import link.socket.kore.model.chat.Chat
 import link.socket.kore.util.randomUUID
 
 class ConversationRepository(
@@ -15,7 +15,7 @@ class ConversationRepository(
 
     fun createConversation(
         agent: KoreAgent,
-        initialMessage: KoreMessage? = null,
+        initialMessage: Chat? = null,
     ): ConversationId {
         val key = randomUUID()
         selectedConversation = key

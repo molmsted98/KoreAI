@@ -10,13 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.core.Role
-import link.socket.kore.model.conversation.KoreMessage
+import link.socket.kore.model.chat.Chat
 
 @Composable
 fun ChatHistory(
     modifier: Modifier = Modifier,
     listState: LazyListState,
-    messages: List<KoreMessage>,
+    messages: List<Chat>,
     isLoading: Boolean,
     displaySnackbar: (String) -> Unit,
 ) {
