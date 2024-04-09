@@ -1,13 +1,13 @@
 package link.socket.kore.model.capability
 
-//import com.lordcodes.turtle.ShellLocation
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import link.socket.kore.io.createFile
+import link.socket.kore.io.parseCsv
+import link.socket.kore.io.readFile
 import link.socket.kore.model.tool.FunctionProvider
-import link.socket.kore.model.tool.LLMCSVFunction1
-import link.socket.kore.model.tool.LLMFunction1
 import link.socket.kore.model.tool.ParameterDefinition
 
 sealed interface IOCapability : Capability {
@@ -45,8 +45,8 @@ sealed interface IOCapability : Capability {
                     val folderPath = args.getValue("folderPath").jsonPrimitive.content
                     val fileName = args.getValue("fileName").jsonPrimitive.content
                     val fileContent = args.getValue("fileContent").jsonPrimitive.content
-                    createFile(folderPath, fileName, fileContent)
-                } as LLMFunction1,
+                    createFileImpl(folderPath, fileName, fileContent)
+                },
                 listOf(
                     ParameterDefinition(
                         name = "folderPath",
@@ -83,25 +83,13 @@ sealed interface IOCapability : Capability {
          * @param fileName the name of the file to create
          * @param fileContent the content that the new file should contain
          */
-        private fun createFile(
+        private fun createFileImpl(
             folderPath: String,
             fileName: String,
             fileContent: String,
         ): String {
-//            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
-//            val filePath = "$workingDirPath/$fileName".toPath()
-//
-//            println(filePath)
-//            try {
-//                FileSystem.SYSTEM.write(filePath) {
-//                    writeUtf8(fileContent)
-//                }
-//            } catch (e: IOException) {
-//                return "File $fileName creation failed with exception: $e."
-//            }
-//
-//            return "File $fileName created successfully."
-            return "TODO"
+            val result = createFile(folderPath, fileName, fileContent)
+            return result.getOrNull() ?: "Failed to create file"
         }
     }
 
@@ -114,8 +102,8 @@ sealed interface IOCapability : Capability {
                 { args: JsonObject ->
                     val folderPath = args.getValue("folderPath").jsonPrimitive.content
                     val fileName = args.getValue("fileName").jsonPrimitive.content
-                    readFile(folderPath, fileName)
-                } as LLMFunction1,
+                    readFileImpl(folderPath, fileName)
+                },
                 readFileParams,
             )
 
@@ -125,27 +113,12 @@ sealed interface IOCapability : Capability {
          * @param folderPath the path where the file should be read from, relative to the user's home directory
          * @param fileName the name of the file to read
          */
-        private fun readFile(
+        private fun readFileImpl(
             folderPath: String,
             fileName: String,
         ): String {
-//            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
-//            val filePath = "$workingDirPath/$fileName".toPath()
-//            var result = ""
-//
-//            try {
-//                FileSystem.SYSTEM.read(filePath) {
-//                    while (true) {
-//                        val line = readUtf8Line() ?: break
-//                        result += (line + "\n")
-//                    }
-//                }
-//            } catch (e: IOException) {
-//                return "Reading file $fileName failed with exception: $e."
-//            }
-//
-//            return result
-            return "TODO"
+            val result = readFile(folderPath, fileName)
+            return result.getOrNull() ?: "Failed to read file"
         }
     }
 
@@ -158,32 +131,17 @@ sealed interface IOCapability : Capability {
                 { args: JsonObject ->
                     val folderPath = args.getValue("folderPath").jsonPrimitive.content
                     val fileName = args.getValue("fileName").jsonPrimitive.content
-                    parseCsv(folderPath, fileName)
-                } as LLMCSVFunction1,
+                    parseCsvImpl(folderPath, fileName)
+                },
                 readFileParams,
             )
 
-        private fun parseCsv(
+        private fun parseCsvImpl(
             folderPath: String,
             fileName: String,
         ): List<List<String>> {
-//            val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
-//            val filePath = "$workingDirPath/$fileName".toPath()
-//            val lines = mutableListOf<String>()
-//
-//            try {
-//                FileSystem.SYSTEM.read(filePath) {
-//                    while (true) {
-//                        val line = readUtf8Line() ?: break
-//                        lines.add(line)
-//                    }
-//                }
-//            } catch (e: IOException) {
-//                return listOf(listOf("Reading file $fileName failed with exception: $e."))
-//            }
-//
-//            return lines.map { it.split(",") }
-            return listOf(listOf("TODO"))
+            val result = parseCsv(folderPath, fileName)
+            return result.getOrNull() ?: listOf(listOf("Failed to parse CSV"))
         }
     }
 
