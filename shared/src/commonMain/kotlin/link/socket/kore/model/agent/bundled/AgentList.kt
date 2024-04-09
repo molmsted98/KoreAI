@@ -31,6 +31,7 @@ val koreAgents: List<AgentDefinition> = listOf(
     LocalCapabilitiesAgent(emptyMap()),
     ModifyFileAgent,
     WritePromptAgent,
+    ComparePromptsAgent,
 )
 
 val agentList: List<AgentDefinition> = listOf(
