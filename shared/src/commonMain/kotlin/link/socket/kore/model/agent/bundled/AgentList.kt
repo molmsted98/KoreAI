@@ -5,10 +5,7 @@ import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.bundled.code.CleanJsonAgent
 import link.socket.kore.model.agent.bundled.code.WriteCodeAgent
 import link.socket.kore.model.agent.bundled.general.*
-import link.socket.kore.model.agent.bundled.kore.DefineAgentAgent
-import link.socket.kore.model.agent.bundled.kore.DelegateTasksAgent
-import link.socket.kore.model.agent.bundled.kore.LocalCapabilitiesAgent
-import link.socket.kore.model.agent.bundled.kore.ModifyFileAgent
+import link.socket.kore.model.agent.bundled.kore.*
 
 val codeAgents: List<AgentDefinition> = listOf(
     CleanJsonAgent,
@@ -33,6 +30,7 @@ val koreAgents: List<AgentDefinition> = listOf(
     DelegateTasksAgent,
     LocalCapabilitiesAgent(emptyMap()),
     ModifyFileAgent,
+    WritePromptAgent,
 )
 
 val agentList: List<AgentDefinition> = listOf(
