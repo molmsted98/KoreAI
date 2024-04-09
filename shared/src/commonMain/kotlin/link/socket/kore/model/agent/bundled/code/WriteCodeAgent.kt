@@ -13,9 +13,11 @@ import link.socket.kore.model.chat.system.Instructions
  * @param description an overview of what the generated code should accomplish
  * @param technologies a list of code technologies (i.e. languages, frameworks) for the Agent to use
  */
-data object WriteCodeAgent : AgentDefinition {
+data class WriteCodeAgent(
+    val inputMap: Map<String, AgentInput>,
+) : AgentDefinition {
 
-    private lateinit var technologies: String
+    private var technologies: String
 
     private val technologiesArg = AgentInput.ListArg(
         key = "technologyList",
@@ -23,24 +25,28 @@ data object WriteCodeAgent : AgentDefinition {
         listValue = emptyList(),
     )
 
-    override val name: String = "Write Code"
+    override val name: String = NAME
 
     override val instructions: Instructions
         get() = Instructions(instructionsFrom(technologies))
 
     override val inputs: List<AgentInput> = listOf(technologiesArg)
 
-    override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
-        technologies = inputs[technologiesArg.key]?.value ?: ""
+    init {
+        technologies = inputMap[technologiesArg.key]?.value ?: ""
     }
 
-    private fun instructionsFrom(technologies: String): String =
-        "You are an Agent that is an expert programmer in:\n" +
-                "$technologies.\n" +
-                "You are tasked with generating code that can be executed, using only the languages or frameworks " +
-                "that you are a specified expert in.\n" +
-                "After generating the requested code, you should ask the user to verify the file's contents and make " +
-                "any requested changes, and then you should save the generated code file to their local disk.\n" +
-                "All generated files should be placed in a folder called 'KoreAI-Test' in the user's home directory.\n" +
-                "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User."
+    companion object {
+        const val NAME = "Write Code"
+
+        private fun instructionsFrom(technologies: String): String =
+            "You are an Agent that is an expert programmer in:\n" +
+                    "$technologies.\n" +
+                    "You are tasked with generating code that can be executed, using only the languages or frameworks " +
+                    "that you are a specified expert in.\n" +
+                    "After generating the requested code, you should ask the user to verify the file's contents and make " +
+                    "any requested changes, and then you should save the generated code file to their local disk.\n" +
+                    "All generated files should be placed in a folder called 'KoreAI-Test' in the user's home directory.\n" +
+                    "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User."
+    }
 }

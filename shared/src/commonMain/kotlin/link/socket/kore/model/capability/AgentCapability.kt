@@ -8,9 +8,9 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import link.socket.kore.data.ConversationRepository
-import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.model.agent.bundled.agentList
+import link.socket.kore.model.agent.bundled.agentArgsList
+import link.socket.kore.model.agent.bundled.agentNameList
 import link.socket.kore.model.agent.bundled.getAgentDefinition
 import link.socket.kore.model.chat.Chat
 import link.socket.kore.model.tool.FunctionProvider
@@ -27,7 +27,7 @@ sealed interface AgentCapability : Capability {
                 GetAgents::getAgents,
             )
 
-        private fun getAgents(): String = agentList.joinToString(", ") { it.name }
+        private fun getAgents(): String = agentNameList.joinToString(", ")
     }
 
     data object GetAgentArgs : AgentCapability {
@@ -39,14 +39,7 @@ sealed interface AgentCapability : Capability {
                 GetAgentArgs::getAgentArgs,
             )
 
-        private fun getAgentArgs(): String = agentList.joinToString("\n\n") { agent ->
-            "${agent.name}(" + (agent.inputs.joinToString(", ") { input ->
-                input.key + ": " + when (input) {
-                    is AgentInput.StringArg -> "String"
-                    is AgentInput.ListArg -> "List<String>"
-                }
-            }) + ")"
-        }
+        private fun getAgentArgs(): String = agentArgsList.joinToString("\n\n")
     }
 
     data class PromptAgent(
@@ -97,7 +90,7 @@ sealed interface AgentCapability : Capability {
                 conversationRepository,
                 openAI,
                 scope,
-                agentName.getAgentDefinition(),
+                agentName.getAgentDefinition(emptyMap()),
             )
 
             val initialMessage = Chat.Text(

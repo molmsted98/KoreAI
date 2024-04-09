@@ -8,7 +8,7 @@ data class Instructions(
     var includeTone: Boolean = true
     var includeSeriousness: Boolean = true
 
-    fun build(): String = toneSection() + seriousnessSection()
+    fun build(): String = toneSection() + seriousnessSection() + "\n\n" + prompt
 
     private fun toneSection() = if (includeTone) {
         tone.build() + "\n\n"

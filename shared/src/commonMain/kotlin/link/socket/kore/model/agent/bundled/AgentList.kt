@@ -1,6 +1,7 @@
 package link.socket.kore.model.agent.bundled
 
 import link.socket.kore.model.agent.AgentDefinition
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.bundled.code.CleanJsonAgent
 import link.socket.kore.model.agent.bundled.code.WriteCodeAgent
 import link.socket.kore.model.agent.bundled.general.*
@@ -11,7 +12,7 @@ import link.socket.kore.model.agent.bundled.kore.ModifyFileAgent
 
 val codeAgents: List<AgentDefinition> = listOf(
     CleanJsonAgent,
-    WriteCodeAgent,
+    WriteCodeAgent(emptyMap()),
 )
 
 val generalAgents: List<AgentDefinition> = listOf(
@@ -30,7 +31,7 @@ val generalAgents: List<AgentDefinition> = listOf(
 val koreAgents: List<AgentDefinition> = listOf(
     DefineAgentAgent,
     DelegateTasksAgent,
-    LocalCapabilitiesAgent,
+    LocalCapabilitiesAgent(emptyMap()),
     ModifyFileAgent,
 )
 
@@ -40,7 +41,18 @@ val agentList: List<AgentDefinition> = listOf(
     *koreAgents.toTypedArray(),
 )
 
-fun String.getAgentDefinition(): AgentDefinition = when (this) {
+val agentNameList: List<String> = agentList.map { it.name }
+
+val agentArgsList: List<String> = agentList.map { agent ->
+    "${agent.name}(" + (agent.inputs.joinToString(", ") { input ->
+        input.key + ": " + when (input) {
+            is AgentInput.StringArg -> "String"
+            is AgentInput.ListArg -> "List<String>"
+        }
+    }) + ")"
+}
+
+fun String.getAgentDefinition(inputMap: Map<String, AgentInput>): AgentDefinition = when (this) {
     CareerAgent.name -> CareerAgent
     CleanJsonAgent.name -> CleanJsonAgent
     CookingAgent.name -> CookingAgent
@@ -50,12 +62,12 @@ fun String.getAgentDefinition(): AgentDefinition = when (this) {
     FinancialAgent.name -> FinancialAgent
     HealthAgent.name -> HealthAgent
     LanguageAgent.name -> LanguageAgent
-    LocalCapabilitiesAgent.name -> LocalCapabilitiesAgent
+    LocalCapabilitiesAgent.NAME -> LocalCapabilitiesAgent(inputMap)
     MediaAgent.name -> MediaAgent
     ModifyFileAgent.name -> ModifyFileAgent
     StudyAgent.name -> StudyAgent
     TechAgent.name -> TechAgent
     TravelAgent.name -> TravelAgent
-    WriteCodeAgent.name -> WriteCodeAgent
+    WriteCodeAgent.NAME -> WriteCodeAgent(inputMap)
     else -> throw IllegalArgumentException("Unknown Agent $this")
 }

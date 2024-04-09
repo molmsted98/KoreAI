@@ -6,7 +6,7 @@ import link.socket.kore.model.agent.AgentInput
 sealed class AgentSelectionState {
 
     data class Unselected(
-        val agentList: List<AgentDefinition>,
+        val agentList: List<String>,
     ) : AgentSelectionState() {
         override val agentName: String? = null
     }

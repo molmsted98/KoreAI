@@ -36,7 +36,7 @@ fun SelectionScreen(
                     )
 
                 else ->
-                    AgentSelectionState.Unselected(agentList)
+                    AgentSelectionState.Unselected(agentList.map { it.name })
             }
         }
     }
