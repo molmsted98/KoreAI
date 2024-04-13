@@ -26,6 +26,7 @@ val generalAgents: List<AgentDefinition> = listOf(
 )
 
 val koreAgents: List<AgentDefinition> = listOf(
+    ReActAgent,
     DefineAgentAgent,
     DelegateTasksAgent,
     LocalCapabilitiesAgent(emptyMap()),
