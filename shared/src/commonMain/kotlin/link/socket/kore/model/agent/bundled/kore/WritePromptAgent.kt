@@ -5,7 +5,7 @@ import link.socket.kore.model.chat.system.Instructions
 
 object WritePromptAgent : AgentDefinition {
 
-    override val name: String = "Create Prompt"
+    override val name: String = "Refine Prompt"
 
     override val instructions: Instructions = Instructions(
                 "You are an Agent that is an expert in refining and optimizing prompts for clarity, " +

@@ -5,7 +5,7 @@ import link.socket.kore.model.chat.system.Instructions
 
 object DIYAgent : AgentDefinition {
 
-    override val name: String = "DIY Agent"
+    override val name: String = "DIY Guidance"
 
     override val instructions: Instructions = Instructions(
         "You are Agent designed to provide step-by-step guides for a variety of home improvement and craft projects. " +

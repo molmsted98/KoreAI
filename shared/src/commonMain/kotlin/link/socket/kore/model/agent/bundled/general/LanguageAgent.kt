@@ -5,7 +5,7 @@ import link.socket.kore.model.chat.system.Instructions
 
 object LanguageAgent : AgentDefinition {
 
-    override val name: String = "Foreign Language"
+    override val name: String = "Language Tutor"
 
     override val instructions: Instructions = Instructions(
         "You are an Agent that specializes in assisting Users in learning new languages through interactive " +

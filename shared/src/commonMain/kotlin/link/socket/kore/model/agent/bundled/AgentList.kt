@@ -9,10 +9,11 @@ import link.socket.kore.model.agent.bundled.kore.*
 
 val codeAgents: List<AgentDefinition> = listOf(
     CleanJsonAgent,
-    WriteCodeAgent(emptyMap()),
+    WriteCodeAgent,
 )
 
 val generalAgents: List<AgentDefinition> = listOf(
+    BusinessAgent,
     CareerAgent,
     CookingAgent,
     DIYAgent,
@@ -29,7 +30,7 @@ val koreAgents: List<AgentDefinition> = listOf(
     ReActAgent,
     DefineAgentAgent,
     DelegateTasksAgent,
-    LocalCapabilitiesAgent(emptyMap()),
+    LocalCapabilitiesAgent,
     ModifyFileAgent,
     WritePromptAgent,
     ComparePromptsAgent,
@@ -52,22 +53,25 @@ val agentArgsList: List<String> = agentList.map { agent ->
     }) + ")"
 }
 
-fun String.getAgentDefinition(inputMap: Map<String, AgentInput>): AgentDefinition = when (this) {
+fun String.getAgentDefinition(): AgentDefinition = when (this) {
+    BusinessAgent.name -> BusinessAgent
     CareerAgent.name -> CareerAgent
     CleanJsonAgent.name -> CleanJsonAgent
     CookingAgent.name -> CookingAgent
+    ComparePromptsAgent.name -> ComparePromptsAgent
     DefineAgentAgent.name -> DefineAgentAgent
     DelegateTasksAgent.name -> DelegateTasksAgent
     DIYAgent.name -> DIYAgent
     FinancialAgent.name -> FinancialAgent
     HealthAgent.name -> HealthAgent
     LanguageAgent.name -> LanguageAgent
-    LocalCapabilitiesAgent.NAME -> LocalCapabilitiesAgent(inputMap)
+    LocalCapabilitiesAgent.name -> LocalCapabilitiesAgent
     MediaAgent.name -> MediaAgent
     ModifyFileAgent.name -> ModifyFileAgent
+    ReActAgent.name -> ReActAgent
     StudyAgent.name -> StudyAgent
     TechAgent.name -> TechAgent
     TravelAgent.name -> TravelAgent
-    WriteCodeAgent.NAME -> WriteCodeAgent(inputMap)
+    WriteCodeAgent.name -> WriteCodeAgent
     else -> throw IllegalArgumentException("Unknown Agent $this")
 }

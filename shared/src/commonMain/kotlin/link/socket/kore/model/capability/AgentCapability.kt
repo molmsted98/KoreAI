@@ -90,7 +90,7 @@ sealed interface AgentCapability : Capability {
                 conversationRepository,
                 openAI,
                 scope,
-                agentName.getAgentDefinition(emptyMap()),
+                agentName.getAgentDefinition(),
             )
 
             val initialMessage = Chat.Text(
