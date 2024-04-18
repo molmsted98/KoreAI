@@ -85,7 +85,7 @@ fun App(
             if (selectedConversationId != null) {
                 scope.launch {
                     val conversation = application.conversationRepository.getValue(selectedConversationId!!)
-                    val lastIndex = conversation?.getChatKoreMessages()?.lastIndex ?: 0
+                    val lastIndex = conversation?.getChats()?.lastIndex ?: 0
 
                     delay(500)
                     conversationListState.animateScrollToItem(lastIndex)

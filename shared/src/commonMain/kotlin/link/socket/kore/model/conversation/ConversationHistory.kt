@@ -16,15 +16,13 @@ sealed interface ConversationHistory {
 
         data object Uninitialized : Threaded(null, emptyMap()) {
 
-            override fun getKoreMessages(): List<Chat> = emptyList()
-
-            override fun getChatMessages(): List<ChatMessage> = emptyList()
+            override fun getChats(): List<Chat> = emptyList()
 
             override fun appendMessage(message: ChatMessage): Uninitialized {
                 error("Attempt to appendMessage $message to ChatHistory.Threaded.Uninitialized")
             }
 
-            override fun appendKoreMessage(message: Chat): ConversationHistory {
+            override fun appendChat(message: Chat): ConversationHistory {
                 TODO("Not yet implemented")
             }
         }
@@ -34,13 +32,8 @@ sealed interface ConversationHistory {
             override val chatMessages: Map<ThreadId, List<Chat>>,
         ) : Threaded(assistantId, chatMessages) {
 
-            override fun getKoreMessages(): List<Chat> {
+            override fun getChats(): List<Chat> {
                 TODO("Not yet implemented")
-            }
-
-            override fun getChatMessages(): List<ChatMessage> {
-                // TODO: Handle getting messages
-                return emptyList()
             }
 
             override fun appendMessage(message: ChatMessage): Initialized {
@@ -48,7 +41,7 @@ sealed interface ConversationHistory {
                 return this
             }
 
-            override fun appendKoreMessage(message: Chat): ConversationHistory {
+            override fun appendChat(message: Chat): ConversationHistory {
                 TODO("Not yet implemented")
             }
         }
@@ -58,21 +51,18 @@ sealed interface ConversationHistory {
         val messages: List<Chat>,
     ) : ConversationHistory {
 
-        override fun getKoreMessages(): List<Chat> = messages
+        override fun getChats(): List<Chat> = messages
 
-        override fun getChatMessages(): List<ChatMessage> = messages.map { it.chatMessage }
+        override fun appendChat(message: Chat): ConversationHistory =
+            NonThreaded(messages.append(message))
 
         override fun appendMessage(message: ChatMessage): NonThreaded =
             NonThreaded(messages.append(message))
-
-        override fun appendKoreMessage(message: Chat): ConversationHistory =
-            NonThreaded(messages.append(message))
     }
 
-    fun getKoreMessages(): List<Chat>
-    fun getChatMessages(): List<ChatMessage>
+    fun getChats(): List<Chat>
     fun appendMessage(message: ChatMessage): ConversationHistory
-    fun appendKoreMessage(message: Chat): ConversationHistory
+    fun appendChat(message: Chat): ConversationHistory
 }
 
 fun List<Chat>.append(

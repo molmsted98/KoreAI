@@ -58,7 +58,7 @@ fun ConversationCard(
 }
 
 private fun Conversation.getChatPreview(): String =
-    getChatKoreMessages()
+    getChats()
         .lastOrNull()
         ?.chatMessage
         ?.content

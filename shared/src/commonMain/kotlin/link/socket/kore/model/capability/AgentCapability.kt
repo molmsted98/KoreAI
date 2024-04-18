@@ -104,7 +104,7 @@ sealed interface AgentCapability : Capability {
             return conversationRepository
                 .getValue(conversationId)
                 ?.conversationHistory
-                ?.getKoreMessages()
+                ?.getChats()
                 ?.lastOrNull()
                 ?.chatMessage
                 ?.content ?: ""

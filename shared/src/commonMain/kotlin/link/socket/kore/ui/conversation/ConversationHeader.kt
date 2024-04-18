@@ -1,6 +1,9 @@
 package link.socket.kore.ui.conversation
 
+import androidx.compose.foundation.Image
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -12,6 +15,7 @@ fun ConversationHeader(
     modifier: Modifier = Modifier,
     agentDefinition: AgentDefinition,
     onBackClicked: () -> Unit,
+    onImportExportClicked: () -> Unit,
 ) {
     Surface(
         modifier = modifier,
@@ -21,6 +25,12 @@ fun ConversationHeader(
             title = agentDefinition.name,
             displayBackIcon = true,
             onBackClicked = onBackClicked,
-        )
+            onActionIconClicked = onImportExportClicked,
+        ) {
+            Image(
+                imageVector = Icons.TwoTone.Share,
+                contentDescription = "Share",
+            )
+        }
     }
 }

@@ -80,7 +80,7 @@ sealed interface LLMCapability : Capability {
             return conversationRepository
                 .getValue(conversationId)
                 ?.conversationHistory
-                ?.getKoreMessages()
+                ?.getChats()
                 ?.lastOrNull()
                 ?.chatMessage
                 ?.content ?: ""

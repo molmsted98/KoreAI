@@ -40,12 +40,12 @@ data class Conversation(
         agent.createCompletionRequest(conversationHistory)
 
 
-    fun getChatKoreMessages(): List<Chat> =
-        conversationHistory.getKoreMessages()
+    fun getChats(): List<Chat> =
+        conversationHistory.getChats()
             .filter { it.chatMessage.content?.isNotEmpty() == true }
 
     fun add(chat: Chat): Conversation =
         copy(
-            conversationHistory = conversationHistory.appendKoreMessage(chat),
+            conversationHistory = conversationHistory.appendChat(chat),
         )
 }

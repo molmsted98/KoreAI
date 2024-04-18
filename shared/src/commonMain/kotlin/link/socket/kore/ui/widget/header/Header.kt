@@ -20,6 +20,8 @@ fun Header(
     title: String,
     displayBackIcon: Boolean,
     onBackClicked: () -> Unit,
+    onActionIconClicked: () -> Unit = {},
+    actionIcon: (@Composable () -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -45,11 +47,22 @@ fun Header(
 
         Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 64.dp),
+                .fillMaxWidth(.8f),
             style = themeTypography().h6,
             text = title,
             textAlign = TextAlign.Center,
         )
+
+        if (actionIcon != null) {
+            IconButton(
+                modifier = Modifier
+                    .requiredSize(64.dp),
+                onClick = onActionIconClicked,
+            ) {
+                actionIcon()
+            }
+        } else {
+            Spacer(modifier = Modifier.requiredWidth(64.dp))
+        }
     }
 }

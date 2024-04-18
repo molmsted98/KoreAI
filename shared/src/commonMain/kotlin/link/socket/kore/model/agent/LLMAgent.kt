@@ -5,8 +5,8 @@ import com.aallam.openai.api.core.FinishReason
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
-import link.socket.kore.model.conversation.ConversationHistory
 import link.socket.kore.model.chat.Chat
+import link.socket.kore.model.conversation.ConversationHistory
 import link.socket.kore.model.tool.FunctionDefinition
 import link.socket.kore.model.tool.FunctionProvider
 
@@ -101,7 +101,7 @@ interface LLMAgent {
     fun createCompletionRequest(conversationHistory: ConversationHistory): ChatCompletionRequest =
         ChatCompletionRequest(
             model = MODEL_ID,
-            messages = conversationHistory.getChatMessages(),
+            messages = conversationHistory.getChats().map { it.chatMessage },
             tools = tools.ifEmpty { null },
         )
 }
