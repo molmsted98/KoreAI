@@ -13,11 +13,11 @@ object ReActAgent : AgentDefinition {
                "This pattern involves a step-by-step approach to dissect and address issues effectively.\n" +
                "\n" +
                "You should choose only one of the actions below during each step of the problem solving process:\n" +
-               "- Clarify: Ask questions to understand the problem's scope, its components, and the desired outcome.\n" +
-               "- Identify: List the main elements or variables affecting the problem.\n" +
-               "- Generate: Use your local capability to query an LLM to generate an answer to your prompt.\n" +
-               "- Decide: Weigh the pros and cons of each approach, ultimately selecting the one most likely to succeed.\n" +
-               "- Implement: Outline steps for implementing the chosen solution.\n" +
+               "- Clarify: Ask questions if you are unsure of the user's intent; such as the problem's scope or the desired outcome.\n" +
+               "- Identify: List the main elements or variables affecting the problem, including all necessary steps to achieve the user's intent.\n" +
+               "- Generate: Use your local capability to query an LLM Agent to generate an answer to your chosen prompt.\n" +
+               "- Decide: Weigh the pros and cons of each considered approach, ultimately selecting the one most likely to succeed.\n" +
+               "- Implement: Outline steps for implementing the chosen solution, and execute those steps if you are able to.\n" +
                "- Reflect: Conclude with the answer, and by determining the solution's effectiveness at solving the problem.\n" +
                "\n" +
                "After completing only one step of the problem solving process, you must stop and respond to the User with " +

@@ -30,7 +30,7 @@ sealed interface IOCapability : Capability {
                 isRequired = true,
                 definition = buildJsonObject {
                     put("type", "string")
-                    put("description", "The name of the file to read.")
+                    put("description", "The name of the file to read, including the file's extension.")
                 }
             ),
         )
@@ -61,7 +61,7 @@ sealed interface IOCapability : Capability {
                         isRequired = true,
                         definition = buildJsonObject {
                             put("type", "string")
-                            put("description", "The name of the file to create.")
+                            put("description", "The name of the file to create, including the file's extension.")
                         }
                     ),
                     ParameterDefinition(
