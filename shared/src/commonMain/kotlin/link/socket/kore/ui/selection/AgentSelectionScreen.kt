@@ -7,11 +7,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import link.socket.kore.model.agent.AgentDefinition
+import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.model.agent.bundled.*
 import link.socket.kore.ui.widget.header.Header
 
@@ -21,6 +22,20 @@ fun AgentSelectionScreen(
     onSubmit: (AgentDefinition) -> Unit,
     onBackClicked: () -> Unit,
 ) {
+    var partiallySelectedAgent by remember { mutableStateOf<AgentDefinition?>(null) }
+
+    var neededInputs: List<AgentInput> by remember(partiallySelectedAgent) {
+        mutableStateOf(partiallySelectedAgent?.neededInputs ?: emptyList())
+    }
+
+    val onAgentSelected: (AgentDefinition) -> Unit = { agentDefinition ->
+        if (agentDefinition.neededInputs.isNotEmpty()) {
+            partiallySelectedAgent = agentDefinition
+        } else {
+            onSubmit(agentDefinition)
+        }
+    }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -28,17 +43,17 @@ fun AgentSelectionScreen(
              Surface(
                  elevation = 16.dp,
              ) {
-                    Column(
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth(),
-                    ) {
-                        Header(
-                            title = "Agent Selection",
-                            displayBackIcon = true,
-                            onBackClicked = onBackClicked,
-                        )
-                    }
+                Column(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth(),
+                ) {
+                    Header(
+                        title = "Agent Selection",
+                        displayBackIcon = true,
+                        onBackClicked = onBackClicked,
+                    )
+                }
              }
         },
         floatingActionButton = {
@@ -60,17 +75,29 @@ fun AgentSelectionScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
-        AgentColumn(
-            modifier = Modifier.padding(paddingValues),
-            onSubmit = onSubmit,
-        )
+        if (neededInputs.isEmpty()) {
+            AgentColumn(
+                modifier = Modifier.padding(paddingValues),
+                onAgentSelected = onAgentSelected,
+            )
+        } else {
+            AgentSelectionInputs(
+                modifier = Modifier.padding(paddingValues),
+                partiallySelectedAgent = partiallySelectedAgent!!,
+                neededInputs = neededInputs,
+                optionalInputs = partiallySelectedAgent!!.optionalInputs,
+                onAgentSubmission = { agentDefinition ->
+                    onSubmit(agentDefinition)
+                },
+            )
+        }
     }
 }
 
 @Composable
 fun AgentColumn(
     modifier: Modifier = Modifier,
-    onSubmit: (AgentDefinition) -> Unit,
+    onAgentSelected: (AgentDefinition) -> Unit,
 ) {
     val data = listOf(
         "Capability Agents" to capabilityAgents,
@@ -90,7 +117,7 @@ fun AgentColumn(
         }
 
         items(data) { (header, row) ->
-            AgentRow(header, row, onSubmit)
+            AgentRow(header, row, onAgentSelected)
         }
 
         item {
@@ -99,12 +126,11 @@ fun AgentColumn(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AgentRow(
     category: String,
     agents: List<AgentDefinition>,
-    onSubmit: (AgentDefinition) -> Unit,
+    onAgentSelected: (AgentDefinition) -> Unit,
 ) {
     Column {
         Text(
@@ -124,7 +150,11 @@ fun AgentRow(
             }
 
             items(agents) { agent ->
-                AgentCard(agent, onSubmit)
+                AgentCard(agent, onAgentSelected)
+            }
+
+            item {
+                // no-op; spaced by 16.dp in the LazyRow
             }
         }
     }
@@ -134,23 +164,25 @@ fun AgentRow(
 @Composable
 fun AgentCard(
     agent: AgentDefinition,
-    onSubmit: (AgentDefinition) -> Unit,
+    onAgentSelected: (AgentDefinition) -> Unit,
 ) {
     Card(
         modifier = Modifier
             .requiredSize(200.dp),
         elevation = 4.dp,
         onClick = {
-            onSubmit(agent)
+            onAgentSelected(agent)
         }
     ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            text = agent.name,
-            textAlign = TextAlign.Center
-        )
+        Column {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                text = agent.name,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

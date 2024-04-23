@@ -59,8 +59,9 @@ val agentList: List<AgentDefinition> = listOf(
 val agentNameList: List<String> = agentList.map { it.name }
 
 val agentArgsList: List<String> = agentList.map { agent ->
-    "${agent.name}(" + (agent.inputs.joinToString(", ") { input ->
+    "${agent.name}(" + (agent.neededInputs.joinToString(", ") { input ->
         input.key + ": " + when (input) {
+            is AgentInput.EnumArgs -> "Enum"
             is AgentInput.StringArg -> "String"
             is AgentInput.ListArg -> "List<String>"
         }

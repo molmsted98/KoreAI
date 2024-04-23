@@ -1,14 +1,13 @@
 package link.socket.kore.model.agent.bundled.reasoning
 
 import link.socket.kore.model.agent.AgentDefinition
-import link.socket.kore.model.chat.system.Instructions
 
 // Inspiration from https://www.width.ai/post/react-prompting
-object ReActAgent : AgentDefinition {
+object ReActAgent : AgentDefinition() {
 
     override val name: String = "ReAct Agent"
 
-    override val instructions: Instructions = Instructions(
+    override val prompt: String =
        "You are an Agent that is designed to apply the ReAct pattern for logical and methodical problem solving. " +
                "This pattern involves a step-by-step approach to dissect and address issues effectively.\n" +
                "\n" +
@@ -33,5 +32,4 @@ object ReActAgent : AgentDefinition {
                "Implement 1: Access reliable entertainment database. Look up Lorelai Gilmore's character bio. Verify the claim's accuracy.\n" +
                "Generate 1: Lorelai Gimore's father Richard Gilmore\n" +
                "Reflect 1: We have found that Lorelai Gilmore's father is named Richard. This approach was fast and effective."
-    )
 }

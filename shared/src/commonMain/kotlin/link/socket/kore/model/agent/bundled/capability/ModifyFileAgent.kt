@@ -2,9 +2,8 @@ package link.socket.kore.model.agent.bundled.capability
 
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
-import link.socket.kore.model.chat.system.Instructions
 
-data object ModifyFileAgent : AgentDefinition {
+data object ModifyFileAgent : AgentDefinition() {
 
     private lateinit var filePath: String
     private lateinit var technologies: String
@@ -23,12 +22,12 @@ data object ModifyFileAgent : AgentDefinition {
 
     override val name: String = "Modify File"
 
-    override val instructions: Instructions
-        get() = Instructions(instructionsFrom(technologies))
+    override val prompt: String
+        get() = instructionsFrom(technologies)
 
-    override val inputs: List<AgentInput> = listOf(filePathArg, technologiesArg)
+    override val neededInputs: List<AgentInput> = listOf(filePathArg, technologiesArg)
 
-    override fun parseNeededInputs(inputs: Map<String, AgentInput>) {
+    override fun parseInputs(inputs: Map<String, AgentInput>) {
         filePath = inputs[filePathArg.key]?.value ?: ""
         technologies = inputs[technologiesArg.key]?.value ?: ""
     }

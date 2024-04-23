@@ -11,7 +11,6 @@ import link.socket.kore.data.ConversationRepository
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.chat.Chat
-import link.socket.kore.model.chat.system.Instructions
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
 
@@ -32,8 +31,8 @@ sealed interface LLMCapability : Capability {
                         "what this function has executed.",
                 { args: JsonObject ->
                     val instructions = args.getValue("instructions").jsonPrimitive.content
-                    val prompt = args.getValue("prompt").jsonPrimitive.content
-                    promptLLM(openAI, scope, instructions, prompt)
+                    val initialChat = args.getValue("initialChat").jsonPrimitive.content
+                    promptLLM(openAI, scope, instructions, initialChat)
                 },
                 listOf(
                     ParameterDefinition(
@@ -45,7 +44,7 @@ sealed interface LLMCapability : Capability {
                         }
                     ),
                     ParameterDefinition(
-                        name = "prompt",
+                        name = "initialChat",
                         isRequired = true,
                         definition = buildJsonObject {
                             put("type", "string")
@@ -60,18 +59,18 @@ sealed interface LLMCapability : Capability {
             openAI: OpenAI,
             scope: CoroutineScope,
             instructions: String,
-            prompt: String,
+            initialChat: String,
         ): String {
-            val agentDefinition = object : AgentDefinition {
+            val agentDefinition = object : AgentDefinition() {
                 override val name: String = ""
-                override val instructions: Instructions = Instructions(instructions)
+                override val prompt: String = instructions
             }
 
             val tempAgent = KoreAgent.HumanAndLLMAssisted(conversationRepository, openAI, scope, agentDefinition)
 
             val initialMessage = Chat.Text(
                 role = ChatRole.User,
-                content = prompt,
+                content = initialChat,
             )
 
             val conversationId = conversationRepository.createConversation(tempAgent, initialMessage)

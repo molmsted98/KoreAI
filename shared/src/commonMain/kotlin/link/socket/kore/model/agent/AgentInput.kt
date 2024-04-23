@@ -5,6 +5,13 @@ sealed class AgentInput(
     open val name: String,
     open val value: String,
 ) {
+    data class EnumArgs(
+        override val key: String,
+        override val name: String,
+        override val value: String,
+        val possibleValues: List<String>,
+    ) : AgentInput(key, name, value)
+
     data class StringArg(
         override val key: String,
         override val name: String,

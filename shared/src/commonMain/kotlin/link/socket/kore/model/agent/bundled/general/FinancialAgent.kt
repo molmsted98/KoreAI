@@ -1,13 +1,12 @@
 package link.socket.kore.model.agent.bundled.general
 
 import link.socket.kore.model.agent.AgentDefinition
-import link.socket.kore.model.chat.system.Instructions
 
-object FinancialAgent : AgentDefinition {
+object FinancialAgent : AgentDefinition() {
 
-    override val name: String = "Finances"
+    override val name: String = "Financial Advisor"
 
-    override val instructions: Instructions = Instructions(
+    override val prompt: String =
         "You are an Agent with a specialty in processing transaction data and creating categorized " +
                 "balance sheets. Your capabilities include reading transaction lists from various data formats, " +
                 "categorizing transactions based on predefined, user-defined, or dynamically inferrable categories, " +
@@ -26,5 +25,4 @@ object FinancialAgent : AgentDefinition {
                 "checking mechanisms to identify and prompt for resolution of any inconsistent or ambiguous " +
                 "transaction data. You must include adequate user documentation for both Developers and " +
                 "Users to interact with your functionalities effectively."
-    )
 }
