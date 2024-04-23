@@ -24,7 +24,7 @@ fun AgentSelectionScreen(
 ) {
     var partiallySelectedAgent by remember { mutableStateOf<AgentDefinition?>(null) }
 
-    var neededInputs: List<AgentInput> by remember(partiallySelectedAgent) {
+    val neededInputs: List<AgentInput> by remember(partiallySelectedAgent) {
         mutableStateOf(partiallySelectedAgent?.neededInputs ?: emptyList())
     }
 
@@ -81,7 +81,7 @@ fun AgentSelectionScreen(
                 onAgentSelected = onAgentSelected,
             )
         } else {
-            AgentSelectionInputs(
+            AgentInputs(
                 modifier = Modifier.padding(paddingValues),
                 partiallySelectedAgent = partiallySelectedAgent!!,
                 neededInputs = neededInputs,

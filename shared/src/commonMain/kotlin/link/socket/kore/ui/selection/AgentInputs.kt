@@ -14,25 +14,17 @@ import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.ui.theme.themeTypography
 
 @Composable
-fun AgentSelectionInputs(
+fun AgentInputs(
     modifier: Modifier = Modifier,
     partiallySelectedAgent: AgentDefinition,
     neededInputs: List<AgentInput>,
     optionalInputs: List<AgentInput>,
     onAgentSubmission: (AgentDefinition) -> Unit,
 ) {
-    val inputs by remember {
+    val inputValues by remember {
         mutableStateOf(
             mutableMapOf<String, AgentInput>()
         )
-    }
-
-    val onStringInputChanged: (AgentInput.StringArg) -> Unit = { input ->
-        inputs[input.key] = input
-    }
-
-    val onListInputChanged: (AgentInput.ListArg) -> Unit = { input ->
-        inputs[input.key] = input
     }
 
     val inputComposable: @Composable (AgentInput) -> Unit = @Composable { input ->
@@ -44,8 +36,8 @@ fun AgentSelectionInputs(
                         .fillMaxWidth(),
                     input = input,
                     possibleValues = input.possibleValues,
-                    onValueChanged = { enumValue ->
-                        inputs[input.key] = input.copy(value = enumValue)
+                    onValueChanged = { value ->
+                        inputValues[input.key] = value
                     },
                 )
             }
@@ -55,7 +47,9 @@ fun AgentSelectionInputs(
                     modifier = Modifier
                         .fillMaxWidth(),
                     input = input,
-                    onValueChanged = onStringInputChanged,
+                    onValueChanged = { value ->
+                        inputValues[input.key] = value
+                    },
                 )
             }
 
@@ -64,7 +58,9 @@ fun AgentSelectionInputs(
                     modifier = Modifier
                         .fillMaxWidth(),
                     input = input,
-                    onValueChanged = onListInputChanged,
+                    onValueChanged = { value ->
+                        inputValues[input.key] = value
+                    },
                 )
             }
         }
@@ -103,7 +99,7 @@ fun AgentSelectionInputs(
                         .fillMaxWidth(),
                     onClick = {
                         val finalizedAgent = partiallySelectedAgent.apply {
-                            parseInputs(inputs)
+                            parseInputs(inputValues)
                         }
                         onAgentSubmission(finalizedAgent)
                     },
@@ -127,29 +123,46 @@ private fun EnumInput(
     modifier: Modifier = Modifier,
     input: AgentInput.EnumArgs,
     possibleValues: List<String>,
-    onValueChanged: (String) -> Unit,
+    onValueChanged: (AgentInput.EnumArgs) -> Unit,
 ) {
-    var showDropdown by remember { mutableStateOf(false) }
-    Card(
+    Column(
         modifier = modifier,
-        onClick = { showDropdown = true },
     ) {
         Text(
-            text = input.value,
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = input.name,
         )
-    }
-    DropdownMenu(
-        expanded = showDropdown,
-        onDismissRequest = { showDropdown = false },
-    ) {
-        possibleValues.forEach { enumValue ->
-            DropdownMenuItem(
-                onClick = {
-                    onValueChanged(enumValue)
-                    showDropdown = false
-                },
-            ) {
-                Text(enumValue)
+
+        var showDropdown by remember { mutableStateOf(false) }
+        Card(
+            modifier = Modifier
+                .padding(12.dp),
+            onClick = {
+                showDropdown = true
+            },
+        ) {
+            Text(
+                text = input.value,
+            )
+        }
+        DropdownMenu(
+            expanded = showDropdown,
+            onDismissRequest = { showDropdown = false },
+        ) {
+            possibleValues.forEach { enumValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        onValueChanged(
+                            input.copy(
+                                value = enumValue,
+                            )
+                        )
+                        showDropdown = false
+                    },
+                ) {
+                    Text(enumValue)
+                }
             }
         }
     }
