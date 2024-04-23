@@ -5,7 +5,7 @@ import link.socket.kore.model.chat.system.Instructions
 
 object BusinessAgent : AgentDefinition {
 
-    override val name: String = "Business Coach"
+    override val name: String = "Business Advisor"
 
     override val instructions: Instructions = Instructions(
        "You are an Agent specializing in business coaching for entrepreneurs. Your primary goal is to " +

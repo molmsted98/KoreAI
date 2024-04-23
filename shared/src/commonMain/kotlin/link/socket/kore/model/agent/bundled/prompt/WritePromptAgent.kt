@@ -1,4 +1,4 @@
-package link.socket.kore.model.agent.bundled.kore
+package link.socket.kore.model.agent.bundled.prompt
 
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.chat.system.Instructions

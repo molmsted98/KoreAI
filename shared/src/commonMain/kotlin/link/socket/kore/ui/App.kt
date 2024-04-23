@@ -10,12 +10,11 @@ import kotlinx.coroutines.*
 import link.socket.kore.Application
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.KoreAgent
-import link.socket.kore.model.agent.bundled.agentList
 import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.ui.conversation.ConversationScreen
 import link.socket.kore.ui.home.HomeScreen
-import link.socket.kore.ui.selection.SelectionScreen
+import link.socket.kore.ui.selection.AgentSelectionScreen
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.theme.themeShapes
 import link.socket.kore.ui.theme.themeTypography
@@ -128,15 +127,16 @@ fun App(
                 }
 
                 Screen.SELECTION -> {
-                    SelectionScreen(
+                    AgentSelectionScreen(
                         modifier = Modifier
                             .fillMaxSize(),
-                        application = application,
-                        agentList = agentList,
-                        onAgentSelected = onNewConversation,
+                        onSubmit = { agentDefinition ->
+                            val agent = application.createAgent(agentDefinition)
+                            onNewConversation(agent)
+                        },
                         onBackClicked = {
                             selectedScreen = Screen.HOME
-                        },
+                        }
                     )
                 }
 

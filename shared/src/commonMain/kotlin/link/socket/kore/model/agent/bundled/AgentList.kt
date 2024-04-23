@@ -2,10 +2,21 @@ package link.socket.kore.model.agent.bundled
 
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
+import link.socket.kore.model.agent.bundled.capability.LocalCapabilitiesAgent
+import link.socket.kore.model.agent.bundled.capability.ModifyFileAgent
 import link.socket.kore.model.agent.bundled.code.CleanJsonAgent
 import link.socket.kore.model.agent.bundled.code.WriteCodeAgent
 import link.socket.kore.model.agent.bundled.general.*
-import link.socket.kore.model.agent.bundled.kore.*
+import link.socket.kore.model.agent.bundled.prompt.ComparePromptsAgent
+import link.socket.kore.model.agent.bundled.prompt.DefineAgentAgent
+import link.socket.kore.model.agent.bundled.prompt.WritePromptAgent
+import link.socket.kore.model.agent.bundled.reasoning.DelegateTasksAgent
+import link.socket.kore.model.agent.bundled.reasoning.ReActAgent
+
+val capabilityAgents = listOf(
+    LocalCapabilitiesAgent,
+    ModifyFileAgent,
+)
 
 val codeAgents: List<AgentDefinition> = listOf(
     CleanJsonAgent,
@@ -26,20 +37,23 @@ val generalAgents: List<AgentDefinition> = listOf(
     TravelAgent,
 )
 
-val koreAgents: List<AgentDefinition> = listOf(
-    ReActAgent,
-    DefineAgentAgent,
-    DelegateTasksAgent,
-    LocalCapabilitiesAgent,
-    ModifyFileAgent,
-    WritePromptAgent,
+val promptAgents: List<AgentDefinition> = listOf(
     ComparePromptsAgent,
+    DefineAgentAgent,
+    WritePromptAgent,
+)
+
+val reasoningAgents: List<AgentDefinition> = listOf(
+    DelegateTasksAgent,
+    ReActAgent,
 )
 
 val agentList: List<AgentDefinition> = listOf(
+    *capabilityAgents.toTypedArray(),
     *codeAgents.toTypedArray(),
     *generalAgents.toTypedArray(),
-    *koreAgents.toTypedArray(),
+    *promptAgents.toTypedArray(),
+    *reasoningAgents.toTypedArray(),
 )
 
 val agentNameList: List<String> = agentList.map { it.name }
