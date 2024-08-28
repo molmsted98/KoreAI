@@ -2,8 +2,6 @@ package link.socket.kore.model.agent.bundled
 
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
-import link.socket.kore.model.agent.bundled.capability.LocalCapabilitiesAgent
-import link.socket.kore.model.agent.bundled.capability.ModifyFileAgent
 import link.socket.kore.model.agent.bundled.code.CleanJsonAgent
 import link.socket.kore.model.agent.bundled.code.WriteCodeAgent
 import link.socket.kore.model.agent.bundled.general.*
@@ -12,11 +10,6 @@ import link.socket.kore.model.agent.bundled.prompt.TestAgentAgent
 import link.socket.kore.model.agent.bundled.prompt.WritePromptAgent
 import link.socket.kore.model.agent.bundled.reasoning.DelegateTasksAgent
 import link.socket.kore.model.agent.bundled.reasoning.ReActAgent
-
-val capabilityAgents = listOf(
-    LocalCapabilitiesAgent,
-    ModifyFileAgent,
-)
 
 val codeAgents = listOf(
     CleanJsonAgent,
@@ -49,7 +42,6 @@ val reasoningAgents = listOf(
 )
 
 val agentList: List<AgentDefinition> = listOf(
-    *capabilityAgents.toTypedArray(),
     *codeAgents.toTypedArray(),
     *generalAgents.toTypedArray(),
     *promptAgents.toTypedArray(),
@@ -79,9 +71,7 @@ fun String?.getAgentDefinition(prompt: String): AgentDefinition = when (this) {
     FinancialAgent.name -> FinancialAgent
     HealthAgent.name -> HealthAgent
     LanguageAgent.name -> LanguageAgent
-    LocalCapabilitiesAgent.name -> LocalCapabilitiesAgent
     MediaAgent.name -> MediaAgent
-    ModifyFileAgent.name -> ModifyFileAgent
     ReActAgent.name -> ReActAgent
     StudyAgent.name -> StudyAgent
     TechAgent.name -> TechAgent

@@ -13,7 +13,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
-import link.socket.kore.model.agent.bundled.*
+import link.socket.kore.model.agent.bundled.codeAgents
+import link.socket.kore.model.agent.bundled.generalAgents
+import link.socket.kore.model.agent.bundled.promptAgents
+import link.socket.kore.model.agent.bundled.reasoningAgents
 import link.socket.kore.ui.widget.header.Header
 
 @Composable
@@ -100,7 +103,6 @@ fun AgentColumn(
     onAgentSelected: (AgentDefinition) -> Unit,
 ) {
     val data = listOf(
-        "Capability Agents" to capabilityAgents,
         "Code Agents" to codeAgents,
         "General Agents" to generalAgents,
         "Prompt Agents" to promptAgents,

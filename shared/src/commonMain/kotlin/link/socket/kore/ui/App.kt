@@ -24,11 +24,11 @@ enum class Screen {
 }
 
 fun Application.createAgent(agentDefinition: AgentDefinition): KoreAgent =
-    KoreAgent.HumanAndLLMAssisted(
-        conversationRepository,
+    KoreAgent(
         openAI,
         CoroutineScope(Dispatchers.IO),
         agentDefinition,
+        conversationRepository,
     )
 
 @Composable

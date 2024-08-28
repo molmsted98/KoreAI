@@ -46,8 +46,8 @@ sealed interface AgentCapability : Capability {
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provideSuspend(
                 "promptAgent",
-                "Requests a Chat completion from another LLM instance with the given prompt and user response. " +
-                        "The completion that is returned from the other LLM instance should be shown to the User.",
+                "Requests a Chat completion from another LLM instance with the given prompt and an optional User response to the LLM's initial Chat. " +
+                        "The completion that is returned from the other LLM instance should be shown to the User as part of your response.",
                 { args: JsonObject ->
                     val agent = args.getOrElse("agent") {
                         JsonPrimitive("")
@@ -95,11 +95,11 @@ sealed interface AgentCapability : Capability {
             prompt: String,
             userResponse: String?,
         ): String {
-            val agent = KoreAgent.HumanAndLLMAssisted(
-                conversationRepository,
+            val agent = KoreAgent(
                 openAI,
                 scope,
                 agentName.getAgentDefinition(prompt),
+                conversationRepository,
             )
 
             val conversationId = conversationRepository.createConversation(agent, null)
