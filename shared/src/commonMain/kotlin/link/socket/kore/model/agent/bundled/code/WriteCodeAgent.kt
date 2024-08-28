@@ -14,7 +14,7 @@ import link.socket.kore.model.agent.AgentInput
  */
 data object WriteCodeAgent : AgentDefinition() {
 
-    private lateinit var technologies: String
+    private var technologies: String = "Any language or framework"
 
     private val technologiesArg = AgentInput.ListArg(
         key = "technologyList",
