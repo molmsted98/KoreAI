@@ -9,7 +9,7 @@ import link.socket.kore.model.capability.AgentCapability
 import link.socket.kore.model.capability.IOCapability
 import link.socket.kore.model.tool.FunctionProvider
 
-open class KoreAgent(
+data class KoreAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
     val definition: AgentDefinition,

@@ -11,6 +11,7 @@ typealias SuspendLLMFunction1 = suspend (JsonObject) -> String
 typealias LLMCSVFunction = () -> List<List<String>>
 typealias LLMCSVFunction1 = (JsonObject) -> List<List<String>>
 
+// TODO: Simplify this
 sealed class FunctionDefinition(
     open val tool: Tool,
 ) {

@@ -2,6 +2,7 @@ package link.socket.kore.model.assistant
 
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.assistant.*
+import com.aallam.openai.api.core.Parameters
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
@@ -24,13 +25,12 @@ data class KoreAssistant(
         AssistantTool.FunctionTool(
             Function(
                 name = tool.function.name,
-                description = tool.description ?: error("Function ${tool.function.name} missing description"),
-                parameters = tool.function.parameters,
+                description = tool.function.description ?: error("Function ${tool.function.name} missing description"),
+                parameters = tool.function.parameters ?: Parameters.Empty,
             )
         )
     } + listOf(
         AssistantTool.CodeInterpreter,
-        AssistantTool.RetrievalTool,
     )
 
     private lateinit var assistant: Assistant

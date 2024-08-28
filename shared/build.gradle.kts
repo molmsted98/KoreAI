@@ -32,9 +32,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.aallam.openai:openai-client:3.6.0")
-                implementation("io.ktor:ktor-client-core:2.3.6")
-                implementation("com.squareup.okio:okio:3.6.0")
+                implementation("com.aallam.openai:openai-client:3.8.2")
+                implementation("io.ktor:ktor-client-core:2.3.12")
+                implementation("com.squareup.okio:okio:3.9.0")
                 implementation("com.mikepenz:multiplatform-markdown-renderer:0.12.0")
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -47,17 +47,17 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:1.8.2")
-                api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.1")
-                implementation("com.lordcodes.turtle:turtle:0.5.0")
+                api("androidx.activity:activity-compose:1.9.1")
+                api("androidx.appcompat:appcompat:1.7.0")
+                api("androidx.core:core-ktx:1.13.1")
+                implementation("com.lordcodes.turtle:turtle:0.10.0")
                 implementation("io.ktor:ktor-client-okhttp:2.3.6")
             }
         }
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
-                implementation("com.lordcodes.turtle:turtle:0.5.0")
+                implementation("com.lordcodes.turtle:turtle:0.10.0")
                 implementation("io.ktor:ktor-client-okhttp:2.3.6")
             }
         }
