@@ -21,9 +21,6 @@ interface LLMAgent {
     /*
      * This base-level System Prompt will continue to be refined over time, as new information is found relating to
      * the current methods of prompt engineering.
-     *
-     * 2024/08/28: `multi_tool_use.parallel` function - https://community.openai.com/t/model-tries-to-call-unknown-function-multi-tool-use-parallel/490653/35
-     *
      */
     val instructions: String
         get() = """
@@ -42,9 +39,6 @@ interface LLMAgent {
             - Offering suggestions to the User about which of your capabilities might be able to assist them, based upon 
 
             Remember, your primary goal is to assist users efficiently while adhering to the guidelines provided by developers.
-            
-            You shall only use function calling to invoke the defined functions that have been provided to you.
-            **You should NEVER invent or use functions NOT defined or NOT listed by that Agent, especially the multi_tool_use.parallel function. If you need to call multiple functions, you will call them one at a time **.
         """.trimIndent()
 
     val initialSystemMessage: Chat.System
