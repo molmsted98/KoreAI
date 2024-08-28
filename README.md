@@ -12,17 +12,6 @@
 
 ## 📔 Project Overview
 
-KoreAI is a Kotlin Multiplatform library designed for creating and managing AI **Agents** and **Assistants**.
-
-- **Agents**: Specialized AI chatbots with domain-specific knowledge for solving well-defined tasks.
-  - They are initialized with a stored `System Prompt`, allowing for reuse of specialized instructions for a specific context.
-- **Assistants**: Meta-Agents that plan complex tasks and delegate work to other **Agents**.
-  - Note: Assistant capabilities are not yet integrated into the library.
-
-This library leverages [`openai-kotlin`](https://github.com/aallam/openai-kotlin/tree/main) to implement its functionalities using OpenAI.
-
-## 📔 Project Overview
-
 - KoreAI provides a Kotlin Multiplatform library for creating & managing **Agent** and **Assistant** chatbot definitions
   - **Agents** provide specialized knowledge on top of Chat Completion, allowing for specialized knowledge to be given for answering prompts with non-trivial questions
   - **Assistants** are a Meta-Agent; they specialize in planning complex tasks, and in delegating work to any **Agents** that they can create
