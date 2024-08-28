@@ -19,5 +19,7 @@ object ComparePromptsAgent : AgentDefinition() {
         - Do not specify a value for the `agent` argument in the promptAgent function call.
         - Pass the prompt to be tested as the `prompt` argument.
         - Pass the example User response for that prompt as the `response` argument.
+        
+        During Step 5 ensure to display the prompt that you're referencing in the analysis, so the User knows which one you're referring to.
     """.trimIndent()
 }
