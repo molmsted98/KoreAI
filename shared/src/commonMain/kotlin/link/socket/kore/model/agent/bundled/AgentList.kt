@@ -8,7 +8,7 @@ import link.socket.kore.model.agent.bundled.code.CleanJsonAgent
 import link.socket.kore.model.agent.bundled.code.WriteCodeAgent
 import link.socket.kore.model.agent.bundled.general.*
 import link.socket.kore.model.agent.bundled.prompt.ComparePromptsAgent
-import link.socket.kore.model.agent.bundled.prompt.DefineAgentAgent
+import link.socket.kore.model.agent.bundled.prompt.TestAgentAgent
 import link.socket.kore.model.agent.bundled.prompt.WritePromptAgent
 import link.socket.kore.model.agent.bundled.reasoning.DelegateTasksAgent
 import link.socket.kore.model.agent.bundled.reasoning.ReActAgent
@@ -18,12 +18,12 @@ val capabilityAgents = listOf(
     ModifyFileAgent,
 )
 
-val codeAgents: List<AgentDefinition> = listOf(
+val codeAgents = listOf(
     CleanJsonAgent,
     WriteCodeAgent,
 )
 
-val generalAgents: List<AgentDefinition> = listOf(
+val generalAgents = listOf(
     BusinessAgent,
     CareerAgent,
     CookingAgent,
@@ -37,13 +37,13 @@ val generalAgents: List<AgentDefinition> = listOf(
     TravelAgent,
 )
 
-val promptAgents: List<AgentDefinition> = listOf(
+val promptAgents = listOf(
     ComparePromptsAgent,
-    DefineAgentAgent,
+    TestAgentAgent(""),
     WritePromptAgent,
 )
 
-val reasoningAgents: List<AgentDefinition> = listOf(
+val reasoningAgents = listOf(
     DelegateTasksAgent,
     ReActAgent,
 )
@@ -68,13 +68,12 @@ val agentArgsList: List<String> = agentList.map { agent ->
     }) + ")"
 }
 
-fun String.getAgentDefinition(): AgentDefinition = when (this) {
+fun String?.getAgentDefinition(prompt: String): AgentDefinition = when (this) {
     BusinessAgent.name -> BusinessAgent
     CareerAgent.name -> CareerAgent
     CleanJsonAgent.name -> CleanJsonAgent
     CookingAgent.name -> CookingAgent
     ComparePromptsAgent.name -> ComparePromptsAgent
-    DefineAgentAgent.name -> DefineAgentAgent
     DelegateTasksAgent.name -> DelegateTasksAgent
     DIYAgent.name -> DIYAgent
     FinancialAgent.name -> FinancialAgent
@@ -88,5 +87,6 @@ fun String.getAgentDefinition(): AgentDefinition = when (this) {
     TechAgent.name -> TechAgent
     TravelAgent.name -> TravelAgent
     WriteCodeAgent.name -> WriteCodeAgent
-    else -> throw IllegalArgumentException("Unknown Agent $this")
+    WritePromptAgent.name -> WritePromptAgent
+    else -> TestAgentAgent(prompt)
 }

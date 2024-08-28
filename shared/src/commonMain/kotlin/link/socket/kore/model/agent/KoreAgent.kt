@@ -61,8 +61,7 @@ abstract class KoreAgent(
 
         override val instructions: String
             get() = "${super.instructions}\n\n" +
-                "You are an Agent that can provide answers to Chat prompts through both LLM completion, " +
-                "or through Developer intervention via the CLI that was used to configure your Chat session. \n\n" +
+                "You are an Agent that can provide answers to Chat prompts through LLM completion.\n" +
                 definition.instructions.build()
     }
 }

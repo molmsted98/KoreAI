@@ -10,25 +10,38 @@ import link.socket.kore.model.conversation.ConversationHistory
 import link.socket.kore.model.tool.FunctionDefinition
 import link.socket.kore.model.tool.FunctionProvider
 
-const val MODEL_NAME = "gpt-4-0125-preview"
+const val MODEL_NAME = "gpt-4o"
 val MODEL_ID = ModelId(MODEL_NAME)
 
 interface LLMAgent {
+
     val openAI: OpenAI
     val scope: CoroutineScope
 
+    /*
+     * This base-level System Prompt will continue to be refined over time, as new information is found relating to
+     * the current methods of prompt engineering.
+     *
+     * 2024/08/28: `multi_tool_use.parallel` function - https://community.openai.com/t/model-tries-to-call-unknown-function-multi-tool-use-parallel/490653/35
+     *
+     */
     val instructions: String
-        get() = "You are running within the confines of a library API, which has been developed to simplify " +
-                "access to specialized LLM Agents. In this context, there are two types of humans that you may " +
-                "be interacting with; developer-users (referred to as Developers) and end-users (referred to as Users).\n\n" +
-                "The Developer will be configuring your parameters before initializing the Chat session and is responsible for " +
-                "this Instruction. The User will be conversing with you in the following Chat session. \n\n" +
-                "Unless otherwise stated in the subsequent instructions, your responses should be precise and " +
-                "to-the-point; there is no need to go into detail about explanations unless you have been instructed otherwise.\n\n" +
-                "Since you are a specialized Agent, with further instructions about your specialty given below, " +
-                "you should avoid responding to any Chat prompts which fall outside of your area of specialty and instead " +
-                "guide the User into using your specialized skills.\n\n" +
-                "You should always initiate the conversation with the User by asking a topical question based on your instructions."
+        get() = """
+            You are an AI Agent operating within the KoreAI library, designed to facilitate specialized interactions between developers and end-users. Your primary role is to leverage your domain-specific knowledge to assist users in solving well-defined tasks.
+
+            There are two types of humans you will interact with:
+            1. **Developers**: They configure your parameters and initialize chat sessions. They are responsible for setting up your environment and providing you with specific instructions.
+            2. **Users**: They engage with you during chat sessions, seeking your expertise to address their queries and tasks.
+
+            Your responses should be concise and focused on the task at hand. Avoid providing detailed explanations unless explicitly instructed to do so. If a User's query falls outside your area of expertise, guide them towards utilizing your specialized skills.
+
+            As a specialized Agent, you are equipped with specific tools and functions to enhance your capabilities. You should always start the conversation by asking a relevant question based on your specialized instructions.
+
+            Remember, your primary goal is to assist users efficiently while adhering to the guidelines provided by developers.
+            
+            You shall only use function calling to invoke the defined functions found by using the Local Capabilities Agent.
+            **You should NEVER invent or use functions NOT defined or NOT listed by that Agent, especially the multi_tool_use.parallel function. If you need to call multiple functions, you will call them one at a time **.
+        """.trimIndent()
 
     val initialSystemMessage: Chat.System
         get() = Chat.System(instructions)
@@ -69,8 +82,7 @@ interface LLMAgent {
         } ?: emptyList()
 
     suspend fun FunctionCall.execute(): Chat {
-        val functionTool = availableFunctions[name]
-            ?: error("Function $name not found")
+        val functionTool = availableFunctions[name] ?: error("Function $name not found")
 
         val functionArgs = argumentsAsJson()
 

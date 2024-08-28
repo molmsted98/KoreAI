@@ -6,8 +6,8 @@ import link.socket.kore.model.chat.system.Tone
 
 abstract class AgentDefinition {
 
-    var tone: Tone = Tone.PROFESSIONAL
-    var seriousness: Seriousness = Seriousness.VERY
+    private var tone: Tone = Tone.PROFESSIONAL
+    private var seriousness: Seriousness = Seriousness.VERY
 
     private val toneArg
         get() = AgentInput.EnumArgs(
