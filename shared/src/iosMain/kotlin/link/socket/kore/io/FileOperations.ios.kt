@@ -30,23 +30,23 @@ actual fun parseCsv(folderPath: String, fileName: String): Result<List<List<Stri
     Result.failure(UnsupportedOperationException())
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun readFile(folderPath: String, fileName: String): Result<String> {
+actual fun readFile(filePath: String): Result<String> {
 
-    val (filename, type) = when (val lastPeriodIndex = fileName.lastIndexOf('.')) {
+    val (filename, type) = when (val lastPeriodIndex = filePath.lastIndexOf('.')) {
         0 -> {
-            null to fileName.drop(1)
+            null to filePath.drop(1)
         }
 
         in 1..Int.MAX_VALUE -> {
-            fileName.take(lastPeriodIndex) to fileName.drop(lastPeriodIndex + 1)
+            filePath.take(lastPeriodIndex) to filePath.drop(lastPeriodIndex + 1)
         }
 
         else -> {
-            fileName to null
+            filePath to null
         }
     }
     val path = bundle.pathForResource(filename, type) ?: error(
-        "Couldn't get path of $fileName (parsed as: ${
+        "Couldn't get path of $filePath (parsed as: ${
             listOfNotNull(
                 filename,
                 type
@@ -62,7 +62,7 @@ actual fun readFile(folderPath: String, fileName: String): Result<String> {
         )?.let { contents ->
             Result.success(contents)
         } ?: Result.failure(
-            RuntimeException("Couldn't load resource: $fileName")
+            RuntimeException("Couldn't load resource: $filePath")
         )
     }
 }

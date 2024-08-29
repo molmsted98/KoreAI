@@ -56,13 +56,13 @@ actual fun parseCsv(folderPath: String, fileName: String): Result<List<List<Stri
     return Result.success(flattenedLines)
 }
 
-actual fun readFile(folderPath: String, fileName: String): Result<String> {
-    val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
-    val filePath = "$workingDirPath/$fileName".toPath()
+actual fun readFile(filePath: String): Result<String> {
+    val fileName = ShellLocation.HOME.resolve(filePath).absolutePath
+    val fileNamePath = fileName.toPath()
     var result = ""
 
     try {
-        FileSystem.SYSTEM.read(filePath) {
+        FileSystem.SYSTEM.read(fileNamePath) {
             while (true) {
                 val line = readUtf8Line() ?: break
                 result += (line + "\n")

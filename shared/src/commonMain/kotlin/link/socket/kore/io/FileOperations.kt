@@ -10,4 +10,4 @@ expect fun createFile(folderPath: String, fileName: String, fileContent: String)
 expect fun parseCsv(folderPath: String, fileName: String): Result<List<List<String>>>
 
 // Expected function to read a file located at the given folder path and file name.
-expect fun readFile(folderPath: String, fileName: String): Result<String>
+expect fun readFile(filePath: String): Result<String>

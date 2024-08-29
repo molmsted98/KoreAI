@@ -33,5 +33,8 @@ data object WriteCodeAgent : AgentDefinition() {
         - Ensure all generated files are saved in a folder named 'KoreAI-Test' located in the user's home directory.
 
         Note: Before writing the code, plan your solution step-by-step.
+        
+        Be sure to adhere to any request from the User regarding constraints around the code that you should be creating.
+        Example: If a User asks to improve documentation, ensure that the code you generate _only_ includes comments and does not modify the existing code.
     """.trimIndent()
 }

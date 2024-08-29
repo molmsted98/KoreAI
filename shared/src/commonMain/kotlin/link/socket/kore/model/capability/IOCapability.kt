@@ -10,7 +10,6 @@ import link.socket.kore.io.readFile
 import link.socket.kore.io.readFolderContents
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
-import okio.Path.Companion.toPath
 
 sealed interface IOCapability : Capability {
 
@@ -32,7 +31,7 @@ sealed interface IOCapability : Capability {
                         isRequired = true,
                         definition = buildJsonObject {
                             put("type", "string")
-                            put("description", "The path where the folder contents should be read from, relative to the user's home directory.")
+                            put("description", "The path where the folder contents should be read from, which must *always* include the entire path relative to the User's home directory.")
                         }
                     ),
                 ),
@@ -120,6 +119,7 @@ sealed interface IOCapability : Capability {
                 description = """
                     Reads a set of files on the local disk with the given path and name, and returns the combined contents of the files after executing.
                     You must always choose to send multiple file paths in one call rather than making separate calls to this function, as it is more efficient.
+                    The paths where the files should be read from *must* be a relative path from the User's home directory.
                 """.trimIndent(),
                 function = { args: JsonObject ->
                     val filePaths = args.getValue("filePaths").jsonPrimitive.content.split(",")
@@ -134,7 +134,8 @@ sealed interface IOCapability : Capability {
                             put(
                                 "description",
                                 """
-                                    The paths where the files should be read from, relative to the User's home directory.
+                                    The paths where the files should be read from, where each one *must* be a relative path from the User's home directory.
+                                    These must be valid paths to the files you want to read, don't send any parameter that does not resemble a file path.
                                     Multiple file paths should be joined together and separated by commas.
                                 """.trimIndent()
                             )
@@ -152,9 +153,7 @@ sealed interface IOCapability : Capability {
         private fun readFilesImpl(
             filePaths: List<String>,
         ): String = filePaths.joinToString("/n/n") { filePath ->
-            val fileName = filePath.toPath().segments.last()
-            val folderPath = filePath.toPath().segments.dropLast(1).joinToString("/")
-            val fileContent = readFile(folderPath, fileName)
+            val fileContent = readFile(filePath)
 
             """
                 File: $filePath

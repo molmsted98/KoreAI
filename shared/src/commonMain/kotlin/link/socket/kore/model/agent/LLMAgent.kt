@@ -5,6 +5,8 @@ import com.aallam.openai.api.core.FinishReason
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import link.socket.kore.model.chat.Chat
 import link.socket.kore.model.conversation.ConversationHistory
 import link.socket.kore.model.tool.FunctionDefinition
@@ -48,7 +50,7 @@ interface LLMAgent {
             Remember, your primary goal is to assist users efficiently while adhering to the guidelines provided by developers.
             
             You shall only use function calling to invoke the defined functions that have been provided to you.
-            **You should NEVER invent or use functions NOT defined or NOT listed by that Agent, especially the multi_tool_use.parallel function. If you need to call multiple functions, you will call them one at a time **.
+            **You should NEVER invent or use functions NOT defined or NOT listed by that Agent, especially the multi_tool_use.parallel function.**
         """.trimIndent()
 
     val initialSystemMessage: Chat.System
@@ -104,12 +106,16 @@ interface LLMAgent {
      *
      * @return The resulting Function Chat objects
      */
-    suspend fun ChatMessage.executePendingToolCalls(): List<Chat> =
-        toolCalls?.map { call ->
-            when (call) {
-                is ToolCall.Function -> call.function.execute()
+    suspend fun ChatMessage.executePendingToolCalls(): List<Chat> {
+        val jobs = toolCalls?.map { call ->
+            scope.async {
+                when (call) {
+                    is ToolCall.Function -> call.function.execute()
+                }
             }
         } ?: emptyList()
+        return jobs.awaitAll()
+    }
 
     /**
      * Executes the function call and returns the response as a Chat object
