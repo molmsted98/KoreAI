@@ -5,6 +5,7 @@ package link.socket.kore.model.agent
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import link.socket.kore.data.ConversationRepository
+import link.socket.kore.model.OPEN_AI
 import link.socket.kore.model.capability.AgentCapability
 import link.socket.kore.model.capability.IOCapability
 import link.socket.kore.model.tool.FunctionProvider
@@ -12,19 +13,19 @@ import link.socket.kore.model.tool.FunctionProvider
 /**
  * Data class representing a KoreAgent, implementing the LLMAgent interface.
  *
- * @property openAI - Instance of OpenAI client to interact with the OpenAI API
  * @property scope - CoroutineScope for managing coroutines
  * @property definition - Definition object that contains the details and instructions for the agent
  * @property conversationRepository - Repository for managing conversation history
  */
 data class KoreAgent(
-    override val openAI: OpenAI,
     override val scope: CoroutineScope,
     val definition: AgentDefinition,
     val conversationRepository: ConversationRepository,
 ) : LLMAgent {
 
     val name: String = definition.name
+
+    override val openAI: OpenAI = OPEN_AI
 
     /**
      * Prompt for the Agent, extending the base prompt from LLMAgent
@@ -38,7 +39,7 @@ data class KoreAgent(
         get() = mapOf(
             AgentCapability.GetAgents.impl,
             AgentCapability.GetAgentArgs.impl,
-            AgentCapability.PromptAgent(conversationRepository, openAI, scope).impl,
+            AgentCapability.PromptAgent(conversationRepository, scope).impl,
             IOCapability.CreateFile.impl,
             IOCapability.ReadFile.impl,
             IOCapability.ParseCsv.impl,

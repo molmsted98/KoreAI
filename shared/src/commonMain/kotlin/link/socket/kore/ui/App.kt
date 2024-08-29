@@ -25,7 +25,6 @@ enum class Screen {
 
 fun Application.createAgent(agentDefinition: AgentDefinition): KoreAgent =
     KoreAgent(
-        openAI,
         CoroutineScope(Dispatchers.IO),
         agentDefinition,
         conversationRepository,
