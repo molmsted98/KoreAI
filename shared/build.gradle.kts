@@ -1,5 +1,5 @@
 
-import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import java.io.FileInputStream
 import java.util.*
@@ -9,11 +9,66 @@ plugins {
     kotlin("plugin.serialization")
     id("com.android.library")
     id("org.jetbrains.compose")
-    id("com.vanniktech.maven.publish")
+    id("maven-publish")
+    id("signing")
+    id("org.jetbrains.dokka") version "1.6.0"
 }
 
 group = "link.socket"
-version = "1.0"
+version = "0.0.1"
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenLocal") {
+            from(components["kotlin"])
+
+            groupId = group.toString()
+            artifactId = "kore-ai"
+            version = "0.0.1"
+
+            pom {
+                name.set("KoreAI")
+                description.set("A Kotlin Multiplatform library for ...")
+                url.set("https://github.com/yourcompany/mylibrary")
+
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:https://github.com/yourcompany/mylibrary.git")
+                    developerConnection.set("scm:git:ssh://git@github.com:yourcompany/mylibrary.git")
+                    url.set("https://github.com/yourcompany/mylibrary")
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            name = "ossrh"
+            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = project.findProperty("ossrhUsername") as String? ?: ""
+                password = project.findProperty("ossrhPassword") as String? ?: ""
+            }
+        }
+    }
+}
+
+tasks {
+    register("generateJavadocs", DokkaTask::class) {
+        dokkaSourceSets {
+            named("main") {
+                noAndroidSdkLink.set(true)
+            }
+        }
+    }
+}
 
 kotlin {
     androidTarget()
@@ -85,20 +140,6 @@ kotlin {
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         compilations.get("main").compilerOptions.options.freeCompilerArgs.add("-Xexport-kdoc")
     }
-
-    // https://kotlinlang.org/docs/multiplatform-publish-lib.html#avoid-duplicate-publications
-    val publicationsFromMainHost =  jvm().name + "kotlinMultiplatform"
-
-    publishing {
-        publications {
-            matching { it.name in publicationsFromMainHost }.all {
-                val targetPublication = this@all
-                tasks.withType<AbstractPublishToMaven>()
-                    .matching { it.publication == targetPublication }
-                    .configureEach { onlyIf { findProperty("isMainHost") == "true" } }
-            }
-        }
-    }
 }
 
 android {
@@ -146,8 +187,3 @@ tasks.register("kotlinConfiguration") {
 tasks.findByName("build")?.dependsOn(
     tasks.findByName("kotlinConfiguration")
 )
-
-mavenPublishing {
-    publishToMavenCentral(SonatypeHost.DEFAULT)
-    signAllPublications()
-}
