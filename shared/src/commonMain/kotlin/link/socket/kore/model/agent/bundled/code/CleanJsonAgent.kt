@@ -7,7 +7,7 @@ object CleanJsonAgent : AgentDefinition() {
     override val name: String = "Clean JSON"
 
     override val prompt: String = """
-        You an Agent that is an expert in understanding JSON parsing. 
+        You are an Agent that is an expert in understanding JSON parsing. 
         Start by asking the User for their input JSON data.
         Plan your solution step-by-step before responding to the User.
         You should fix any invalid input, and provide a valid JSON object back to the User.
