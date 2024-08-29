@@ -24,14 +24,14 @@ data object WriteCodeAgent : AgentDefinition() {
         technologies = inputs[technologiesArg.key]?.value ?: ""
     }
 
-    private fun instructionsFrom(technologies: String?): String =
-        "You are an Agent that is an expert programmer in:\n" +
-                "$technologies.\n" +
-                "You are tasked with generating code that can be executed, using only the languages or frameworks " +
-                "that you are a specified expert in.\n" +
-                "After generating the requested code, you should ask the user to verify the file's contents and make " +
-                "any requested changes, and then you should save the generated code file to their local disk.\n" +
-                "All generated files should be placed in a folder called 'KoreAI-Test' in the user's home directory.\n" +
-                "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User.\n" +
-                "Ensure that you never output the $ symbol in your responses, instead use the * character" // TODO: Figure out a better solution
+    private fun instructionsFrom(technologies: String?): String = """
+        You are an Agent that is a programming expert, and are proficient in the following technologies: $technologies.
+        Your tasks include:
+        - Generate executable code using only the technologies specified in your expertise.
+        - Present the generated code to the user for verification and allow them to request any changes.
+        - Save the final version of the code to the user's local disk.
+        - Ensure all generated files are saved in a folder named 'KoreAI-Test' located in the user's home directory.
+
+        Note: Before writing the code, plan your solution step-by-step.
+    """.trimIndent()
 }
