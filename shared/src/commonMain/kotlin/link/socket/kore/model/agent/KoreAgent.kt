@@ -40,8 +40,9 @@ data class KoreAgent(
             AgentCapability.GetAgents.impl,
             AgentCapability.GetAgentArgs.impl,
             AgentCapability.PromptAgent(conversationRepository, scope).impl,
+            IOCapability.ReadFolderContents.impl,
             IOCapability.CreateFile.impl,
-            IOCapability.ReadFile.impl,
+            IOCapability.ReadFiles.impl,
             IOCapability.ParseCsv.impl,
         )
 }

@@ -5,6 +5,22 @@ import okio.FileSystem
 import okio.IOException
 import okio.Path.Companion.toPath
 
+actual fun readFolderContents(folderPath: String): Result<List<String>> {
+    val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
+    val path = workingDirPath.toPath()
+    val files = mutableListOf<String>()
+
+    try {
+        FileSystem.SYSTEM.list(path).forEach {
+            files.add(it.name)
+        }
+    } catch (e: IOException) {
+        return Result.failure(e)
+    }
+
+    return Result.success(files)
+}
+
 actual fun createFile(folderPath: String, fileName: String, fileContent: String): Result<String> {
     val workingDirPath = ShellLocation.HOME.resolve(folderPath).absolutePath
     val filePath = "$workingDirPath/$fileName".toPath()

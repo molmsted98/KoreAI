@@ -20,6 +20,9 @@ val bundle by lazy {
     NSBundle.bundleForClass(BundleMarker)
 }
 
+actual fun readFolderContents(folderPath: String): Result<List<String>> =
+    Result.failure(UnsupportedOperationException())
+
 actual fun createFile(folderPath: String, fileName: String, fileContent: String): Result<String> =
     Result.failure(UnsupportedOperationException())
 

@@ -11,6 +11,8 @@ sealed class Chat(
     open val role: ChatRole,
     open val chatMessage: ChatMessage,
 ) {
+    abstract val content: String
+
     /**
      * Data class for text messages that contain the System prompt for the LLM.
      */
@@ -22,14 +24,16 @@ sealed class Chat(
             role = ChatRole.System,
             content = prompt,
         )
-    )
+    ) {
+        override val content: String = prompt
+    }
 
     /**
      * Data class for text messages, containing content and an optional function name.
      */
     data class Text(
         override val role: ChatRole,
-        val content: String,
+        override val content: String,
         val functionName: String? = null,
     ) : Chat(
         role,
@@ -76,5 +80,7 @@ sealed class Chat(
                 resultString.toString()
             },
         )
-    )
+    ) {
+        override val content: String = csvContent.joinToString { it.joinToString("\t") }
+    }
 }

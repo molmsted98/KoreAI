@@ -52,9 +52,7 @@ class ConversationRepository(
         do {
             getValue(conversationId)?.let { conversation ->
                 val completionRequest = conversation.getCompletionRequest()
-                val ranTools = conversation.agent.execute(
-                    completionRequest = completionRequest,
-                ) { chats ->
+                val ranTools = conversation.agent.execute(completionRequest) { chats ->
                     storeValue(conversationId, conversation.add(*chats.toTypedArray()))
                 }
 
