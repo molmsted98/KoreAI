@@ -27,7 +27,7 @@ data class KoreAgent(
     val name: String = definition.name
 
     /**
-     * Prompt for the agent, extending the base prompt from LLMAgent
+     * Prompt for the Agent, extending the base prompt from LLMAgent
      */
     override val prompt: String
         get() = "${super.prompt}\n\n" +

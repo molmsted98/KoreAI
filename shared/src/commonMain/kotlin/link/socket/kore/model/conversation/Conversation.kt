@@ -78,11 +78,11 @@ data class Conversation(
     /**
      * Adds a chat message to the conversation.
      *
-     * @param chat The chat message to be added.
+     * @param chats The chat messages to be added.
      * @return A new Conversation instance with the added chat message.
      */
-    fun add(chat: Chat): Conversation =
+    fun add(vararg chats: Chat): Conversation =
         copy(
-            conversationHistory = conversationHistory.appendChat(chat),
+            conversationHistory = conversationHistory.appendChats(*chats),
         )
 }

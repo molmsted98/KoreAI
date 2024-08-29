@@ -16,8 +16,6 @@ class ConversationRepository(
     override val scope: CoroutineScope,
 ) : Repository<ConversationId, Conversation>(scope) {
 
-    private var selectedConversation: ConversationId? = null
-
     /**
      * Creates a new conversation with the given agent and an optional initial message.
      * The new conversation is initialized and stored in the repository.
@@ -31,7 +29,6 @@ class ConversationRepository(
         initialMessage: Chat? = null,
     ): ConversationId {
         val key = randomUUID()
-        selectedConversation = key
 
         val conversation = Conversation(
             id = key,
@@ -53,10 +50,12 @@ class ConversationRepository(
         var shouldRerun = false
 
         do {
-            getValue(conversationId)?.apply {
-                val completionRequest = getCompletionRequest()
-                val ranTools = agent.execute(completionRequest) { message ->
-                    storeValue(conversationId, add(message))
+            getValue(conversationId)?.let { conversation ->
+                val completionRequest = conversation.getCompletionRequest()
+                val ranTools = conversation.agent.execute(
+                    completionRequest = completionRequest,
+                ) { chats ->
+                    storeValue(conversationId, conversation.add(*chats.toTypedArray()))
                 }
 
                 shouldRerun = ranTools
@@ -71,7 +70,10 @@ class ConversationRepository(
      * @param conversationId The ID of the conversation
      * @param input The user input to be added as a chat
      */
-    suspend fun addUserChat(conversationId: ConversationId, input: String) {
+    suspend fun addUserChat(
+        conversationId: ConversationId,
+        input: String,
+    ) {
         getValue(conversationId)?.apply {
             storeValue(conversationId, addUserChat(input))
             runConversation(conversationId)

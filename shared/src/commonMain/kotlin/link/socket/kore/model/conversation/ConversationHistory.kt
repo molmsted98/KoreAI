@@ -43,7 +43,7 @@ sealed interface ConversationHistory {
              * Appends a Chat to the conversation history.
              * This operation is not implemented, as uninitialized states cannot hold messages yet.
              */
-            override fun appendChat(message: Chat): ConversationHistory {
+            override fun appendChats(vararg chats: Chat): ConversationHistory {
                 TODO("Not yet implemented")
             }
         }
@@ -72,10 +72,10 @@ sealed interface ConversationHistory {
             /**
              * Appends a Chat to the list of messages for this conversation and returns the updated conversation history.
              *
-             * @param message The Chat object to be appended.
-             * @return The updated conversation history after appending the Chat object.
+             * @param chats The Chat objects to be appended.
+             * @return The updated conversation history after appending the Chat objects.
              */
-            override fun appendChat(message: Chat): ConversationHistory {
+            override fun appendChats(vararg chats: Chat): ConversationHistory {
                 TODO("Not yet implemented")
             }
 
@@ -113,11 +113,11 @@ sealed interface ConversationHistory {
         /**
          * Appends a Chat message to the existing list and returns an updated NonThreaded conversation history.
          *
-         * @param message The Chat object to be appended.
+         * @param chats The Chat objects to be appended.
          * @return The updated conversation history after appending the Chat object.
          */
-        override fun appendChat(message: Chat): ConversationHistory =
-            NonThreaded(messages.append(message))
+        override fun appendChats(vararg chats: Chat): ConversationHistory =
+            NonThreaded(messages.append(*chats))
 
         /**
          * Appends a ChatMessage (received from the API) to the list and returns an updated NonThreaded conversation instance.
@@ -150,10 +150,10 @@ sealed interface ConversationHistory {
      * Abstract method to append a Chat object to the conversation and return the updated state.
      * Implementations must ensure chat integrity and ordering based on the conversation type.
      *
-     * @param message The Chat object to be appended.
-     * @return The updated conversation history after appending the Chat object.
+     * @param chats The Chat objects to be appended.
+     * @return The updated conversation history after appending the Chat objects.
      */
-    fun appendChat(message: Chat): ConversationHistory
+    fun appendChats(vararg chats: Chat): ConversationHistory
 }
 
 /**
@@ -162,28 +162,28 @@ sealed interface ConversationHistory {
  * the Chat representation of the ChatMessage to the end of the list, effectively
  * creating a new list with the appended message.
  *
- * @param newMessage The ChatMessage to append.
+ * @param newChat The ChatMessage to append.
  * @return A new list of Chat messages including the appended ChatMessage.
  */
 fun List<Chat>.append(
-    newMessage: ChatMessage,
+    newChat: ChatMessage,
 ): List<Chat> =
     mutableListOf(
         *this.toTypedArray(), // Adds the current list
-        Chat.Text.fromChatMessage(newMessage), // Converts ChatMessage to Chat.Text and appends to list.
+        Chat.Text.fromChatMessage(newChat), // Converts ChatMessage to Chat.Text and appends to list.
     )
 
 /**
  * Extension function to append a Chat object to a list of Chat.
  * Similar to the previous function but for direct Chat instances.
  *
- * @param newMessage The Chat object to append.
- * @return A new list of Chat messages including the appended Chat object.
+ * @param newChats The Chat objects to append.
+ * @return A new list of Chat messages including the appended Chat objects.
  */
 fun List<Chat>.append(
-    newMessage: Chat
+    vararg newChats: Chat
 ): List<Chat> =
     mutableListOf(
-        *this.toTypedArray(), // Adds the current list
-        newMessage, // Appends the new Chat object to the list.
+        *this.toTypedArray(), // Adds the existing conversation chat list
+        *newChats, // Appends the new Chat object to the chat list
     )

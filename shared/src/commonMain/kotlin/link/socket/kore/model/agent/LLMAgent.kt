@@ -16,7 +16,7 @@ import link.socket.kore.model.tool.FunctionProvider
 interface LLMAgent {
 
     companion object {
-        private const val MODEL_NAME = "gpt-4o-mini"
+        private const val MODEL_NAME = "gpt-4o"
         private val MODEL_ID = ModelId(MODEL_NAME)
     }
 
@@ -68,26 +68,28 @@ interface LLMAgent {
      * a boolean indicating if there were tool calls pending execution.
      *
      * @param completionRequest - the request to be processed by OpenAI's chat model
-     * @param onNewChat - a lambda that is executed whenever a new Chat has been returned by the API
+     * @param onNewChats - a lambda that is executed whenever new Chats are added to the conversation
      * @return A boolean indicating if Tool calls were ran
      */
     suspend fun execute(
         completionRequest: ChatCompletionRequest,
-        onNewChat: (Chat) -> Unit,
+        onNewChats: (List<Chat>) -> Unit,
     ): Boolean {
         val completion = openAI.chatCompletion(completionRequest)
         val response = completion.choices.first()
-        val responseMessage = Chat.Text(
-            role = ChatRole.Assistant,
+
+        val completionChat = Chat.Text(
+            role = response.message.role,
             content = response.message.content ?: "",
         )
+        val newChatList = listOf(completionChat)
 
         return if (response.finishReason == FinishReason.ToolCalls) {
-            onNewChat(responseMessage)
-            response.message.executePendingToolCalls(onNewChat)
+            val toolChats = response.message.executePendingToolCalls()
+            onNewChats(newChatList.plus(toolChats))
             true
         } else {
-            onNewChat(responseMessage)
+            onNewChats(newChatList)
             false
         }
     }
@@ -95,17 +97,14 @@ interface LLMAgent {
     /**
      * Executes any pending tool calls in the given ChatMessage and returns the responses as a list
      *
-     * @param onNewChat - a lambda that is executed whenever a new Chat has been returned by the API
+     * @return The resulting Function Chat objects
      */
-    suspend fun ChatMessage.executePendingToolCalls(
-        onNewChat: (Chat) -> Unit,
-    ) {
-        toolCalls?.forEach { call ->
+    suspend fun ChatMessage.executePendingToolCalls(): List<Chat> =
+        toolCalls?.map { call ->
             when (call) {
-                is ToolCall.Function -> onNewChat(call.function.execute())
+                is ToolCall.Function -> call.function.execute()
             }
-        }
-    }
+        } ?: emptyList()
 
     /**
      * Executes the function call and returns the response as a Chat object
