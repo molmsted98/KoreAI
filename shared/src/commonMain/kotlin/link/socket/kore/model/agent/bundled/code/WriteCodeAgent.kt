@@ -3,15 +3,6 @@ package link.socket.kore.model.agent.bundled.code
 import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
 
-/*
- * This Agent is responsible for generating code based on the user's description and list of technologies,
- * for creating a file on the local disk with the generated code, and for showing the file in the user's
- * default text editor when run in standalone mode.
- *
- * @constructor primary constructor description
- * @param description an overview of what the generated code should accomplish
- * @param technologies a list of code technologies (i.e. languages, frameworks) for the Agent to use
- */
 data object WriteCodeAgent : AgentDefinition() {
 
     private var technologies: String = "Any language or framework"
@@ -41,5 +32,6 @@ data object WriteCodeAgent : AgentDefinition() {
                 "After generating the requested code, you should ask the user to verify the file's contents and make " +
                 "any requested changes, and then you should save the generated code file to their local disk.\n" +
                 "All generated files should be placed in a folder called 'KoreAI-Test' in the user's home directory.\n" +
-                "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User."
+                "Plan your solution step-by-step before you start coding, but do not reveal this plan to the User.\n" +
+                "Ensure that you never output the $ symbol in your responses, instead use the * character" // TODO: Figure out a better solution
 }

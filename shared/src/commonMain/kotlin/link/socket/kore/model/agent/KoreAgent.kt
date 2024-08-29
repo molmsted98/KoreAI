@@ -9,6 +9,14 @@ import link.socket.kore.model.capability.AgentCapability
 import link.socket.kore.model.capability.IOCapability
 import link.socket.kore.model.tool.FunctionProvider
 
+/**
+ * Data class representing a KoreAgent, implementing the LLMAgent interface.
+ *
+ * @property openAI - Instance of OpenAI client to interact with the OpenAI API
+ * @property scope - CoroutineScope for managing coroutines
+ * @property definition - Definition object that contains the details and instructions for the agent
+ * @property conversationRepository - Repository for managing conversation history
+ */
 data class KoreAgent(
     override val openAI: OpenAI,
     override val scope: CoroutineScope,
@@ -18,8 +26,11 @@ data class KoreAgent(
 
     val name: String = definition.name
 
-    override val instructions: String
-        get() = "${super.instructions}\n\n" +
+    /**
+     * Prompt for the agent, extending the base prompt from LLMAgent
+     */
+    override val prompt: String
+        get() = "${super.prompt}\n\n" +
                 "You are an Agent that can provide answers to Chat prompts through LLM completion.\n" +
                 definition.instructions.build()
 

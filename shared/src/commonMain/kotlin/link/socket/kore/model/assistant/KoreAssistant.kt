@@ -17,7 +17,7 @@ data class KoreAssistant(
     private val existingAssistantId: AssistantId?,
     private val modelId: ModelId,
     private val name: String,
-    override val instructions: String,
+    override val prompt: String,
     override val availableFunctions: Map<String, FunctionProvider>,
 ) : LLMAgent {
 

@@ -3,20 +3,30 @@ package link.socket.kore.model.chat
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 
+/**
+ * Sealed class representing different types of messages.
+ * Each Chat has a ChatRole and a corresponding ChatMessage.
+ */
 sealed class Chat(
     open val role: ChatRole,
     open val chatMessage: ChatMessage,
 ) {
+    /**
+     * Data class for text messages that contain the System prompt for the LLM.
+     */
     data class System(
-        val instructions: String,
+        val prompt: String,
     ) : Chat(
         ChatRole.System,
         ChatMessage(
             role = ChatRole.System,
-            content = instructions,
+            content = prompt,
         )
     )
 
+    /**
+     * Data class for text messages, containing content and an optional function name.
+     */
     data class Text(
         override val role: ChatRole,
         val content: String,
@@ -30,6 +40,9 @@ sealed class Chat(
         )
     ) {
         companion object {
+            /**
+             * Factory method for creating Text instances from ChatMessage objects.
+             */
             fun fromChatMessage(chatMessage: ChatMessage): Text =
                 Text(
                     role = chatMessage.role,
@@ -39,9 +52,12 @@ sealed class Chat(
         }
     }
 
+    /**
+     * Data class for CSV messages, containing CSV content and an optional function name.
+     */
     data class CSV(
         override val role: ChatRole,
-        val csvContent: CSVContent,
+        val csvContent: List<List<String>>,
         val functionName: String? = null,
     ) : Chat(
         role,

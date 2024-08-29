@@ -5,8 +5,8 @@ data class Instructions(
     val tone: Tone = Tone.PROFESSIONAL,
     val seriousness: Seriousness = Seriousness.VERY,
 ) {
-    var includeTone: Boolean = true
-    var includeSeriousness: Boolean = true
+    private var includeTone: Boolean = true
+    private var includeSeriousness: Boolean = true
 
     fun build(): String = toneSection() + seriousnessSection() + "\n\n" + prompt
 
