@@ -120,6 +120,7 @@ sealed interface IOCapability : Capability {
                     Reads a set of files on the local disk with the given path and name, and returns the combined contents of the files after executing.
                     You must always choose to send multiple file paths in one call rather than making separate calls to this function, as it is more efficient.
                     The paths where the files should be read from *must* be a relative path from the User's home directory.
+                    Multiple file paths should _not_ be sent as an array, and should be joined together as a string separated by commas.
                 """.trimIndent(),
                 function = { args: JsonObject ->
                     val filePaths = args.getValue("filePaths").jsonPrimitive.content.split(",")

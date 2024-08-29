@@ -12,7 +12,7 @@ actual fun readFolderContents(folderPath: String): Result<List<String>> {
 
     try {
         FileSystem.SYSTEM.listRecursively(path).forEach {
-            files.add(it.toFile().relativeTo(ShellLocation.HOME).absolutePath)
+            files.add(it.toFile().relativeTo(ShellLocation.HOME).path)
         }
     } catch (e: IOException) {
         return Result.failure(e)

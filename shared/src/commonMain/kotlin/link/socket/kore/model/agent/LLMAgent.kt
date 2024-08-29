@@ -7,6 +7,7 @@ import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import link.socket.kore.model.chat.Chat
 import link.socket.kore.model.conversation.ConversationHistory
 import link.socket.kore.model.tool.FunctionDefinition
@@ -82,6 +83,8 @@ interface LLMAgent {
         completionRequest: ChatCompletionRequest,
         onNewChats: (List<Chat>) -> Unit,
     ): Boolean {
+        delay(500)
+
         val completion = openAI.chatCompletion(completionRequest)
         val response = completion.choices.first()
 
