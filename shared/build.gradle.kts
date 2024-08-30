@@ -11,11 +11,11 @@ plugins {
     id("org.jetbrains.compose")
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "1.6.0"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 group = "link.socket"
-version = "0.0.2"
+version = "0.0.3"
 
 publishing {
     publications {
@@ -24,7 +24,7 @@ publishing {
 
             groupId = group.toString()
             artifactId = "kore-ai"
-            version = "0.0.2"
+            version = "0.0.3"
 
             pom {
                 name.set("KoreAI")
@@ -63,10 +63,16 @@ publishing {
 tasks {
     register("generateJavadocs", DokkaTask::class) {
         dokkaSourceSets {
-            named("main") {
+            named("commonMain") {
                 noAndroidSdkLink.set(true)
             }
         }
+    }
+}
+
+tasks.withType<DokkaTask>().configureEach {
+    dokkaSourceSets.configureEach {
+        outputDirectory.set(file("${rootDir}/docs/api"))
     }
 }
 
