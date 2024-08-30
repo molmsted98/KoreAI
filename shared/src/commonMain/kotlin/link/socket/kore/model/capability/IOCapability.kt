@@ -10,10 +10,14 @@ import link.socket.kore.io.readFile
 import link.socket.kore.io.readFolderContents
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
+import link.socket.kore.util.logWith
 
-sealed interface IOCapability : Capability {
+sealed class IOCapability(open val agentTag: String) : Capability {
 
-    data object ReadFolderContents : IOCapability {
+    override val tag: String
+        get() = "$agentTag-IO${super.tag}"
+
+    data class ReadFolderContents(override val agentTag: String) : IOCapability(agentTag) {
 
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provide(
@@ -46,14 +50,19 @@ sealed interface IOCapability : Capability {
         private fun readFolderContentsImpl(
             folderPath: String,
         ): String {
-            val result = readFolderContents(folderPath)
-            return result.map { contents ->
-                contents.joinToString("\n")
-            }.getOrNull() ?: "Error: Failed to read folder contents"
+            logWith(tag).i("\nArgs:\nfolderPath=$folderPath")
+
+            return readFolderContents(folderPath)
+                .map { contents -> contents.joinToString("\n") }
+                .getOrNull()
+                ?: "Error: Failed to read folder contents".also { response ->
+                    logWith(tag).i("\nResponse:\n$response")
+                }
         }
+
     }
 
-    data object CreateFile : IOCapability {
+    data class CreateFile(override val agentTag: String) : IOCapability(agentTag) {
 
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provide(
@@ -106,12 +115,15 @@ sealed interface IOCapability : Capability {
             fileName: String,
             fileContent: String,
         ): String {
-            val result = createFile(folderPath, fileName, fileContent)
-            return result.getOrNull() ?: "Error: Failed to create file"
+            logWith(tag).i("\nArgs:\nfolderPath=$folderPath\nfileName=$fileName\nfileContent=$fileContent")
+            return createFile(folderPath, fileName, fileContent).getOrNull()
+                ?: "Error: Failed to create file".also { response ->
+                    logWith(tag).i("\nResponse:\n$response")
+                }
         }
     }
 
-    data object ReadFiles : IOCapability {
+    data class ReadFiles(override val agentTag: String) : IOCapability(agentTag) {
 
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provide(
@@ -153,17 +165,22 @@ sealed interface IOCapability : Capability {
          */
         private fun readFilesImpl(
             filePaths: List<String>,
-        ): String = filePaths.joinToString("/n/n") { filePath ->
-            val fileContent = readFile(filePath)
+        ): String {
+            logWith(tag).i("Args:\nfilePaths=$filePaths")
+            return filePaths.joinToString("\n\n") { filePath ->
+                val fileContent = readFile(filePath)
 
-            """
-                File: $filePath
-                Content: ${fileContent.getOrNull() ?: "Error: Failed to read file"}
-            """.trimIndent()
+                """
+                    File: $filePath
+                    Content: ${fileContent.getOrNull() ?: "Error: Failed to read file"}
+                """.trimIndent()
+            }.also { response ->
+                logWith(tag).i("\nResponse:\n$response")
+            }
         }
     }
 
-    data object ParseCsv : IOCapability {
+    data class ParseCsv(override val agentTag: String) : IOCapability(agentTag) {
 
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provideCSV(
@@ -201,8 +218,12 @@ sealed interface IOCapability : Capability {
             folderPath: String,
             fileName: String,
         ): List<List<String>> {
-            val result = parseCsv(folderPath, fileName)
-            return result.getOrNull() ?: listOf(listOf("Error: Failed to parse CSV"))
+            logWith(tag).i("\nArgs:\nfolderPath=$folderPath\nfileName=$fileName")
+            return parseCsv(folderPath, fileName)
+                .getOrNull()
+                ?: listOf(listOf("Error: Failed to parse CSV")).also {
+                    logWith(tag).i("\nResponse:\n$it")
+                }
         }
     }
 }

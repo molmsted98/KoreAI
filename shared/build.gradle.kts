@@ -91,6 +91,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:2.3.12")
                 implementation("com.squareup.okio:okio:3.9.0")
                 implementation("com.mikepenz:multiplatform-markdown-renderer:0.12.0")
+                implementation("co.touchlab:kermit:2.0.4")
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)

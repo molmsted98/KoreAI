@@ -21,6 +21,8 @@ data class KoreAssistant(
     override val availableFunctions: Map<String, FunctionProvider>,
 ) : LLMAgent {
 
+    override val tag: String = "KoreAssistant${name.replace(" ", "")}-${super.tag}"
+
     private val assistantTools: List<AssistantTool> = tools.map { tool ->
         AssistantTool.FunctionTool(
             Function(

@@ -25,6 +25,8 @@ data class KoreAgent(
 
     val name: String = definition.name
 
+    override val tag: String = "Kore${name.replace(" ", "")}-${super.tag}"
+
     override val openAI: OpenAI = OPEN_AI
 
     /**
@@ -37,12 +39,11 @@ data class KoreAgent(
 
     override val availableFunctions: Map<String, FunctionProvider>
         get() = mapOf(
-            AgentCapability.GetAgents.impl,
-            AgentCapability.GetAgentArgs.impl,
-            AgentCapability.PromptAgent(conversationRepository, scope).impl,
-            IOCapability.ReadFolderContents.impl,
-            IOCapability.CreateFile.impl,
-            IOCapability.ReadFiles.impl,
-            IOCapability.ParseCsv.impl,
+            AgentCapability.GetAgents(tag).impl,
+            AgentCapability.PromptAgent(tag, conversationRepository, scope).impl,
+            IOCapability.ReadFolderContents(tag).impl,
+            IOCapability.CreateFile(tag).impl,
+            IOCapability.ReadFiles(tag).impl,
+            IOCapability.ParseCsv(tag).impl,
         )
 }

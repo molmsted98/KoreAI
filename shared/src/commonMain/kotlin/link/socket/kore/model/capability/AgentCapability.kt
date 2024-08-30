@@ -5,50 +5,40 @@ import kotlinx.serialization.json.*
 import link.socket.kore.data.ConversationRepository
 import link.socket.kore.model.agent.KoreAgent
 import link.socket.kore.model.agent.bundled.agentArgsList
-import link.socket.kore.model.agent.bundled.agentNameList
 import link.socket.kore.model.agent.bundled.getAgentDefinition
+import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.model.tool.FunctionProvider
 import link.socket.kore.model.tool.ParameterDefinition
+import link.socket.kore.util.logWith
 
 /**
  * Represents a capability that an agent can possess.
  */
-sealed interface AgentCapability : Capability {
+sealed class AgentCapability(open val agentTag: String) : Capability {
+
+    override val tag: String
+        get() = "$agentTag-Agent${super.tag}"
 
     /**
      * Capability to get a list of available LLM agents.
      */
-    data object GetAgents : AgentCapability {
+    data class GetAgents(override val agentTag: String) : AgentCapability(agentTag) {
+
+        override val tag: String = "${super.tag}-GetAgents"
 
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provide(
                 name = "getAgents",
-                description = "Returns a list of available LLM Agents.",
-                function = GetAgents::getAgents,
-            )
-
-        /**
-         * Returns a comma-separated list of agent names.
-         */
-        private fun getAgents(): String = agentNameList.joinToString(", ")
-    }
-
-    /**
-     * Capability to get a list of available LLM agents along with their respective arguments.
-     */
-    data object GetAgentArgs : AgentCapability {
-
-        override val impl: Pair<String, FunctionProvider> =
-            FunctionProvider.provide(
-                name = "getAgentArgs",
                 description = "Returns a list of available LLM Agents, along with their respective arguments.",
-                function = GetAgentArgs::getAgentArgs,
+                function = ::getAgents,
             )
 
         /**
          * Returns a newline-separated list of agent arguments.
          */
-        private fun getAgentArgs(): String = agentArgsList.joinToString("\n\n")
+        private fun getAgents(): String = agentArgsList.joinToString("\n\n").also { agentList ->
+            logWith(tag).i("\nResponse: $agentList")
+        }
     }
 
     /**
@@ -58,9 +48,12 @@ sealed interface AgentCapability : Capability {
      * @property scope Coroutine scope for managing asynchronous operations.
      */
     data class PromptAgent(
+        override val agentTag: String,
         val conversationRepository: ConversationRepository,
         val scope: CoroutineScope,
-    ) : AgentCapability {
+    ) : AgentCapability(agentTag) {
+
+        override val tag: String = "${super.tag}-PromptAgent"
 
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provideSuspend(
@@ -71,19 +64,30 @@ sealed interface AgentCapability : Capability {
                     You must provide either an Agent name or a prompt, but **never** both.
                 """.trimIndent(),
                 function = { args: JsonObject ->
-                    val agent = args.getOrElse("agent") {
+                    val parentConversationId: String = args.getOrElse("parentConversationId") {
                         JsonPrimitive("")
                     }.jsonPrimitive.content
-                    val prompt = args.getOrElse("prompt") {
+                    val agent: String = args.getOrElse("agent") {
                         JsonPrimitive("")
                     }.jsonPrimitive.content
-                    val initialUserChat = args.getOrElse("initialUserChat") {
+                    val prompt: String = args.getOrElse("prompt") {
+                        JsonPrimitive("")
+                    }.jsonPrimitive.content
+                    val initialUserChat: String = args.getOrElse("initialUserChat") {
                         JsonPrimitive("")
                     }.jsonPrimitive.content
 
-                    promptAgent(scope, agent, prompt, initialUserChat)
+                    promptAgent(parentConversationId, scope, agent, prompt, initialUserChat)
                 },
                 parameterList = listOf(
+                    ParameterDefinition(
+                        name = "parentConversationId",
+                        isRequired = true,
+                        definition = buildJsonObject {
+                            put("type", "string")
+                            put("description", "The ID of the parent Conversation that is calling this function.")
+                        }
+                    ),
                     ParameterDefinition(
                         name = "agent",
                         isRequired = false,
@@ -126,29 +130,36 @@ sealed interface AgentCapability : Capability {
          * @param scope Coroutine scope for managing asynchronous operations.
          * @param agentName Optional name of the LLM Agent.
          * @param prompt The system instructions to use.
-         * @param initialUserPrompt Optional to send an initial User Chat message to the Agent.
+         * @param initialUserChat Optional to send an initial User Chat message to the Agent.
          * @return The Chat completion generated by the sub-Agent.
          */
         private suspend fun promptAgent(
+            parentConversationId: ConversationId,
             scope: CoroutineScope,
             agentName: String?,
             prompt: String?,
-            initialUserPrompt: String?,
+            initialUserChat: String?,
         ): String {
+            logWith(tag).i("\nArgs:\nagent=$agentName\nprompt=$prompt\n$initialUserChat")
+
             val agent = KoreAgent(
                 scope,
                 agentName.getAgentDefinition(prompt),
                 conversationRepository,
             )
 
-            val conversationId = conversationRepository.createConversation(agent, null)
+            val conversationId = conversationRepository.createConversation(
+                agent = agent,
+                parentConversationId = parentConversationId,
+                initialMessage = null,
+            )
 
-            if (initialUserPrompt != null) {
+            if (initialUserChat!= null) {
                 // Option to get the _second_ LLM response, after a User provides their initial reply to the _first_ LLM response
                 conversationRepository.runConversation(conversationId)
                 conversationRepository.addUserChat(
                     conversationId = conversationId,
-                    input = initialUserPrompt,
+                    input = initialUserChat,
                 )
             }
 
@@ -161,6 +172,9 @@ sealed interface AgentCapability : Capability {
                 ?.lastOrNull()
                 ?.chatMessage
                 ?.content ?: ""
+                .also { lastMessage ->
+                    logWith(tag).i("\nResponse:\n$lastMessage")
+                }
         }
     }
 }

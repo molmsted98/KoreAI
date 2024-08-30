@@ -48,8 +48,6 @@ val agentList: List<AgentDefinition> = listOf(
     *reasoningAgents.toTypedArray(),
 )
 
-val agentNameList: List<String> = agentList.map { it.name }
-
 val agentArgsList: List<String> = agentList.map { agent ->
     "${agent.name}(" + (agent.neededInputs.joinToString(", ") { input ->
         input.key + ": " + when (input) {

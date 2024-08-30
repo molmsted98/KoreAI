@@ -34,8 +34,8 @@ data class Conversation(
             copy(
                 conversationHistory = ConversationHistory.NonThreaded(
                     initialMessage?.let { message ->
-                        listOf(agent.initialSystemMessage, message)
-                    } ?: listOf(agent.initialSystemMessage)
+                        listOf(agent.initialSystemMessage(id), message)
+                    } ?: listOf(agent.initialSystemMessage(id))
                 )
             )
         } else {

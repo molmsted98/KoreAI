@@ -9,6 +9,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import link.socket.kore.model.chat.Chat
 import link.socket.kore.model.conversation.ConversationHistory
+import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.model.tool.FunctionDefinition
 import link.socket.kore.model.tool.FunctionProvider
 
@@ -21,6 +22,9 @@ interface LLMAgent {
         private const val MODEL_NAME = "gpt-4o"
         private val MODEL_ID = ModelId(MODEL_NAME)
     }
+
+    val tag: String
+        get() = "LLMAgent"
 
     val openAI: OpenAI
     val scope: CoroutineScope
@@ -53,8 +57,14 @@ interface LLMAgent {
             **You should NEVER invent or use functions NOT defined or NOT listed by that Agent, especially the multi_tool_use.parallel function.**
         """.trimIndent()
 
-    val initialSystemMessage: Chat.System
-        get() = Chat.System(prompt)
+    fun initialSystemMessage(conversationId: ConversationId): Chat.System =
+        """
+            {
+                "conversationId": "$conversationId"
+            }
+        """.trimIndent().let { metadata ->
+            Chat.System("$metadata\n\n$prompt")
+        }
 
     /**
      * @return Map of every available [FunctionProvider], can be extended in concrete implementations

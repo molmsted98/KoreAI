@@ -29,8 +29,7 @@ data object WriteCodeAgent : AgentDefinition() {
         Your tasks include:
         - Generate executable code using only the technologies specified in your expertise.
         - Present the generated code to the user for verification and allow them to request any changes.
-        - Save the final version of the code to the user's local disk.
-        - Ensure all generated files are saved in a folder named 'KoreAI-Test' located in the user's home directory.
+        - Save the final version of the code to the user's local disk, defaulting to the home directory if no path has been specified.
 
         Note: Before writing the code, plan your solution step-by-step.
         

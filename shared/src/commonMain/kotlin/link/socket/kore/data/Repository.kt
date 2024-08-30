@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 abstract class Repository<Key : Any, Value>(
     open val scope: CoroutineScope,
 ) {
+    open val tag: String = "Repository"
 
     private val values: MutableMap<Key, Value> = mutableMapOf()
 
