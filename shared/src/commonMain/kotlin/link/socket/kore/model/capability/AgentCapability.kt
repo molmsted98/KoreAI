@@ -93,7 +93,10 @@ sealed class AgentCapability(open val agentTag: String) : Capability {
                         isRequired = false,
                         definition = buildJsonObject {
                             put("type", "string")
-                            put("description", "The name of the LLM Agent that should be completing the prompt. *Cannot* be used if prompt is being sent.")
+                            put("description", """
+                                The name of the LLM Agent that should be completing the prompt. *Cannot* be used if prompt is being sent.
+                                This name *must* match the name returned by the `getAgents` function - i.e. do *not* include the word 'Agent' in this parameter.
+                            """.trimIndent())
                         }
                     ),
                     ParameterDefinition(

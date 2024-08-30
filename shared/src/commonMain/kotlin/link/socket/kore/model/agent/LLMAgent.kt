@@ -12,6 +12,7 @@ import link.socket.kore.model.conversation.ConversationHistory
 import link.socket.kore.model.conversation.ConversationId
 import link.socket.kore.model.tool.FunctionDefinition
 import link.socket.kore.model.tool.FunctionProvider
+import link.socket.kore.util.logWith
 
 /**
  * Abstract class representing an Agent that interacts with an LLM.
@@ -86,7 +87,7 @@ interface LLMAgent {
      *
      * @param completionRequest - the request to be processed by OpenAI's chat model
      * @param onNewChats - a lambda that is executed whenever new Chats are added to the conversation
-     * @return A boolean indicating if Tool calls were ran
+     * @return A boolean indicating if Tool calls were ran during this execution
      */
     suspend fun execute(
         completionRequest: ChatCompletionRequest,
@@ -99,14 +100,14 @@ interface LLMAgent {
             role = response.message.role,
             content = response.message.content ?: "",
         )
-        val newChatList = listOf(completionChat)
-
+        onNewChats(listOf(completionChat))
         return if (response.finishReason == FinishReason.ToolCalls) {
             val toolChats = response.message.executePendingToolCalls()
-            onNewChats(newChatList.plus(toolChats))
+            onNewChats(toolChats)
+            logWith("$tag-execute").i("Response:\n$response\n$toolChats")
             true
         } else {
-            onNewChats(newChatList)
+            logWith("$tag-execute").i("Response:\n$response")
             false
         }
     }
@@ -120,10 +121,16 @@ interface LLMAgent {
         val jobs = toolCalls?.map { call ->
             scope.async {
                 when (call) {
-                    is ToolCall.Function -> call.function.execute()
+                    is ToolCall.Function -> call.function.let { function ->
+                        logWith("$tag-executePendingToolCalls").i("Executing ${function.name} with Args:\n${function.arguments}")
+                        function.execute().also { response ->
+                            logWith("$tag-executePendingToolCalls").i("Tool ${function.name} Response: $response")
+                        }
+                    }
                 }
             }
         } ?: emptyList()
+
         return jobs.awaitAll()
     }
 

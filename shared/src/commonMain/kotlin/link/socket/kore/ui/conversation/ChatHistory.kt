@@ -12,6 +12,15 @@ import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.core.Role
 import link.socket.kore.model.chat.Chat
 
+/**
+ * A composable function that displays the chat history in a lazy column.
+ *
+ * @param modifier Modifier to be applied to the LazyColumn.
+ * @param listState State of the lazy list to control scrolling.
+ * @param messages List of chat messages to be displayed.
+ * @param isLoading Boolean flag to indicate if the chat is loading.
+ * @param displaySnackbar Function to display a snackbar with a given message.
+ */
 @Composable
 fun ChatHistory(
     modifier: Modifier = Modifier,

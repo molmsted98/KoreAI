@@ -33,7 +33,7 @@ actual fun createFile(folderPath: String, fileName: String, fileContent: String)
         return Result.failure(e)
     }
 
-    return Result.success("File created")
+    return Result.success("File created: $folderPath/$fileName")
 }
 
 actual fun parseCsv(folderPath: String, fileName: String): Result<List<List<String>>> {

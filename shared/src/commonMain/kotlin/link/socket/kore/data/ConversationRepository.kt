@@ -41,10 +41,10 @@ class ConversationRepository(
             title = "Sub Conversation",
             agent = agent,
         )
-        storeValue(key, conversation.initialize(initialMessage))
+        storeValue(id, conversation.initialize(initialMessage))
         logWith(tag).i("${agent.tag} - Conversation Created: $id")
 
-        return key
+        return id
     }
 
     /**
@@ -56,10 +56,10 @@ class ConversationRepository(
     suspend fun runConversation(conversationId: ConversationId) {
         var shouldRerun = false
 
-        logWith(tag).i("Starting Conversation: $conversationId")
+        logWith("$tag-runConversation").i("Starting Conversation: $conversationId")
 
         do {
-            logWith(tag).i("Running Conversation: $conversationId")
+            logWith("$tag-runConversation").i("Running Conversation: $conversationId")
 
             getValue(conversationId)?.let { conversation ->
                 val completionRequest = conversation.getCompletionRequest()
@@ -68,12 +68,14 @@ class ConversationRepository(
                 }
 
                 if (ranTools) {
-                    logWith(tag).i("${conversation.agent.tag} - Conversation ran tools: $conversationId")
+                    logWith("$tag-runConversation").i("${conversation.agent.tag} ran tools: $conversationId")
                 }
 
                 shouldRerun = ranTools
             }
         } while (shouldRerun)
+
+        logWith("$tag-runConversation").i("Finished Conversation: $conversationId")
     }
 
     /**
@@ -87,7 +89,7 @@ class ConversationRepository(
         conversationId: ConversationId,
         input: String,
     ) {
-        logWith(tag).i("addUserChat to Conversation:\nid: $conversationId")
+        logWith("$tag-addUserChat").i("addUserChat to Conversation:\nid: $conversationId")
 
         getValue(conversationId)?.apply {
             storeValue(conversationId, addUserChat(input))

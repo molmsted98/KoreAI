@@ -24,6 +24,7 @@ sealed class IOCapability(open val agentTag: String) : Capability {
                 name = "readFolderContents",
                 description = """
                     Reads a folder's contents on the local disk with the given path, and returns the list of files and folders after executing.
+                    The paths where the folder should be read from *must* be a relative path from the User's home directory.
                 """.trimIndent(),
                 function = { args: JsonObject ->
                     val folderPath = args.getValue("folderPath").jsonPrimitive.content
@@ -67,7 +68,11 @@ sealed class IOCapability(open val agentTag: String) : Capability {
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provide(
                 name = "createFile",
-                description = "Creates a file on the local disk with the given name and content, and returns the status of the file creation after executing.",
+                description = """
+                    Creates a file on the local disk with the given name and content, and returns the status of the file creation after executing."
+                    The path where the file should be created *must* be a relative path from the User's home directory.
+                    This function can be ran in parallel.
+                """.trimIndent(),
                 function = { args: JsonObject ->
                     val folderPath = args.getValue("folderPath").jsonPrimitive.content
                     val fileName = args.getValue("fileName").jsonPrimitive.content
@@ -80,7 +85,12 @@ sealed class IOCapability(open val agentTag: String) : Capability {
                         isRequired = true,
                         definition = buildJsonObject {
                             put("type", "string")
-                            put("description", "The path where the file should be created, which must *always* include the entire path relative to the User's home directory.")
+                            put(
+                                "description",
+                                """
+                                    The path where the file should be created, where the path *must* be a relative path from the User's home directory."
+                                """.trimIndent()
+                            )
                         }
                     ),
                     ParameterDefinition(
@@ -130,9 +140,10 @@ sealed class IOCapability(open val agentTag: String) : Capability {
                 name = "readFiles",
                 description = """
                     Reads a set of files on the local disk with the given path and name, and returns the combined contents of the files after executing.
-                    You must always choose to send multiple file paths in one call rather than making separate calls to this function, as it is more efficient.
+                    You must always prefer to send multiple file paths in one call rather than making separate calls to this function with only one path each, as it is more efficient.
                     The paths where the files should be read from *must* be a relative path from the User's home directory.
                     Multiple file paths should _not_ be sent as an array, and should be joined together as a string separated by commas.
+                    This function *cannot* be ran in parallel.
                 """.trimIndent(),
                 function = { args: JsonObject ->
                     val filePaths = args.getValue("filePaths").jsonPrimitive.content.split(",")
@@ -185,7 +196,10 @@ sealed class IOCapability(open val agentTag: String) : Capability {
         override val impl: Pair<String, FunctionProvider> =
             FunctionProvider.provideCSV(
                 name = "parseCsv",
-                description = "Reads a CSV file on the local disk with the given name, and returns the table of strings after executing.",
+                description = """
+                    Reads a CSV file on the local disk with the given name, and returns the table of strings after executing.
+                    The paths where the file should be read from *must* be a relative path from the User's home directory.
+                """.trimIndent(),
                 function = { args: JsonObject ->
                     val folderPath = args.getValue("folderPath").jsonPrimitive.content
                     val fileName = args.getValue("fileName").jsonPrimitive.content
@@ -199,7 +213,9 @@ sealed class IOCapability(open val agentTag: String) : Capability {
                             put("type", "string")
                             put(
                                 "description",
-                                "The path where the file should be read from, relative to the user's home directory."
+                                """
+                                    The paths where the file should be read from, where the path *must* be a relative path from the User's home directory.
+                                """.trimIndent()
                             )
                         }
                     ),
