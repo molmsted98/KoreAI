@@ -21,6 +21,7 @@ val generalAgents = listOf(
     CareerAgent,
     CookingAgent,
     DIYAgent,
+    EmailAgent,
     FinancialAgent,
     HealthAgent,
     LanguageAgent,
@@ -66,6 +67,7 @@ fun String?.getAgentDefinition(prompt: String?): AgentDefinition = when (this) {
     ComparePromptsAgent.name -> ComparePromptsAgent
     DelegateTasksAgent.name -> DelegateTasksAgent
     DIYAgent.name -> DIYAgent
+    EmailAgent.name -> EmailAgent
     FinancialAgent.name -> FinancialAgent
     HealthAgent.name -> HealthAgent
     LanguageAgent.name -> LanguageAgent
