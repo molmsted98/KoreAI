@@ -60,7 +60,7 @@ val agentArgsList: List<String> = agentList.map { agent ->
     }) + ")"
 }
 
-fun String?.getAgentDefinition(prompt: String): AgentDefinition = when (this) {
+fun String?.getAgentDefinition(prompt: String?): AgentDefinition = when (this) {
     BusinessAgent.name -> BusinessAgent
     CareerAgent.name -> CareerAgent
     CleanJsonAgent.name -> CleanJsonAgent
@@ -78,5 +78,5 @@ fun String?.getAgentDefinition(prompt: String): AgentDefinition = when (this) {
     TravelAgent.name -> TravelAgent
     WriteCodeAgent.name -> WriteCodeAgent
     WritePromptAgent.name -> WritePromptAgent
-    else -> TestAgentAgent(prompt)
+    else -> TestAgentAgent(prompt.orEmpty())
 }

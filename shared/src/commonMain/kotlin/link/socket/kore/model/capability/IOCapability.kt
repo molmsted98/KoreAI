@@ -71,7 +71,7 @@ sealed interface IOCapability : Capability {
                         isRequired = true,
                         definition = buildJsonObject {
                             put("type", "string")
-                            put("description", "The path where the file should be created, relative to the user's home directory.")
+                            put("description", "The path where the file should be created, which must *always* include the entire path relative to the User's home directory.")
                         }
                     ),
                     ParameterDefinition(
