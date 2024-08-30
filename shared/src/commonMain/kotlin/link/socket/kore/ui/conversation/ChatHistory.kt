@@ -15,6 +15,10 @@ import link.socket.kore.model.chat.Chat
 /**
  * A composable function that displays the chat history in a lazy column.
  *
+ * This function takes a list of chat messages and displays them in a scrollable column.
+ * Each message is displayed using the ChatMessage composable. If the chat is loading,
+ * a circular progress indicator is shown at the bottom of the list.
+ *
  * @param modifier Modifier to be applied to the LazyColumn.
  * @param listState State of the lazy list to control scrolling.
  * @param messages List of chat messages to be displayed.

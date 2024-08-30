@@ -19,6 +19,16 @@ import link.socket.kore.model.conversation.Conversation
 import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.widget.SmallSnackbarHost
 
+/**
+ * Composable function that represents the conversation screen.
+ *
+ * @param modifier Modifier to be applied to the root layout.
+ * @param listState State of the lazy list used to display chat messages.
+ * @param conversation The conversation data model containing chat messages and agent information.
+ * @param isLoading Boolean flag indicating whether the chat is currently loading.
+ * @param onChatSent Callback function to be invoked when a chat message is sent.
+ * @param onBackClicked Callback function to be invoked when the back button is clicked.
+ */
 @Composable
 fun ConversationScreen(
     modifier: Modifier = Modifier,
@@ -32,6 +42,11 @@ fun ConversationScreen(
     val scaffoldState = rememberScaffoldState()
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
 
+    /**
+     * Displays a snackbar with the given message.
+     *
+     * @param message The message to be displayed in the snackbar.
+     */
     val displaySnackbar: (String) -> Unit = { message ->
         scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(

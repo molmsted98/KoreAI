@@ -172,11 +172,17 @@ sealed class AgentCapability(open val agentTag: String) : Capability {
                 .getValue(conversationId)
                 ?.conversationHistory
                 ?.getChats()
-                ?.lastOrNull()
-                ?.chatMessage
-                ?.content ?: ""
-                .also { lastMessage ->
-                    logWith(tag).i("\nResponse:\n$lastMessage")
+                ?.joinToString("\n\n") { chat ->
+                    """
+                    {
+                        "role": "${chat.role}",
+                        "content": "${chat.content}"
+                    }
+                    """.trimIndent()
+                }
+                ?: ""
+                .also { message ->
+                    logWith(tag).i("\nResponse:\n$message")
                 }
         }
     }

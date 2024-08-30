@@ -12,7 +12,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
@@ -25,7 +24,14 @@ import androidx.compose.ui.unit.dp
 import link.socket.kore.ui.theme.iconAlpha
 import link.socket.kore.ui.theme.iconButtonSize
 
-@OptIn(ExperimentalComposeUiApi::class)
+/**
+ * A composable function that represents the text entry field in a conversation UI.
+ *
+ * @param modifier Modifier to be applied to the root layout.
+ * @param textFieldValue The current value of the text field.
+ * @param onTextChanged Callback to be invoked when the text field value changes.
+ * @param onSendClicked Callback to be invoked when the send button is clicked.
+ */
 @Composable
 fun ConversationTextEntry(
     modifier: Modifier = Modifier,
@@ -35,6 +41,7 @@ fun ConversationTextEntry(
 ) {
     val focusManager = LocalFocusManager.current
 
+    // Function to handle the completion of text input
     val onTextInputCompleted: () -> Unit = {
         onSendClicked()
         onTextChanged(textFieldValue.copy(""))
@@ -42,7 +49,7 @@ fun ConversationTextEntry(
     }
 
     Column {
-        val isKeyboardOpen by keyboardAsState() // true or false
+        val isKeyboardOpen by keyboardAsState() // State to track if the keyboard is open
 
         Surface(
             modifier = modifier
@@ -61,6 +68,7 @@ fun ConversationTextEntry(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
+                // Icon button to handle keyboard visibility and attachments
                 IconButton(
                     modifier = Modifier
                         .requiredSize(iconButtonSize),
@@ -87,6 +95,7 @@ fun ConversationTextEntry(
                     )
                 }
 
+                // Text field for message input
                 TextField(
                     modifier = Modifier
                         .padding(
@@ -116,6 +125,7 @@ fun ConversationTextEntry(
                     label = { Text("Your message...") },
                 )
 
+                // Icon button to send the message
                 IconButton(
                     modifier = Modifier
                         .requiredSize(iconButtonSize),
@@ -132,6 +142,11 @@ fun ConversationTextEntry(
     }
 }
 
+/**
+ * A composable function that returns the state of the keyboard visibility.
+ *
+ * @return State<Boolean> indicating whether the keyboard is visible or not.
+ */
 @Composable
 fun keyboardAsState(): State<Boolean> {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0

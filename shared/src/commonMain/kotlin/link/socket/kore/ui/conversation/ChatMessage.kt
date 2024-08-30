@@ -25,6 +25,14 @@ import com.mikepenz.markdown.compose.Markdown
 import link.socket.kore.model.chat.Chat
 import link.socket.kore.ui.theme.*
 
+/**
+ * A composable function that displays a chat message.
+ *
+ * @param modifier A [Modifier] for this composable.
+ * @param message The [Chat] message to display.
+ * @param displaySnackbar A function to display a snackbar with a given message.
+ * @param showRegenerate A boolean indicating whether to show the regenerate button.
+ */
 @Composable
 fun ChatMessage(
     modifier: Modifier = Modifier,
@@ -33,8 +41,7 @@ fun ChatMessage(
     showRegenerate: Boolean,
 ) {
     Surface(
-        modifier = modifier
-            .wrapContentHeight(),
+        modifier = modifier.wrapContentHeight(),
         elevation = 1.dp,
         shape = themeShapes().small,
         color = if (message.role != Role.Assistant && message.role != Role.User) {
@@ -43,14 +50,14 @@ fun ChatMessage(
             themeColors().surface
         }
     ) {
-        // Card
+        // Card container
         Column(
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
-            // Info
+            // Info row
             Row(
                 modifier = Modifier
                     .requiredHeight(48.dp)
@@ -59,8 +66,7 @@ fun ChatMessage(
             ) {
                 if (message.role != Role.User) {
                     Row(
-                        modifier = Modifier
-                            .padding(bottom = 2.dp),
+                        modifier = Modifier.padding(bottom = 2.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
@@ -71,8 +77,7 @@ fun ChatMessage(
                         Spacer(modifier = Modifier.requiredWidth(8.dp))
 
                         Image(
-                            modifier = Modifier
-                                .requiredSize(separatorIconSize),
+                            modifier = Modifier.requiredSize(separatorIconSize),
                             imageVector = Icons.Default.Circle,
                             alpha = iconAlpha,
                             contentDescription = "Separator",
@@ -83,27 +88,21 @@ fun ChatMessage(
                 }
 
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     style = themeTypography().body2,
-                    textAlign = if (message.role == Role.User) {
-                        TextAlign.End
-                    } else {
-                        TextAlign.Start
-                    },
+                    textAlign = if (message.role == Role.User) TextAlign.End else TextAlign.Start,
                     text = "11/27/23, 10:03pm", // TODO: Add proper timestamp
                 )
 
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     style = themeTypography().body2,
                     textAlign = TextAlign.End,
                     text = "27 tokens", // TODO: Add proper token count
                 )
             }
 
-            // Content
+            // Content section
             when (message) {
                 is Chat.System,
                 is Chat.Text -> {
@@ -111,24 +110,21 @@ fun ChatMessage(
 
                     if (message.role == Role.User) {
                         Text(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             style = themeTypography().body1,
                             textAlign = TextAlign.End,
                             text = messageContent,
                         )
                     } else {
                         Markdown(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             content = messageContent
                         )
                     }
                 }
                 is Chat.CSV -> {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         message.csvContent.forEach { line ->
                             Row {
@@ -151,7 +147,7 @@ fun ChatMessage(
                 }
             }
 
-            // Actions
+            // Actions row
             if (message.role != Role.User) {
                 Row(
                     modifier = Modifier
@@ -160,8 +156,7 @@ fun ChatMessage(
                 ) {
                     if (showRegenerate) {
                         IconButton(
-                            modifier = Modifier
-                                .requiredSize(iconButtonSize),
+                            modifier = Modifier.requiredSize(iconButtonSize),
                             onClick = {
                                 // TODO: Handle click
                             }
@@ -177,8 +172,7 @@ fun ChatMessage(
                     val clipboardManager = LocalClipboardManager.current
 
                     IconButton(
-                        modifier = Modifier
-                            .requiredSize(iconButtonSize),
+                        modifier = Modifier.requiredSize(iconButtonSize),
                         onClick = {
                             clipboardManager.setText(
                                 AnnotatedString(message.chatMessage.content ?: ""),
