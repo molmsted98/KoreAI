@@ -19,6 +19,13 @@ import link.socket.kore.model.agent.bundled.promptAgents
 import link.socket.kore.model.agent.bundled.reasoningAgents
 import link.socket.kore.ui.widget.header.Header
 
+/**
+ * Composable function to display the agent selection screen.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param onSubmit Callback function to handle agent submission.
+ * @param onBackClicked Callback function to handle back button click.
+ */
 @Composable
 fun AgentSelectionScreen(
     modifier: Modifier = Modifier,
@@ -97,6 +104,12 @@ fun AgentSelectionScreen(
     }
 }
 
+/**
+ * Composable function to display a column of agents.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param onAgentSelected Callback function to handle agent selection.
+ */
 @Composable
 fun AgentColumn(
     modifier: Modifier = Modifier,
@@ -128,6 +141,13 @@ fun AgentColumn(
     }
 }
 
+/**
+ * Composable function to display a row of agents.
+ *
+ * @param category The category of agents.
+ * @param agents List of agent definitions.
+ * @param onAgentSelected Callback function to handle agent selection.
+ */
 @Composable
 fun AgentRow(
     category: String,
@@ -162,6 +182,12 @@ fun AgentRow(
     }
 }
 
+/**
+ * Composable function to display an agent card.
+ *
+ * @param agent The agent definition.
+ * @param onAgentSelected Callback function to handle agent selection.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AgentCard(
@@ -187,4 +213,3 @@ fun AgentCard(
         }
     }
 }
-

@@ -19,10 +19,19 @@ import link.socket.kore.ui.theme.themeColors
 import link.socket.kore.ui.theme.themeShapes
 import link.socket.kore.ui.theme.themeTypography
 
+/**
+ * Enum class representing the different screens in the application.
+ */
 enum class Screen {
     HOME, SELECTION, CONVERSATION;
 }
 
+/**
+ * Extension function to create a [KoreAgent] from an [AgentDefinition].
+ *
+ * @param agentDefinition The definition of the agent to be created.
+ * @return A new instance of [KoreAgent].
+ */
 fun Application.createAgent(agentDefinition: AgentDefinition): KoreAgent =
     KoreAgent(
         CoroutineScope(Dispatchers.IO),
@@ -30,6 +39,11 @@ fun Application.createAgent(agentDefinition: AgentDefinition): KoreAgent =
         conversationRepository,
     )
 
+/**
+ * Composable function representing the main application UI.
+ *
+ * @param modifier The [Modifier] to be applied to the root composable.
+ */
 @Composable
 fun App(
     modifier: Modifier = Modifier,

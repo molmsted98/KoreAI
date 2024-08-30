@@ -13,6 +13,15 @@ import link.socket.kore.model.agent.AgentDefinition
 import link.socket.kore.model.agent.AgentInput
 import link.socket.kore.ui.theme.themeTypography
 
+/**
+ * Composable function to display and handle agent inputs.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param partiallySelectedAgent The agent definition that is partially selected.
+ * @param neededInputs List of required agent inputs.
+ * @param optionalInputs List of optional agent inputs.
+ * @param onAgentSubmission Callback function to handle agent submission.
+ */
 @Composable
 fun AgentInputs(
     modifier: Modifier = Modifier,
@@ -21,19 +30,19 @@ fun AgentInputs(
     optionalInputs: List<AgentInput>,
     onAgentSubmission: (AgentDefinition) -> Unit,
 ) {
+    // State to hold the input values
     val inputValues by remember {
         mutableStateOf(
             mutableMapOf<String, AgentInput>()
         )
     }
 
+    // Composable function to render different types of inputs
     val inputComposable: @Composable (AgentInput) -> Unit = @Composable { input ->
         when (input) {
-
             is AgentInput.EnumArgs -> {
                 EnumInput(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     input = input,
                     possibleValues = input.possibleValues,
                     onValueChanged = { value ->
@@ -41,22 +50,18 @@ fun AgentInputs(
                     },
                 )
             }
-
             is AgentInput.StringArg -> {
                 StringInput(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     input = input,
                     onValueChanged = { value ->
                         inputValues[input.key] = value
                     },
                 )
             }
-
             is AgentInput.ListArg -> {
                 ListInput(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     input = input,
                     onValueChanged = { value ->
                         inputValues[input.key] = value
@@ -66,10 +71,11 @@ fun AgentInputs(
         }
     }
 
+    // Main column layout for the agent inputs
     Column(
-        modifier = modifier
-            .wrapContentHeight(),
+        modifier = modifier.wrapContentHeight(),
     ) {
+        // Display the agent name
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,6 +85,7 @@ fun AgentInputs(
             textAlign = TextAlign.Center,
         )
 
+        // LazyColumn to display needed and optional inputs
         LazyColumn(
             modifier = Modifier
                 .wrapContentHeight()
@@ -93,10 +100,10 @@ fun AgentInputs(
                 inputComposable(input)
             }
 
+            // Submit button to finalize and submit the agent
             item {
                 Button(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         val finalizedAgent = partiallySelectedAgent.apply {
                             parseInputs(inputValues)
@@ -105,8 +112,7 @@ fun AgentInputs(
                     },
                 ) {
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         style = themeTypography().button,
                         text = "Submit",
                         textAlign = TextAlign.Center,
@@ -117,6 +123,14 @@ fun AgentInputs(
     }
 }
 
+/**
+ * Composable function to display an enum input.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param input The enum input definition.
+ * @param possibleValues List of possible values for the enum.
+ * @param onValueChanged Callback function to handle value changes.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun EnumInput(
@@ -128,16 +142,16 @@ private fun EnumInput(
     Column(
         modifier = modifier,
     ) {
+        // Display the input name
         Text(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = input.name,
         )
 
         var showDropdown by remember { mutableStateOf(false) }
+        // Card to display the selected value and trigger dropdown
         Card(
-            modifier = Modifier
-                .padding(12.dp),
+            modifier = Modifier.padding(12.dp),
             onClick = {
                 showDropdown = true
             },
@@ -146,6 +160,7 @@ private fun EnumInput(
                 text = input.value,
             )
         }
+        // Dropdown menu to select a value
         DropdownMenu(
             expanded = showDropdown,
             onDismissRequest = { showDropdown = false },
@@ -168,6 +183,13 @@ private fun EnumInput(
     }
 }
 
+/**
+ * Composable function to display a string input.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param input The string input definition.
+ * @param onValueChanged Callback function to handle value changes.
+ */
 @Composable
 private fun StringInput(
     modifier: Modifier = Modifier,
@@ -176,6 +198,7 @@ private fun StringInput(
 ) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
 
+    // TextField to input string value
     TextField(
         modifier = modifier,
         value = textFieldValue,
@@ -191,6 +214,13 @@ private fun StringInput(
     Spacer(modifier = Modifier.requiredHeight(8.dp))
 }
 
+/**
+ * Composable function to display a list input.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param input The list input definition.
+ * @param onValueChanged Callback function to handle value changes.
+ */
 @Composable
 private fun ListInput(
     modifier: Modifier = Modifier,
@@ -205,13 +235,14 @@ private fun ListInput(
         )
     }
 
+    // Column layout for list items
     Column(
-        modifier = modifier
-            .wrapContentHeight(),
+        modifier = modifier.wrapContentHeight(),
     ) {
         for (index in 0..<itemCount) {
             var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
 
+            // TextField for each list item
             TextField(
                 modifier = modifier,
                 value = textFieldValue,
@@ -232,17 +263,16 @@ private fun ListInput(
             Spacer(modifier = Modifier.requiredHeight(8.dp))
         }
 
+        // Button to add more list items
         Button(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(),
             onClick = {
                 itemCount++
             },
         ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 style = themeTypography().button,
                 text = "Add List Item",
                 textAlign = TextAlign.Center,

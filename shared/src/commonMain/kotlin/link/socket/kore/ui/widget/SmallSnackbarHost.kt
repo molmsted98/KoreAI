@@ -11,6 +11,12 @@ import androidx.compose.ui.platform.AccessibilityManager
 import androidx.compose.ui.platform.LocalAccessibilityManager
 import kotlinx.coroutines.delay
 
+/**
+ * A composable function that displays a small Snackbar.
+ *
+ * @param modifier The modifier to be applied to the Snackbar.
+ * @param snackbarHostState The state of the Snackbar host, which controls the display of Snackbars.
+ */
 @Composable
 fun SmallSnackbarHost(
     modifier: Modifier = Modifier,
@@ -19,6 +25,7 @@ fun SmallSnackbarHost(
     val currentSnackbarData = snackbarHostState.currentSnackbarData
     val accessibilityManager = LocalAccessibilityManager.current
 
+    // Launch a coroutine to handle the Snackbar's display duration and dismissal
     LaunchedEffect(currentSnackbarData) {
         if (currentSnackbarData != null) {
             val duration = currentSnackbarData.duration.toMillis(
@@ -30,17 +37,21 @@ fun SmallSnackbarHost(
         }
     }
 
+    // Display the Snackbar if there is current Snackbar data
     currentSnackbarData?.let { data ->
         Snackbar(
-            modifier = modifier
-                .wrapContentWidth(),
+            modifier = modifier.wrapContentWidth(),
             snackbarData = data,
         )
     }
 }
 
-/*
- * Implementation from [androidx.compose.material.SnackbarHostState]
+/**
+ * Extension function to convert SnackbarDuration to milliseconds, considering accessibility settings.
+ *
+ * @param hasAction Boolean indicating if the Snackbar has an action button.
+ * @param accessibilityManager The AccessibilityManager to use for calculating recommended timeout.
+ * @return The duration in milliseconds.
  */
 internal fun SnackbarDuration.toMillis(
     hasAction: Boolean,
