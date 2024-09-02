@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "link.socket"
-version = "0.0.3"
+version = "0.0.4"
 
 publishing {
     publications {
@@ -24,7 +24,7 @@ publishing {
 
             groupId = group.toString()
             artifactId = "kore-ai"
-            version = "0.0.3"
+            version = "0.0.4"
 
             pom {
                 name.set("KoreAI")

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aallam.openai.api.core.Role
 import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.model.markdownColor
 import link.socket.kore.model.chat.Chat
 import link.socket.kore.ui.theme.*
 
@@ -39,6 +41,13 @@ fun ChatMessage(
     message: Chat,
     displaySnackbar: (String) -> Unit,
     showRegenerate: Boolean,
+    backgroundColor: Color = themeColors().surface,
+    textColor: Color = MaterialTheme.colors.onBackground,
+    codeTextColor: Color = MaterialTheme.colors.onBackground,
+    linkTextColor: Color = textColor,
+    codeBackgroundColor: Color = MaterialTheme.colors.onBackground.copy(alpha = 0.1f),
+    inlineCodeBackgroundColor: Color = codeBackgroundColor,
+    dividerColor: Color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
 ) {
     Surface(
         modifier = modifier.wrapContentHeight(),
@@ -47,7 +56,7 @@ fun ChatMessage(
         color = if (message.role != Role.Assistant && message.role != Role.User) {
             nonContentCardColor
         } else {
-            themeColors().surface
+            backgroundColor
         }
     ) {
         // Card container
@@ -118,7 +127,15 @@ fun ChatMessage(
                     } else {
                         Markdown(
                             modifier = Modifier.fillMaxWidth(),
-                            content = messageContent
+                            content = messageContent,
+                            colors = markdownColor(
+                                text = textColor,
+                                codeText = codeTextColor,
+                                linkText = linkTextColor,
+                                codeBackground = codeBackgroundColor,
+                                inlineCodeBackground = inlineCodeBackgroundColor,
+                                dividerColor = dividerColor,
+                            )
                         )
                     }
                 }
